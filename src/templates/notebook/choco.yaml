@@ -3,6 +3,7 @@ choco:
   - opera
   - winrar
   - cmder
+  - vscode
   - vlc
   - telegram
   - make
@@ -14,8 +15,6 @@ choco:
   - gitkraken
   - firefox
   - python
-  - mongodb
-  - robo3t
   - sumatrapdf.install
   - strawberryperl
   - miktex
@@ -26,3 +25,4 @@ choco:
   - visualstudio2017enterprise
   - cygwin
   - cyg-get
+  - nvm
