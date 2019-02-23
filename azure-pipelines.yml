@@ -1,0 +1,10 @@
+jobs:
+  - job: Dotfiles
+    timeoutInMinutes: 200
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+      - powershell: .\src\scripts\init.ps1
+        displayName: Run `init.ps1`
+        env:
+          CI: 'true'
