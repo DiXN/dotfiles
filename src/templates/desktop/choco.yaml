@@ -16,8 +16,6 @@ choco:
   - firefox
   - python
   - sumatrapdf.install
-  - strawberryperl
-  - miktex
   - vcredist2015
   - visualcppbuildtools
   - docker-for-windows
@@ -28,7 +26,6 @@ choco:
   - cygwin
   - cyg-get
   - displayfusion
-  - nvm
   - logitechgaming
   - msiafterburner
   - jdownloader

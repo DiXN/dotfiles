@@ -21,6 +21,9 @@ namespace DotfilesWrapper
                         case "commands":
                             ExecTask(new Command(arg));
                             break;
+                        case "scoop":
+                            ExecTask(new Scoop(arg));
+                            break;
                         case "choco":
                             _taskList.Enqueue(new Choco(arg));
                             break;
@@ -46,13 +49,19 @@ namespace DotfilesWrapper
 
             TaskBase.OnTasksFinished += (sender, type) =>
             {
-                var task = _taskList.Dequeue();
+                if (_taskList.Count > 0)
+                {
+                    var task = _taskList.Dequeue();
 
-                if (task != null)
-                    ExecTask(task);
+                    if (task != null)
+                        ExecTask(task);
+                }
+
             };
 
-            ExecTask(_taskList.Dequeue());
+            if (_taskList.Count > 0)
+                ExecTask(_taskList.Dequeue());
+
             Console.ReadLine();
         }
     }

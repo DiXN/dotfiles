@@ -1,0 +1,9 @@
+---
+scoop:
+  - bat
+  - crystaldiskmark
+  - less
+  - nvm
+  - rclone
+  - perl
+  - latex

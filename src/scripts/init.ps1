@@ -62,17 +62,28 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 Write-Output "Installing Chocolatey..."
 Invoke-Expression ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))
 
+#install Scoop
+Set-ExecutionPolicy remotesigned -s currentuser
+Invoke-Expression (new-object net.webclient).downloadstring('https://get.scoop.sh')
+
+scoop install git
+scoop install aria2
+scoop bucket add extras
+
+#download YAML files
 if (Detect-Notebook) {
   Write-Output "Downloading YAML files..."
   Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/notebook/choco.yaml" | Out-File -filepath "$downloadLocation\choco.yaml"
+  Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/notebook/scoop.yaml" | Out-File "$downloadLocation\scoop.yaml"
   Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/notebook/commands.yaml" | Out-File "$downloadLocation\commands.yaml"
 } else {
   Write-Output "Downloading YAML files..."
   Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/desktop/choco.yaml" | Out-File "$downloadLocation\choco.yaml"
+  Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/desktop/scoop.yaml" | Out-File "$downloadLocation\scoop.yaml"
   Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/desktop/commands.yaml" | Out-File "$downloadLocation\commands.yaml"
 }
 
 Set-Location $downloadLocation
 
 Write-Output "Invoking DotfilesWrapper..."
-Invoke-Expression "$downloadLocation\DotfilesWrapper.exe $downloadLocation\choco.yaml $downloadLocation\commands.yaml"
+Invoke-Expression "$downloadLocation\DotfilesWrapper.exe $downloadLocation\choco.yaml $downloadLocation\commands.yaml $downloadLocation\scoop.yaml"

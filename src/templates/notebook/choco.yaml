@@ -16,8 +16,6 @@ choco:
   - firefox
   - python
   - sumatrapdf.install
-  - strawberryperl
-  - miktex
   - vcredist2015
   - visualcppbuildtools
   - jdk10 -params "source=false"

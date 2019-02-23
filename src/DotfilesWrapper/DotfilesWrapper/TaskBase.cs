@@ -24,7 +24,8 @@ namespace DotfilesWrapper
         {
             COMMAND,
             CHOCO,
-            CHOCO_DEPENDENCY
+            CHOCO_DEPENDENCY,
+            SCOOP
         }
 
         public CMD_TYPE CmdType { get; set; }

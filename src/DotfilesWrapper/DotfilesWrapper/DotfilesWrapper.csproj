@@ -50,6 +50,7 @@
     <Compile Include="Command.cs" />
     <Compile Include="ICommandable.cs" />
     <Compile Include="Optional.cs" />
+    <Compile Include="Scoop.cs" />
     <Compile Include="TaskBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
