@@ -84,20 +84,6 @@ if (Test-RegistryValue -Path $registryKeyPath -Value "AllowAllTrustedApps") {
 #disable windows defender real time monitoring during installation
 Set-MpPreference -DisableRealtimeMonitoring $true
 
-#install Scoop
-Invoke-Expression (new-object net.webclient).downloadstring('https://get.scoop.sh')
-Set-ExecutionPolicy Undefined -scope Process -Force
-Set-ExecutionPolicy Undefined -scope LocalMachine -Force
-Set-ExecutionPolicy RemoteSigned -scope CurrentUser -Force
-
-scoop install git
-scoop install aria2
-scoop bucket add extras
-
-#install Chocolatey
-Write-Output "Installing Chocolatey..."
-Invoke-Expression ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))
-
 #download YAML files
 if (Detect-Notebook) {
   Write-Output "Downloading YAML files..."
@@ -111,7 +97,5 @@ if (Detect-Notebook) {
   Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/desktop/commands.yaml" | Out-File "$downloadLocation\commands.yaml"
 }
 
-Set-Location $downloadLocation
-
 Write-Output "Invoking DotfilesWrapper..."
-Invoke-Expression "$downloadLocation\DotfilesWrapper.exe $downloadLocation\choco.yaml $downloadLocation\commands.yaml $downloadLocation\scoop.yaml"
+& "$downloadLocation\DotfilesWrapper.exe" "$downloadLocation\commands.yaml"
