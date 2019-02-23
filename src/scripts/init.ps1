@@ -1,4 +1,4 @@
-Set-ExecutionPolicy Bypass -Scope Process -Force
+Get-ExecutionPolicy -List
 
 Function Detect-Notebook {
   Param([string]$computer = "localhost")
@@ -13,6 +13,23 @@ Function Detect-Notebook {
   }
 
   $isNotebook
+}
+
+#https://www.jonathanmedd.net/2014/02/testing-for-the-presence-of-a-registry-key-and-value.html
+function Test-RegistryValue {
+  param (
+    [parameter(Mandatory=$true)]
+    [ValidateNotNullOrEmpty()]$Path,
+    [parameter(Mandatory=$true)]
+    [ValidateNotNullOrEmpty()]$Value
+  )
+  try {
+  Get-ItemProperty -Path $Path | Select-Object -ExpandProperty $Value -ErrorAction Stop | Out-Null
+    return $true
+  }
+  catch {
+    return $false
+  }
 }
 
 $downloadLocation = [System.IO.Path]::GetTempPath() + "dotfiles"
@@ -48,27 +65,38 @@ Set-ItemProperty -Path "HKCR:\Microsoft.PowerShellScript.1\Shell\open\command" -
 #enable developer mode
 $registryKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock"
 
-if (-not(Test-Path -Path $registryKeyPath)) {
-    New-Item -Path $registryKeyPath -ItemType Directory -Force
+if (-not(Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock")) {
+  New-Item -Path $registryKeyPath -ItemType Directory -Force
 }
 
-New-ItemProperty -Path $RegistryKeyPath -Name AllowDevelopmentWithoutDevLicense -PropertyType DWORD -Value 1
-New-ItemProperty -Path $RegistryKeyPath -Name AllowAllTrustedApps -PropertyType DWORD -Value 1
+if (Test-RegistryValue -Path $registryKeyPath -Value "AllowDevelopmentWithoutDevLicense") {
+  Set-ItemProperty -Path $registryKeyPath -Name "AllowDevelopmentWithoutDevLicense" -Value "1"
+} else {
+  New-ItemProperty -Path $registryKeyPath -Name "AllowDevelopmentWithoutDevLicense" -PropertyType DWORD -Value "1"
+}
+
+if (Test-RegistryValue -Path $registryKeyPath -Value "AllowAllTrustedApps") {
+  Set-ItemProperty -Path $registryKeyPath -Name "AllowAllTrustedApps" -Value "1"
+} else {
+  New-ItemProperty -Path $registryKeyPath -Name "AllowAllTrustedApps" -PropertyType DWORD -Value "1"
+}
 
 #disable windows defender real time monitoring during installation
 Set-MpPreference -DisableRealtimeMonitoring $true
 
-#install Chocolatey
-Write-Output "Installing Chocolatey..."
-Invoke-Expression ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))
-
 #install Scoop
-Set-ExecutionPolicy remotesigned -s currentuser
 Invoke-Expression (new-object net.webclient).downloadstring('https://get.scoop.sh')
+Set-ExecutionPolicy Undefined -scope Process -Force
+Set-ExecutionPolicy Undefined -scope LocalMachine -Force
+Set-ExecutionPolicy RemoteSigned -scope CurrentUser -Force
 
 scoop install git
 scoop install aria2
 scoop bucket add extras
+
+#install Chocolatey
+Write-Output "Installing Chocolatey..."
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))
 
 #download YAML files
 if (Detect-Notebook) {
