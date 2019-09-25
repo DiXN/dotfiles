@@ -1,5 +1,4 @@
 Get-ExecutionPolicy -List
-
 Function Detect-Notebook {
   Param([string]$computer = "localhost")
   $isNotebook = $false
@@ -98,4 +97,6 @@ if (Detect-Notebook) {
 }
 
 Write-Output "Invoking DotfilesWrapper..."
-& "$downloadLocation\DotfilesWrapper.exe" "$downloadLocation\commands.yaml"
+$process = Start-Process -FilePath "$downloadLocation\DotfilesWrapper.exe" -ArgumentList "$downloadLocation\commands.yaml", "$downloadLocation\choco.yaml" -NoNewWindow -PassThru -Wait
+
+$process.ExitCode
