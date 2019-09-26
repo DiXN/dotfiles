@@ -26,9 +26,9 @@ class Command : TaskBase
         });
     }
 
-    public override Task[] Exec()
+    public override Task<int>[] Exec()
     {
-        List<Task> tasks = new List<Task>();
+        List<Task<int>> tasks = new List<Task<int>>();
 
         for (var i = 0; Check(i, _commandQueue); i++)
         {
@@ -43,9 +43,9 @@ class Command : TaskBase
         return tasks.ToArray();
     }
 
-    protected override Task ExecTask()
+    protected override Task<int> ExecTask()
     {
-        Task task = null;
+        Task<int> task = null;
         if (Check(_currentProcesses, _commandQueue))
         {
             _commandQueue.TryDequeue(out var cmd);
@@ -65,10 +65,14 @@ class Command : TaskBase
                 Console.WriteLine($"Command task {_status} of {Tasks} (\"{cmd.Desc}\") finished. {Environment.NewLine}");
 
                 Console.ResetColor();
+
+                return res.code;
             }).ContinueWith(x =>
             {
                 Interlocked.Decrement(ref _currentProcesses);
+                Console.WriteLine($"Processed finished. {_currentProcesses} processes still currently running.");
                 ExecTask();
+                return x.Result;
             });
         }
 

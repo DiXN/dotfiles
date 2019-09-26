@@ -23,17 +23,29 @@ class ChocoDependency : TaskBase
             Tasks = val.Commands.Count;
         });
     }
-    public override Task[] Exec() => new[] { ExecTask() };
+    public override Task<int>[] Exec() => new[] { ExecTask() };
 
-    protected override Task ExecTask()
+    protected override Task<int> ExecTask()
     {
         return Task.Run(async () =>
         {
+            int returnCode = 0;
             foreach (var task in _chocoDependencyQueue.Select(cmd => ExecCommand($"choco install {cmd.app} -y && {string.Join(" && ", cmd.Cmd ?? (new[] { "" }))}", cmd.Desc, cmd.Path)))
             {
-                Console.WriteLine(await task);
+                (int code, string output) res = await task;
+
+                returnCode = res.code;
+
+                if (res.code != 0)
+                Console.ForegroundColor = ConsoleColor.Red;
+                else
+                Console.ForegroundColor = ConsoleColor.Green;
+
+                Console.WriteLine(res.output);
                 Console.WriteLine($"Choco with dependency task {++_status} of {Tasks} finished. {Environment.NewLine}");
             }
+
+            return returnCode;
         });
     }
 

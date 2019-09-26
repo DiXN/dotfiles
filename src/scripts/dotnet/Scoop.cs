@@ -23,15 +23,18 @@ class Scoop : TaskBase
         });
     }
 
-    public override Task[] Exec() => new[] { ExecTask() };
+    public override Task<int>[] Exec() => new[] { ExecTask() };
 
-    protected override Task ExecTask()
+    protected override Task<int> ExecTask()
     {
         return Task.Run(async () =>
         {
+            int returnCode = 0;
             foreach (var task in _scoopQueue.Select(cmd => ExecCommand($"scoop install {cmd}", cmd)))
             {
                 (int code, string output) res = await task;
+
+                returnCode = res.code;
 
                 if (res.code != 0)
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -43,6 +46,8 @@ class Scoop : TaskBase
 
                 Console.ResetColor();
             }
+
+            return returnCode;
         });
     }
 

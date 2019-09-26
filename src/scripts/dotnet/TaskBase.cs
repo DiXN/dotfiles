@@ -122,6 +122,6 @@ abstract class TaskBase
         }
     }
 
-    protected abstract Task ExecTask();
-    public abstract Task[] Exec();
+    protected abstract Task<int> ExecTask();
+    public abstract Task<int>[] Exec();
 }

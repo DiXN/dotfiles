@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 Console.WriteLine($"Available Threads: {Environment.ProcessorCount}");
 
 var _taskList = new Queue<TaskBase>();
-var _allTasks = new List<Task[]>();
+var _allTasks = new List<Task<int>[]>();
 
 foreach (var arg in Args.Distinct())
 {
@@ -71,3 +71,11 @@ var allTasksFlattened = _allTasks.SelectMany(x => x).ToArray();
 Task.WaitAll(allTasksFlattened);
 
 Console.WriteLine($"Processed {allTasksFlattened.Length} tasks in total.");
+
+if (allTasksFlattened.Any(t => t.Result != 0))
+{
+    Console.Error.WriteLine("Not all tasks have finished successfully.");
+    return -1;
+}
+else
+    return 0;
