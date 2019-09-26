@@ -15,11 +15,14 @@ using System.Threading.Tasks;
 Console.WriteLine($"Available Threads: {Environment.ProcessorCount}");
 
 var _taskList = new Queue<TaskBase>();
+var _allTasks = new List<Task[]>();
 
 foreach (var arg in Args.Distinct())
 {
+    Console.WriteLine(arg);
     if (File.Exists(arg) && Regex.IsMatch(Path.GetExtension(arg.ToLower()), "^.ya?ml$"))
     {
+        Console.WriteLine($"{arg} exists");
         switch (Path.GetFileNameWithoutExtension(arg))
         {
             case "commands":
@@ -45,7 +48,7 @@ void ExecTask(TaskBase task)
 {
     if (task.Tasks > 0)
     {
-        task.Exec();
+        _allTasks.Add(task.Exec());
     }
     else
     {
@@ -64,3 +67,9 @@ TaskBase.OnTasksFinished += (sender, type) =>
       ExecTask(task);
   }
 };
+
+var allTasksFlattened = _allTasks.SelectMany(x => x).ToArray();
+
+Task.WaitAll(allTasksFlattened);
+
+Console.WriteLine($"Processed {allTasksFlattened.Length} tasks in total.");

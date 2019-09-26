@@ -26,20 +26,30 @@ class Command : TaskBase
         });
     }
 
-    public override void Exec()
+    public override Task[] Exec()
     {
-        for (var i = 0; Check(i, _commandQueue); i++)
-            ExecTask();
+        List<Task> tasks = new List<Task>();
 
-        Task.WaitAll(_tasks.ToArray());
+        for (var i = 0; Check(i, _commandQueue); i++)
+        {
+            var task = ExecTask();
+
+            if (task != null)
+            {
+                tasks.Add(task);
+            }
+        }
+
+        return tasks.ToArray();
     }
 
-    protected override void ExecTask()
+    protected override Task ExecTask()
     {
+        Task task = null;
         if (Check(_currentProcesses, _commandQueue))
         {
             _commandQueue.TryDequeue(out var cmd);
-            _tasks.Add(Task.Run(async () =>
+            task = Task.Run(async () =>
             {
                 Interlocked.Increment(ref _currentProcesses);
                 Console.WriteLine(await ExecCommand(string.Join(" && ", cmd.Cmd ?? (new[] { "" })), cmd.Desc, cmd.Path));
@@ -49,8 +59,10 @@ class Command : TaskBase
             {
                 Interlocked.Decrement(ref _currentProcesses);
                 ExecTask();
-            }));
+            });
         }
+
+        return task;
     }
     internal class CommandTuple
     {

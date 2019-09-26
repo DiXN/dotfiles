@@ -23,18 +23,18 @@ class Choco : TaskBase
             Tasks = val.Commands.Count;
         });
     }
-    public override void Exec() => ExecTask();
+    public override Task[] Exec() => new[] { ExecTask() };
 
-    protected override void ExecTask()
+    protected override Task ExecTask()
     {
-        Task.Run(async () =>
+        return Task.Run(async () =>
         {
             foreach (var task in _chocoQueue.Select(cmd => ExecCommand($"choco install {cmd} -y", cmd)))
             {
                 Console.WriteLine(await task);
                 Console.WriteLine($"Choco task {++_status} of {Tasks} finished. {Environment.NewLine}");
             }
-        }).Wait();
+        });
     }
 
     internal class ChocoWrapper : ICommandable<string>

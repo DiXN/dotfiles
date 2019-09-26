@@ -105,6 +105,8 @@ else {
   $templatePrefix = "desktop"
 }
 
+Write-Output "[dotfiles running on $templatePrefix ....]"
+
 #invoke dotnet-script
 Write-Output "[Installing dotfiles ...]"
-dotnet script "$downloadLocation\scripts\dotnet\main.csx" -- "$downloadLocation\template\$templatePrefix\commands.yaml" "$downloadLocation\template\$templatePrefix\scoop.yaml"
+dotnet script "$downloadLocation\scripts\dotnet\main.csx" -- "$downloadLocation\templates\$templatePrefix\commands.yaml" "$downloadLocation\templates\$templatePrefix\scoop.yaml"

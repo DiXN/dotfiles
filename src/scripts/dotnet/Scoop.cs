@@ -23,18 +23,18 @@ class Scoop : TaskBase
         });
     }
 
-    public override void Exec() => ExecTask();
+    public override Task[] Exec() => new[] { ExecTask() };
 
-    protected override void ExecTask()
+    protected override Task ExecTask()
     {
-        Task.Run(async () =>
+        return Task.Run(async () =>
         {
             foreach (var task in _scoopQueue.Select(cmd => ExecCommand($"scoop install {cmd}", cmd)))
             {
                 Console.WriteLine(await task);
                 Console.WriteLine($"Scoop task {++_status} of {Tasks} finished. {Environment.NewLine}");
             }
-        }).Wait();
+        });
     }
 
     internal class ChocoWrapper : ICommandable<string>
