@@ -5,7 +5,6 @@ scoop:
   - less
   - nvm
   - rclone
-  - perl
   - latex
   - scrcpy
   - qbittorrent

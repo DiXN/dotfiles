@@ -35,6 +35,8 @@ $downloadLocation = [System.IO.Path]::GetTempPath() + "dotfiles"
 #create folder in TEMP path if not exists
 mkdir -Force $downloadLocation | Out-Null
 
+cd $downloadLocation
+
 #download repo
 Write-Output "[Downloading Repo ...]"
 Invoke-Expression ((New-Object System.Net.WebClient).DownloadString("https://raw.githubusercontent.com/DiXN/dotfiles/master/src/scripts/download-repo.ps1"))

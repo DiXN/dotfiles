@@ -2,12 +2,12 @@
 commands:
   - cmd:
     - powershell -command "Invoke-WebRequest https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe -OutFile rustup-init.exe"
-    - .\rustup-init.exe -yv --default-toolchain nightly --default-host x86_64-pc-windows-msvc
+    - .\rustup-init.exe -yv --default-toolchain stable --default-host x86_64-pc-windows-msvc
     desc: install rustup
   - cmd:
-    - powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; .\default-apps.ps1"
+    - powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\default-apps.ps1"
     desc: configure default apps
   - cmd:
     - mkdir %USERPROFILE%\Documents\WindowsPowerShell 2> NUL
-    - xcopy /y Microsoft.PowerShell_profile.ps1 %USERPROFILE%\Documents\WindowsPowerShell
+    - xcopy /y .\configs\Microsoft.PowerShell_profile.ps1 %USERPROFILE%\Documents\WindowsPowerShell
     desc: copy powershell config
