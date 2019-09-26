@@ -35,19 +35,8 @@ $downloadLocation = [System.IO.Path]::GetTempPath() + "dotfiles"
 #create folder in TEMP path if not exists
 mkdir -Force $downloadLocation | Out-Null
 
-#download DotfilesWrapper
-Write-Output "Downloading DotfilesWrapper..."
-Invoke-Expression ((New-Object System.Net.WebClient).DownloadString("https://raw.githubusercontent.com/DiXN/dotfiles/master/src/scripts/download-github-release.ps1"))
-
-#extract DotfilesWrapper
-Write-Output "Extracting DotfilesWrapper..."
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-[System.IO.Compression.ZipFile]::ExtractToDirectory("$downloadLocation\dotfiles.zip", $downloadLocation)
-
-Remove-Item "$downloadLocation\dotfiles.zip"
-
 #disable UAC
-Write-Output 'Disabling UAC ...'
+Write-Output "[Disabling UAC ...]"
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value "0"
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorUser" -Value "0"
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Value "1"
@@ -96,7 +85,17 @@ if (Detect-Notebook) {
   Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/desktop/commands.yaml" | Out-File "$downloadLocation\commands.yaml"
 }
 
-Write-Output "Invoking DotfilesWrapper..."
-$process = Start-Process -FilePath "$downloadLocation\DotfilesWrapper.exe" -ArgumentList "$downloadLocation\commands.yaml", "$downloadLocation\choco.yaml" -NoNewWindow -PassThru -Wait
+#install scoop
+Write-Output "[Installing Scoop...]"
+Invoke-Expression (new-object net.webclient).downloadstring('https://get.scoop.sh')
 
-$process.ExitCode
+scoop install git
+scoop install aria2
+scoop bucket add extras
+scoop bucket add versions
+
+#lts for now
+scoop install dotnet-sdk-lts
+
+#install dotnet-script
+(new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/filipw/dotnet-script/master/install/install.ps1") | Invoke-Expression
