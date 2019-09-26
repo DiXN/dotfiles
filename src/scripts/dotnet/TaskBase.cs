@@ -82,7 +82,7 @@ abstract class TaskBase
         }
     }
 
-    protected async Task<string> ExecCommand(string cmd, string desc = "", string path = "")
+    protected async Task<(int, string)> ExecCommand(string cmd, string desc = "", string path = "")
     {
         using (Process process = new Process())
         {
@@ -118,7 +118,7 @@ abstract class TaskBase
             FormatStd(cmd, output, desc, STD_TYPE.OUTPUT).IfPresentOrElse(outp =>
                 builder.Append(outp), () => builder.AppendLine($"no output for \"{cmd}\""));
 
-            return builder.ToString();
+            return (code: String.IsNullOrEmpty(error) ? 0 : -1, output: builder.ToString());
         }
     }
 

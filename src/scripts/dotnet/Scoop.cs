@@ -31,8 +31,17 @@ class Scoop : TaskBase
         {
             foreach (var task in _scoopQueue.Select(cmd => ExecCommand($"scoop install {cmd}", cmd)))
             {
-                Console.WriteLine(await task);
+                (int code, string output) res = await task;
+
+                if (res.code != 0)
+                    Console.ForegroundColor = ConsoleColor.Red;
+                else
+                    Console.ForegroundColor = ConsoleColor.Green;
+
+                Console.WriteLine(res.output);
                 Console.WriteLine($"Scoop task {++_status} of {Tasks} finished. {Environment.NewLine}");
+
+                Console.ResetColor();
             }
         });
     }

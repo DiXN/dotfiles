@@ -52,9 +52,19 @@ class Command : TaskBase
             task = Task.Run(async () =>
             {
                 Interlocked.Increment(ref _currentProcesses);
-                Console.WriteLine(await ExecCommand(string.Join(" && ", cmd.Cmd ?? (new[] { "" })), cmd.Desc, cmd.Path));
+
+                (int code, string output) res = await ExecCommand(string.Join(" && ", cmd.Cmd ?? (new[] { "" })), cmd.Desc, cmd.Path);
+
+                if (res.code != 0)
+                    Console.ForegroundColor = ConsoleColor.Red;
+                else
+                    Console.ForegroundColor = ConsoleColor.Green;
+
+                Console.WriteLine(res.output);
                 Interlocked.Increment(ref _status);
                 Console.WriteLine($"Command task {_status} of {Tasks} finished. {Environment.NewLine}");
+
+                Console.ResetColor();
             }).ContinueWith(x =>
             {
                 Interlocked.Decrement(ref _currentProcesses);

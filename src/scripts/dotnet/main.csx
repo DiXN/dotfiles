@@ -19,10 +19,8 @@ var _allTasks = new List<Task[]>();
 
 foreach (var arg in Args.Distinct())
 {
-    Console.WriteLine(arg);
     if (File.Exists(arg) && Regex.IsMatch(Path.GetExtension(arg.ToLower()), "^.ya?ml$"))
     {
-        Console.WriteLine($"{arg} exists");
         switch (Path.GetFileNameWithoutExtension(arg))
         {
             case "commands":
