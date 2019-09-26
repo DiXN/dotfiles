@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 abstract class TaskBase
@@ -98,6 +99,7 @@ abstract class TaskBase
             };
 
             int code = -1;
+            int pTimer = 0;
             var title = !string.IsNullOrEmpty(desc) ? desc : cmd;
 
             try
@@ -105,27 +107,41 @@ abstract class TaskBase
                 process.Start();
                 Console.WriteLine($"Started task: \"{(!string.IsNullOrEmpty(desc) ? desc : cmd)}\"");
 
-
-                var stdOut = Task.Run(async () => {
-                    string line = string.Empty;
-                    while (!string.IsNullOrEmpty((line = await process.StandardOutput.ReadLineAsync())))
-                    {
-                        Console.WriteLine($"[{title}]: {line}");
-                    }
-                });
-
-                var stdError = Task.Run(async () =>
+                Task.Run(async () =>
                 {
                     string line = string.Empty;
-                    while (!string.IsNullOrEmpty((line = await process.StandardError.ReadLineAsync())))
+                    while ((line = await process.StandardOutput.ReadLineAsync()) != null)
                     {
                         Console.WriteLine($"[{title}]: {line}");
+                        Interlocked.Exchange(ref pTimer, 0);
                     }
                 });
 
-                await Task.WhenAll(stdOut, stdError);
+                Task.Run(async () =>
+                {
+                    string line = string.Empty;
+                    while ((line = await process.StandardError.ReadLineAsync()) != null)
+                    {
+                        Console.WriteLine($"[{title}]: {line}");
+                        Interlocked.Exchange(ref pTimer, 0);
+                    }
+                });
 
-                while (!process.WaitForExit(1000));
+                while (!process.HasExited)
+                {
+                    if (pTimer >= 360_000)
+                    {
+                        process.Kill();
+                        break;
+                    }
+
+                    if (pTimer > 0 && pTimer % 60000 == 0)
+                        Console.WriteLine($"[{title}]: has not responded for {pTimer / 60000} minutes.");
+
+                    await Task.Delay(100);
+                    Interlocked.Add(ref pTimer, 100);
+                }
+
                 code = process.ExitCode;
             }
             catch (Exception ex)

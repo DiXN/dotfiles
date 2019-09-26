@@ -61,8 +61,8 @@ class Command : TaskBase
                     Console.ForegroundColor = ConsoleColor.Green;
 
                 Interlocked.Increment(ref _status);
-                Console.WriteLine($"Command task {_status} of {Tasks} (\"{res.output}\") finished" + (res.code != 0 ? " with an error." : ".") + Environment.NewLine);
 
+                Console.WriteLine($"Command task {_status} of {Tasks} (\"{res.output}\") finished" + (res.code != 0 ? " with an error." : ".") + Environment.NewLine);
                 Console.ResetColor();
 
                 return res.code;

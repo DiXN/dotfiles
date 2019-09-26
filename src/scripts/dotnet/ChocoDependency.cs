@@ -41,8 +41,8 @@ class ChocoDependency : TaskBase
                 else
                     Console.ForegroundColor = ConsoleColor.Green;
 
-                Console.WriteLine(res.output);
-                Console.WriteLine($"Choco with dependency task {++_status} of {Tasks} finished. {Environment.NewLine}");
+                Console.WriteLine($"Choco with dependency {++_status} of {Tasks} (\"{res.output}\") finished" + (res.code != 0 ? " with an error." : ".") + Environment.NewLine);
+                Console.ResetColor();
             }
 
             return returnCode;

@@ -1,4 +1,7 @@
 Get-ExecutionPolicy -List
+
+[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+
 Function Detect-Notebook {
   Param([string]$computer = "localhost")
   $isNotebook = $false
@@ -35,11 +38,11 @@ $downloadLocation = [System.IO.Path]::GetTempPath() + "dotfiles"
 #create folder in TEMP path if not exists
 mkdir -Force $downloadLocation | Out-Null
 
-cd $downloadLocation
+Set-Location $downloadLocation
 
 #download repo
 Write-Output "[Downloading Repo ...]"
-Invoke-Expression ((New-Object System.Net.WebClient).DownloadString("https://raw.githubusercontent.com/DiXN/dotfiles/master/src/scripts/download-repo.ps1"))
+Invoke-Expression ((new-object net.webclient).downloadstring("https://raw.githubusercontent.com/DiXN/dotfiles/master/src/scripts/download-repo.ps1"))
 
 #disable UAC
 Write-Output "[Disabling UAC ...]"
@@ -84,7 +87,7 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 
 #install scoop
 Write-Output "[Installing Scoop ...]"
-Invoke-Expression (new-object net.webclient).downloadstring('https://get.scoop.sh')
+Invoke-Expression ((new-object net.webclient).downloadstring("https://get.scoop.sh"))
 
 scoop install git
 scoop install aria2
@@ -93,6 +96,10 @@ scoop bucket add versions
 
 #lts for now
 scoop install dotnet-sdk-lts
+
+#install Chocolatey
+Write-Output "[Installing Chocolatey ...]"
+Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
 #install dotnet-script
 dotnet tool install -g dotnet-script
@@ -111,4 +118,4 @@ Write-Output "[dotfiles running on $templatePrefix ....]"
 
 #invoke dotnet-script
 Write-Output "[Installing dotfiles ...]"
-dotnet script "$downloadLocation\scripts\dotnet\main.csx" -- "$downloadLocation\templates\$templatePrefix\commands.yaml" "$downloadLocation\templates\$templatePrefix\scoop.yaml"
+dotnet script "$downloadLocation\scripts\dotnet\main.csx" -- "$downloadLocation\templates\$templatePrefix\choco.yaml" "$downloadLocation\templates\$templatePrefix\scoop.yaml" "$downloadLocation\templates\$templatePrefix\commands.yaml"

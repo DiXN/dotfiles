@@ -12,7 +12,7 @@ function DownloadRepo {
   # REST Building
   $baseUri = "https://api.github.com";
   $argsUri = "repos/$Owner/$Repository/contents/$Path";
-  $wr = Invoke-WebRequest -Uri ("$baseUri/$argsUri") -Headers $headers;
+  $wr = Invoke-WebRequest -Uri ("$baseUri/$argsUri") -UseBasicParsing;
 
   # Data Handler
   $objects = $wr.Content | ConvertFrom-Json
@@ -39,7 +39,7 @@ function DownloadRepo {
     $fileDestination = Join-Path $DestinationPath (Split-Path $file -Leaf)
     $outputFilename = $fileDestination.Replace("%20", " ");
     try {
-      Invoke-WebRequest -Uri "$file" -OutFile "$outputFilename" -ErrorAction Stop -Verbose
+      Invoke-WebRequest -Uri "$file" -OutFile "$outputFilename" -UseBasicParsing -ErrorAction Stop -Verbose
       "Grabbed '$($file)' to '$outputFilename'";
     }
     catch {

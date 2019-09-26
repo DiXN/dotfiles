@@ -1,8 +1,9 @@
 ---
 choco:
-  - opera
   - winrar
+  - opera
   - cmder
+  - spotify
   - vscode
   - vlc
   - telegram
@@ -10,7 +11,6 @@ choco:
   - nodejs
   - yarn
   - postman
-  - spotify
   - discord
   - gitkraken
   - firefox

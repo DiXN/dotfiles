@@ -30,7 +30,7 @@ class Choco : TaskBase
         return Task.Run(async () =>
         {
             int returnCode = 0;
-            foreach (var task in _chocoQueue.Select(cmd => ExecCommand($"choco install {cmd} -y", cmd)))
+            foreach (var task in _chocoQueue.Select(cmd => ExecCommand($"choco install {cmd} -y --no-progress", cmd)))
             {
                 (int code, string output) res = await task;
 
@@ -41,8 +41,8 @@ class Choco : TaskBase
                 else
                     Console.ForegroundColor = ConsoleColor.Green;
 
-                Console.WriteLine(res.output);
-                Console.WriteLine($"Choco task {++_status} of {Tasks} finished. {Environment.NewLine}");
+                Console.WriteLine($"Choco task {++_status} of {Tasks} (\"{res.output}\") finished" + (res.code != 0 ? " with an error." : ".") + Environment.NewLine);
+                Console.ResetColor();
             }
 
             return returnCode;

@@ -1,7 +1,7 @@
 ---
 commands:
   - cmd:
-    - powershell -command "Invoke-WebRequest https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe -OutFile rustup-init.exe"
+    - powershell -command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; Invoke-WebRequest https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe -UseBasicParsing -OutFile rustup-init.exe"
     - .\rustup-init.exe -yv --default-toolchain stable --default-host x86_64-pc-windows-msvc
     desc: install rustup
   - cmd:
