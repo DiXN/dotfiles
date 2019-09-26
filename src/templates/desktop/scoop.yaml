@@ -7,3 +7,7 @@ scoop:
   - rclone
   - perl
   - latex
+  - scrcpy
+  - qbittorrent
+  - autohotkey
+  - ddu

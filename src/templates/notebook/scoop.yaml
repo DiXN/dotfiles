@@ -7,3 +7,4 @@ scoop:
   - rclone
   - perl
   - latex
+  - scrcpy
