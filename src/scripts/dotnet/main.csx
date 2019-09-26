@@ -11,28 +11,28 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Linq;
 
+Console.WriteLine($"Available Threads: {Environment.ProcessorCount}");
+
 var _taskList = new Queue<TaskBase>();
 
 foreach (var arg in Args.Distinct())
 {
-    Console.WriteLine(arg);
-
     if (File.Exists(arg) && Regex.IsMatch(Path.GetExtension(arg.ToLower()), "^.ya?ml$"))
     {
         switch (Path.GetFileNameWithoutExtension(arg))
         {
-        case "commands":
-            ExecTask(new Command(arg));
-            break;
-        case "scoop":
-            ExecTask(new Scoop(arg));
-            break;
-        case "choco":
-            _taskList.Enqueue(new Choco(arg));
-            break;
-        case "choco_dependency":
-            _taskList.Enqueue(new ChocoDependency(arg));
-            break;
+            case "commands":
+                ExecTask(new Command(arg));
+                break;
+            case "scoop":
+                ExecTask(new Scoop(arg));
+                break;
+            case "choco":
+                _taskList.Enqueue(new Choco(arg));
+                break;
+            case "choco_dependency":
+                _taskList.Enqueue(new ChocoDependency(arg));
+                break;
         }
     }
 }

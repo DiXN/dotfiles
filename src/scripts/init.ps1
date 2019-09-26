@@ -35,6 +35,10 @@ $downloadLocation = [System.IO.Path]::GetTempPath() + "dotfiles"
 #create folder in TEMP path if not exists
 mkdir -Force $downloadLocation | Out-Null
 
+#download repo
+Write-Output "[Downloading Repo ...]"
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString("https://raw.githubusercontent.com/DiXN/dotfiles/master/src/scripts/download-repo.ps1"))
+
 #disable UAC
 Write-Output "[Disabling UAC ...]"
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value "0"
@@ -43,14 +47,17 @@ Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Value "0"
 
 #show file extensions and hidden files
+Write-Output "[Enabling file extensions and hidden files ...]"
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Value "0"
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Value "1"
 
 #exec powershell scripts on double click
+Write-Output "[Enabling execution of powershell files on double click ...]"
 New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
 Set-ItemProperty -Path "HKCR:\Microsoft.PowerShellScript.1\Shell\open\command" -Name "(Default)" -Value "'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe' -noLogo -ExecutionPolicy unrestricted -file '%1'"
 
 #enable developer mode
+Write-Output "[Enabling developer mode ...]"
 $registryKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock"
 
 if (-not(Test-Path -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock")) {
@@ -70,23 +77,11 @@ if (Test-RegistryValue -Path $registryKeyPath -Value "AllowAllTrustedApps") {
 }
 
 #disable windows defender real time monitoring during installation
+Write-Output "[Disable windows defender ...]"
 Set-MpPreference -DisableRealtimeMonitoring $true
 
-#download YAML files
-if (Detect-Notebook) {
-  Write-Output "Downloading YAML files..."
-  Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/notebook/choco.yaml" | Out-File -filepath "$downloadLocation\choco.yaml"
-  Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/notebook/scoop.yaml" | Out-File "$downloadLocation\scoop.yaml"
-  Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/notebook/commands.yaml" | Out-File "$downloadLocation\commands.yaml"
-} else {
-  Write-Output "Downloading YAML files..."
-  Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/desktop/choco.yaml" | Out-File "$downloadLocation\choco.yaml"
-  Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/desktop/scoop.yaml" | Out-File "$downloadLocation\scoop.yaml"
-  Invoke-RestMethod "https://raw.githubusercontent.com/DiXN/dotfiles/master/src/templates/desktop/commands.yaml" | Out-File "$downloadLocation\commands.yaml"
-}
-
 #install scoop
-Write-Output "[Installing Scoop...]"
+Write-Output "[Installing Scoop ...]"
 Invoke-Expression (new-object net.webclient).downloadstring('https://get.scoop.sh')
 
 scoop install git
@@ -98,4 +93,18 @@ scoop bucket add versions
 scoop install dotnet-sdk-lts
 
 #install dotnet-script
-(new-object Net.WebClient).DownloadString("https://raw.githubusercontent.com/filipw/dotnet-script/master/install/install.ps1") | Invoke-Expression
+dotnet tool install -g dotnet-script
+
+#check if notebook or desktop
+$templatePrefix = ""
+
+if (Detect-Notebook) {
+  $templatePrefix = "notebook"
+}
+else {
+  $templatePrefix = "desktop"
+}
+
+#invoke dotnet-script
+Write-Output "[Installing dotfiles ...]"
+dotnet script "$downloadLocation\scripts\dotnet\main.csx" -- "$downloadLocation\template\$templatePrefix\commands.yaml" "$downloadLocation\template\$templatePrefix\scoop.yaml"
