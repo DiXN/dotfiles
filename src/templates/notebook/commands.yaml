@@ -5,9 +5,9 @@ commands:
     - .\rustup-init.exe -yv --default-toolchain stable --default-host x86_64-pc-windows-msvc
     desc: install rustup
   - cmd:
-    - powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; ..\..\scripts\default-apps.ps1"
+    - powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\default-apps.ps1"
     desc: configure default apps
   - cmd:
     - mkdir %USERPROFILE%\Documents\WindowsPowerShell 2> NUL
-    - xcopy /y ..\..\configs\Microsoft.PowerShell_profile.ps1 %USERPROFILE%\Documents\WindowsPowerShell
+    - xcopy /y .\configs\Microsoft.PowerShell_profile.ps1 %USERPROFILE%\Documents\WindowsPowerShell
     desc: copy powershell config

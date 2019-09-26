@@ -41,8 +41,7 @@ class Scoop : TaskBase
                 else
                     Console.ForegroundColor = ConsoleColor.Green;
 
-                Console.WriteLine(res.output);
-                Console.WriteLine($"Scoop task {++_status} of {Tasks} finished. {Environment.NewLine}");
+                Console.WriteLine($"Scoop task {++_status} of {Tasks} (\"{res.output}\") finished" + (res.code != 0 ? " with an error." : ".") + Environment.NewLine);
 
                 Console.ResetColor();
             }

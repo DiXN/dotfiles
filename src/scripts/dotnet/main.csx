@@ -74,7 +74,7 @@ Console.WriteLine($"Processed {allTasksFlattened.Length} tasks in total.");
 
 if (allTasksFlattened.Any(t => t.Result != 0))
 {
-    Console.Error.WriteLine("Not all tasks have finished successfully.");
+    Console.Error.WriteLine($"Not all tasks have finished successfully. There were {allTasksFlattened.Count(x => x.Result != 0)} tasks with errors.");
     return -1;
 }
 else

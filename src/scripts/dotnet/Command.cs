@@ -60,9 +60,8 @@ class Command : TaskBase
                 else
                     Console.ForegroundColor = ConsoleColor.Green;
 
-                Console.WriteLine(res.output);
                 Interlocked.Increment(ref _status);
-                Console.WriteLine($"Command task {_status} of {Tasks} (\"{cmd.Desc}\") finished. {Environment.NewLine}");
+                Console.WriteLine($"Command task {_status} of {Tasks} (\"{res.output}\") finished" + (res.code != 0 ? " with an error." : ".") + Environment.NewLine);
 
                 Console.ResetColor();
 
@@ -70,7 +69,7 @@ class Command : TaskBase
             }).ContinueWith(x =>
             {
                 Interlocked.Decrement(ref _currentProcesses);
-                Console.WriteLine($"Processed finished. {_currentProcesses} processes still currently running.");
+                Console.WriteLine($"Process finished. {_currentProcesses} processes still currently running.");
                 ExecTask();
                 return x.Result;
             });

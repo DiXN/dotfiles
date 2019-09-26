@@ -97,28 +97,43 @@ abstract class TaskBase
                 WorkingDirectory = path,
             };
 
-            StringBuilder builder = new StringBuilder();
-            string error = string.Empty, output = string.Empty;
+            int code = -1;
+            var title = !string.IsNullOrEmpty(desc) ? desc : cmd;
 
             try
             {
                 process.Start();
                 Console.WriteLine($"Started task: \"{(!string.IsNullOrEmpty(desc) ? desc : cmd)}\"");
 
-                output = await process.StandardOutput.ReadToEndAsync();
-                error = await process.StandardError.ReadToEndAsync();
+
+                var stdOut = Task.Run(async () => {
+                    string line = string.Empty;
+                    while (!string.IsNullOrEmpty((line = await process.StandardOutput.ReadLineAsync())))
+                    {
+                        Console.WriteLine($"[{title}]: {line}");
+                    }
+                });
+
+                var stdError = Task.Run(async () =>
+                {
+                    string line = string.Empty;
+                    while (!string.IsNullOrEmpty((line = await process.StandardError.ReadLineAsync())))
+                    {
+                        Console.WriteLine($"[{title}]: {line}");
+                    }
+                });
+
+                await Task.WhenAll(stdOut, stdError);
+
+                while (!process.WaitForExit(1000));
+                code = process.ExitCode;
             }
             catch (Exception ex)
             {
-                error = ex.Message;
+                Console.WriteLine($"[{title}]: {ex.Message}");
             }
 
-            FormatStd(cmd, error, desc, STD_TYPE.ERROR).IfPresent(err => builder.Append(err));
-
-            FormatStd(cmd, output, desc, STD_TYPE.OUTPUT).IfPresentOrElse(outp =>
-                builder.Append(outp), () => builder.AppendLine($"no output for \"{cmd}\""));
-
-            return (code: String.IsNullOrEmpty(error) ? 0 : -1, output: builder.ToString());
+            return (code: code, output: title);
         }
     }
 
