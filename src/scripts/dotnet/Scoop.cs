@@ -34,7 +34,7 @@ class Scoop : TaskBase
                 Console.WriteLine(await task);
                 Console.WriteLine($"Scoop task {++_status} of {Tasks} finished. {Environment.NewLine}");
             }
-        });
+        }).Wait();
     }
 
     internal class ChocoWrapper : ICommandable<string>

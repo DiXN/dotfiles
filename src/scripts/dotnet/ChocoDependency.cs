@@ -34,7 +34,7 @@ class ChocoDependency : TaskBase
                 Console.WriteLine(await task);
                 Console.WriteLine($"Choco with dependency task {++_status} of {Tasks} finished. {Environment.NewLine}");
             }
-        });
+        }).Wait();
     }
 
     internal class ChocoDependencyTuple

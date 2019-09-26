@@ -10,6 +10,8 @@ using YamlDotNet.Serialization;
 class Command : TaskBase
 {
     private ConcurrentQueue<CommandTuple> _commandQueue;
+    private List<Task> _tasks = new List<Task>();
+
     public Command(string file)
     {
         CmdType = CMD_TYPE.COMMAND;
@@ -28,6 +30,8 @@ class Command : TaskBase
     {
         for (var i = 0; Check(i, _commandQueue); i++)
             ExecTask();
+
+        Task.WaitAll(_tasks.ToArray());
     }
 
     protected override void ExecTask()
@@ -35,7 +39,7 @@ class Command : TaskBase
         if (Check(_currentProcesses, _commandQueue))
         {
             _commandQueue.TryDequeue(out var cmd);
-            Task.Run(async () =>
+            _tasks.Add(Task.Run(async () =>
             {
                 Interlocked.Increment(ref _currentProcesses);
                 Console.WriteLine(await ExecCommand(string.Join(" && ", cmd.Cmd ?? (new[] { "" })), cmd.Desc, cmd.Path));
@@ -45,7 +49,7 @@ class Command : TaskBase
             {
                 Interlocked.Decrement(ref _currentProcesses);
                 ExecTask();
-            });
+            }));
         }
     }
     internal class CommandTuple

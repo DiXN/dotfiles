@@ -34,7 +34,7 @@ class Choco : TaskBase
                 Console.WriteLine(await task);
                 Console.WriteLine($"Choco task {++_status} of {Tasks} finished. {Environment.NewLine}");
             }
-        });
+        }).Wait();
     }
 
     internal class ChocoWrapper : ICommandable<string>

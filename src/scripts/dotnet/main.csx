@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Linq;
+using System.Threading.Tasks;
 
 Console.WriteLine($"Available Threads: {Environment.ProcessorCount}");
 
@@ -38,12 +39,7 @@ foreach (var arg in Args.Distinct())
 }
 
 if (_taskList.Count > 0)
-{
     ExecTask(_taskList.Dequeue());
-}
-
-Console.ReadLine();
-
 
 void ExecTask(TaskBase task)
 {
