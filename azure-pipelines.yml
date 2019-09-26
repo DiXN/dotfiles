@@ -58,6 +58,8 @@ jobs:
           [System.Environment]::SetEnvironmentVariable("ChocolateyToolsLocation", $null, 'User')
           [System.Environment]::SetEnvironmentVariable("ChocolateyToolsLocation", $null, 'Machine')
         displayName: Uninstall Chocolatey
+      - script: rustup self uninstall -y
+        displayName: Uninstall Rust
       - powershell: .\src\scripts\init.ps1
         displayName: Run `init.ps1`
         env:
