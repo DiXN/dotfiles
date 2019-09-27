@@ -3,7 +3,9 @@ commands:
   - cmd:
     - powershell -command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; Invoke-WebRequest https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe -UseBasicParsing -OutFile rustup-init.exe"
     - .\rustup-init.exe -yv --default-toolchain stable --default-host x86_64-pc-windows-msvc
-    desc: install rustup
+    - true && %USERPROFILE%\.cargo\bin\cargo.exe install cargo-edit
+    - true && %USERPROFILE%\.cargo\bin\cargo.exe install cargo-watch
+    desc: install Rust
   - cmd:
     - powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\default-apps.ps1"
     desc: configure default apps

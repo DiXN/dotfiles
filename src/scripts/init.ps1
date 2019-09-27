@@ -91,8 +91,11 @@ Invoke-Expression ((new-object net.webclient).downloadstring("https://get.scoop.
 
 scoop install git
 scoop install aria2
+scoop install sudo
+
 scoop bucket add extras
 scoop bucket add versions
+scoop bucket add java
 
 #lts for now
 scoop install dotnet-sdk-lts

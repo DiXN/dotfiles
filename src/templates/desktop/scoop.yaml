@@ -9,3 +9,25 @@ scoop:
   - scrcpy
   - qbittorrent
   - autohotkey
+  - cygwin
+  - winrar
+  - opera
+  - cmder-full
+  - vscode
+  - vlc
+  - nodejs
+  - telegram
+  - make
+  - yarn
+  - postman
+  - oraclejdk
+  - discord
+  - gitkraken
+  - firefox
+  - python
+  - sumatrapdf
+  - vcredist2015
+  - vcredist2019
+  - msiafterburner
+  - extras/rtss
+  - jdownloader

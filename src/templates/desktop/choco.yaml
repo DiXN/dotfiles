@@ -1,35 +1,17 @@
 ---
 choco:
-  - winrar
-  - opera
-  - cmder
-  - spotify
-  - vscode
-  - vlc
-  - telegram
-  - make
-  - nodejs
-  - yarn
-  - postman
-  - discord
-  - gitkraken
-  - firefox
-  - python
-  - sumatrapdf.install
-  - vcredist2015
   - visualcppbuildtools
   - docker-for-windows
-  - docker
-  - jdk10 -params "source=false"
   - intellijidea-ultimate
-  - visualstudio2017enterprise
-  - cygwin
+  - visualstudio2019community --package-parameters "--locale de-DE --addProductLang en-US --passive"
+  - visualstudio2019-workload-manageddesktop
+  - visualstudio2019-workload-netweb
   - cyg-get
+  - spotify
   - displayfusion
   - logitechgaming
-  - msiafterburner
-  - jdownloader
   - origin
+  - uplay
   - geforce-game-ready-driver
   - fraps
   - cue
