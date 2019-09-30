@@ -89,16 +89,12 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 Write-Output "[Installing Scoop ...]"
 Invoke-Expression ((new-object net.webclient).downloadstring("https://get.scoop.sh"))
 
-scoop install git
-scoop install aria2
-scoop install sudo
+scoop install aria2 git sudo dotnet-sdk
 
 scoop bucket add extras
 scoop bucket add versions
 scoop bucket add java
 scoop bucket add Ash258 'https://github.com/Ash258/Scoop-Ash258.git'
-
-scoop install dotnet-sdk
 
 #install Chocolatey
 Write-Output "[Installing Chocolatey ...]"
@@ -117,8 +113,8 @@ else {
   $templatePrefix = "desktop"
 }
 
-Write-Output "[dotfiles running on $templatePrefix ....]"
+Write-Output "[dotfiles running on $templatePrefix ...]"
 
 #invoke dotnet-script
 Write-Output "[Installing dotfiles ...]"
-dotnet script "$downloadLocation\scripts\dotnet\main.csx" -- "$downloadLocation\templates\$templatePrefix\choco.yaml" "$downloadLocation\templates\$templatePrefix\scoop.yaml" "$downloadLocation\templates\$templatePrefix\commands.yaml"
+dotnet script -c release "$downloadLocation\scripts\dotnet\main.csx" -- "$downloadLocation\templates\$templatePrefix\choco.yaml" "$downloadLocation\templates\$templatePrefix\scoop.yaml" "$downloadLocation\templates\$templatePrefix\commands.yaml"

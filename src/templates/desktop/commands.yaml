@@ -8,6 +8,12 @@ commands:
     - true && %USERPROFILE%\.cargo\bin\cargo.exe install cargo-watch
     desc: install Rust
   - cmd:
+    - powershell -command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; Invoke-WebRequest https://miktex.org/download/win/miktexsetup-x64.zip -UseBasicParsing -OutFile miktexsetup-x64.zip"
+    - unzip miktexsetup-x64.zip
+    - miktexsetup.exe --verbose --local-package-repository=C:\temp\miktex --package-set=basic download
+    - miktexsetup.exe --quiet --local-package-repository=C:\temp\miktex --package-set=basic install
+    desc: install MikTeX
+  - cmd:
     - powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\default-apps.ps1"
     desc: configure default apps
   - cmd:

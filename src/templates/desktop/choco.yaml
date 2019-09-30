@@ -7,6 +7,7 @@ choco:
   - visualstudio2019-workload-manageddesktop
   - visualstudio2019-workload-netweb
   - cyg-get
+  - spotify
   - geforce-game-ready-driver
   - fraps
   - cue
