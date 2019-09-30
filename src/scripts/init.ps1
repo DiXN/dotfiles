@@ -96,9 +96,9 @@ scoop install sudo
 scoop bucket add extras
 scoop bucket add versions
 scoop bucket add java
+scoop bucket add Ash258 'https://github.com/Ash258/Scoop-Ash258.git'
 
-#lts for now
-scoop install dotnet-sdk-lts
+scoop install dotnet-sdk
 
 #install Chocolatey
 Write-Output "[Installing Chocolatey ...]"
