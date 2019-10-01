@@ -12,6 +12,15 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using System.Threading.Tasks;
 
+public static void WaitForDebugger()
+{
+  Console.WriteLine("Attach Debugger (VS Code)");
+  while (!System.Diagnostics.Debugger.IsAttached) ;
+}
+
+if (Args.Contains("--debugger"))
+  WaitForDebugger();
+
 Console.WriteLine($"Available Threads: {Environment.ProcessorCount}");
 
 var _taskList = new Queue<TaskBase>();

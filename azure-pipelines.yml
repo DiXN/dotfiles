@@ -1,3 +1,6 @@
+variables:
+  CI: 'true'
+
 jobs:
   - job: Dotfiles
     timeoutInMinutes: 200
