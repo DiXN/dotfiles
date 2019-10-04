@@ -40,6 +40,7 @@ if (credentials.Exists)
 {
     using (var ps = PowerShell.Create())
     {
+        //Get SecureString form credentials file.
         ps.AddScript("Get-Content \"credential.txt\" | ConvertTo-SecureString");
         var password = ps.Invoke()[0].BaseObject as SecureString;
 
@@ -50,9 +51,14 @@ if (credentials.Exists)
                 Console.WriteLine("[Connecting to server for \"rclone.conf\" ...]");
                 client.Connect();
 
-                var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config", "rclone", "rclone.conf");
+                //Create rclone directory if it does not exist.
+                var folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config", "rclone");
+                Directory.CreateDirectory(folderPath);
+
+                var path = Path.Combine(folderPath, "rclone.conf");
                 var config = new FileInfo(path);
 
+                //Delete previous config to prevent appending of config.
                 if (config.Exists)
                     config.Delete();
 
