@@ -7,6 +7,9 @@ task :alias do
   add_line_to_file bash_environment, 'alias yas="yay -S --noconfirm"'
   add_line_to_file fish_environment, 'alias yas="yay -S --noconfirm"'
 
+  add_line_to_file bash_environment, 'alias ze="z -e"'
+  add_line_to_file fish_environment, 'alias ze="z -e"'
+
   add_line_to_file bash_environment, 'export BAT_THEME="GitHub"'
   add_line_to_file fish_environment, 'export BAT_THEME="GitHub"'
 
@@ -52,6 +55,14 @@ task :alias do
   add_line_to_file fish_environment, <<~eos
     function full
       xrandr --output DP-3 --auto --right-of DVI-D-0
+    end
+  eos
+
+  add_line_to_file fish_environment, <<~eos
+    if not functions -q fisher
+      set -q XDG_CONFIG_HOME; or set XDG_CONFIG_HOME ~/.config
+      curl https://git.io/fisher --create-dirs -sLo $XDG_CONFIG_HOME/fish/functions/fisher.fish
+      fish -c fisher
     end
   eos
 end
