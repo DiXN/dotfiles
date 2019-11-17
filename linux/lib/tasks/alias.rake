@@ -46,6 +46,12 @@ function idle
 end
 eos
 
+add_line_to_file fish_environment, <<-eos
+function full
+  xrandr --output DP-3 --auto --right-of DVI-D-0
+end
+eos
+
   sh 'source', fish_environment
   sh 'source', bash_environment
 end
