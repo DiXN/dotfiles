@@ -7,6 +7,9 @@ task :alias do
   add_line_to_file bash_environment, 'alias yas="yay -S --noconfirm"'
   add_line_to_file fish_environment, 'alias yas="yay -S --noconfirm"'
 
+  add_line_to_file bash_environment, 'export BAT_THEME="GitHub"'
+  add_line_to_file fish_environment, 'export BAT_THEME="GitHub"'
+
   add_line_to_file bash_environment, "export fish_env=\"#{fish_environment}\""
   add_line_to_file fish_environment, "export fish_env=\"#{fish_environment}\""
 
@@ -51,7 +54,4 @@ task :alias do
       xrandr --output DP-3 --auto --right-of DVI-D-0
     end
   eos
-
-  sh 'source', fish_environment
-  sh 'source', bash_environment
 end
