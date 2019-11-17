@@ -12,6 +12,12 @@ task :packages => :yay do
 		xorg-xinput
 		teamspeak3
 		teamspeak3-kde-wrapper
+		otf-sfmono
+		ckb-next
+		xclip
+		maim
+		xrandr
+		pulseaudio
 	].each do |package|
 		sh 'yay', '-S', '--noconfirm', package
 	end
