@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'which'
-require 'open3'
+require 'command'
 
 task :rust do
   cargo_home = '~/.config/cargo'
@@ -30,14 +30,13 @@ task :rust do
 
   if which 'rustup'
     puts ANSI.blue { 'Updating Rust …' }
-    sh 'rustup', 'update'
+    command 'rustup', 'update'
   else
     puts ANSI.blue { 'Installing Rust …' }
-    sh 'rustup-init', '-y', '--no-modify-path'
+    command 'rustup-init', '-y', '--no-modify-path'
   end
 
-  installed_toolchains, *_ = Open3.capture3('rustup', 'toolchain', 'list')
-  installed_toolchains = installed_toolchains.chomp.split("\n")
+  installed_toolchains = capture('rustup', 'toolchain', 'list')
 
   if installed_toolchains.include?('nightly-x86_64-unknown-linux-gnu')
     puts ANSI.green { 'Rust nightly toolchain already installed.' }
@@ -46,17 +45,41 @@ task :rust do
     sh 'rustup', 'toolchain', 'install', 'nightly'
   end
 
+  installed_components = capture('rustup', 'component', 'list').lines.map { |line| line.split(/\s/).first }
+
+  components = %w[
+    rust-src
+    rustfmt-preview
+    clippy-preview
+  ]
+
+  components = components.select { |component|
+    installed_components.none? { |installed_component|
+      installed_component == component || installed_component.start_with?("#{component}-")
+    }
+  }
+
+  if components.empty?
+    puts ANSI.green { 'All Rust components already installed.' }
+  else
+    puts ANSI.blue { 'Installing Rust components …' }
+    components.each do |component|
+      command 'rustup', 'component', 'add', component, '--toolchain', 'stable'
+      command 'rustup', 'component', 'add', component, '--toolchain', 'nightly'
+    end
+  end
+
   if which 'cargo-add'
     puts ANSI.green { '`cargo-edit` already installed.' }
   else
     puts ANSI.blue { 'Installing `cargo-edit` …' }
-    sh 'cargo', 'install', 'cargo-edit'
+    command 'cargo', 'install', 'cargo-edit'
   end
 
   if which 'racer'
     puts ANSI.green { '`racer` already installed.' }
   else
     puts ANSI.blue { 'Installing `racer` …' }
-    sh 'cargo', '+nightly', 'install', 'racer'
+    command 'cargo', '+nightly', 'install', 'racer'
   end
 end
