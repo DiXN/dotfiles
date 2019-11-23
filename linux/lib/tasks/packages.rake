@@ -1,4 +1,4 @@
-task :packages => :yay do 
+task :packages => :yay do
 	%W[
 		visual-studio-code-bin
 		gitkraken
@@ -18,6 +18,8 @@ task :packages => :yay do
 		maim
 		xrandr
 		pulseaudio
+		rclone
+    gvim
 	].each do |package|
 		sh 'yay', '-S', '--noconfirm', package
 	end
