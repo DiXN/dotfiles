@@ -23,6 +23,9 @@ class ChocoDependency : TaskBase
             Tasks = val.Commands.Count;
         });
     }
+
+    protected override string CommandName => "ChocoDependency";
+
     public override Task<int>[] Exec() => new[] { ExecTask() };
 
     protected override Task<int> ExecTask()

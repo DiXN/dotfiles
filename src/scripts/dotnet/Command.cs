@@ -26,6 +26,8 @@ class Command : TaskBase
         });
     }
 
+    protected override string CommandName => "Command";
+
     public override Task<int>[] Exec()
     {
         List<Task<int>> tasks = new List<Task<int>>();

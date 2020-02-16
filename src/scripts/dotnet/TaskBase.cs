@@ -33,6 +33,8 @@ abstract class TaskBase
 
     public string FileName { get; set; }
 
+    protected abstract string CommandName {get; }
+
     protected TaskBase()
     {
         Task.Run(async () =>
@@ -105,7 +107,7 @@ abstract class TaskBase
             try
             {
                 process.Start();
-                Console.WriteLine($"Started task: \"{(!string.IsNullOrEmpty(desc) ? desc : cmd)}\"");
+                Console.WriteLine($"Started \"{CommandName}\" task: \"{(!string.IsNullOrEmpty(desc) ? desc : cmd)}\"");
 
                 Task.Run(async () =>
                 {

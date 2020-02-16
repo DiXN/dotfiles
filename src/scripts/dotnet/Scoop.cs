@@ -23,6 +23,8 @@ class Scoop : TaskBase
         });
     }
 
+    protected override string CommandName => "Scoop";
+
     public override Task<int>[] Exec() => new[] { ExecTask() };
 
     protected override Task<int> ExecTask()
