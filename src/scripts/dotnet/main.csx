@@ -1,4 +1,4 @@
-#r "nuget: YamlDotNet, 6.1.2"
+#r "nuget: YamlDotNet, 8.0.1"
 #load "TaskBase.cs"
 #load "Command.cs"
 #load "Scoop.cs"
