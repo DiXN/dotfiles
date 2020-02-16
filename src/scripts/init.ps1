@@ -112,6 +112,8 @@ scoop install aria2 git sudo dotnet-sdk
 scoop bucket add extras
 scoop bucket add versions
 scoop bucket add java
+scoop bucket add JetBrains
+scoop bucket add nonportable
 scoop bucket add Ash258 'https://github.com/Ash258/Scoop-Ash258.git'
 
 #install Chocolatey

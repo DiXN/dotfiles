@@ -1,26 +1,4 @@
 ---
 choco:
-  - opera
-  - winrar
-  - cmder
-  - vscode
-  - vlc
-  - telegram
-  - make
-  - nodejs
-  - yarn
-  - postman
-  - spotify
-  - discord
-  - gitkraken
-  - firefox
-  - python
-  - sumatrapdf.install
-  - vcredist2015
   - visualcppbuildtools
-  - jdk10 -params "source=false"
-  - intellijidea-ultimate
-  - visualstudio2017enterprise
-  - cygwin
-  - cyg-get
-  - nvm
+  - spotify

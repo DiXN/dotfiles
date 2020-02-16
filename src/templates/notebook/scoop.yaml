@@ -2,8 +2,24 @@
 scoop:
   - bat
   - crystaldiskmark
-  - less
   - nvm
   - rclone
-  - latex
   - scrcpy
+  - winrar
+  - opera
+  - cmder-full
+  - vscode
+  - vlc
+  - nodejs
+  - telegram
+  - make
+  - yarn
+  - postman
+  - gitkraken
+  - firefox
+  - python
+  - sumatrapdf
+  - vcredist2015
+  - vcredist2019
+  - SuperF4
+  - docker

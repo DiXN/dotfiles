@@ -1,13 +1,40 @@
 ---
 commands:
   - cmd:
-    - powershell -command "Invoke-WebRequest https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe -OutFile rustup-init.exe"
+    - powershell -command "if (${env:CI} -ne 'true') {
+        .\scripts\wait-file.ps1 -app rclone;
+        iex (${env:userprofile} + '\.dotnet\tools\dotnet-script.exe .\scripts\dotnet\sync-files.csx');
+        mkdir -Force C:\sync | Out-Null;
+        rclone sync db:/ C:\sync --progress; }"
+    desc: Sync files
+  - cmd:
+    - powershell -command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; Invoke-WebRequest https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe -UseBasicParsing -OutFile rustup-init.exe"
     - .\rustup-init.exe -yv --default-toolchain stable --default-host x86_64-pc-windows-msvc
-    desc: install rustup
+    - powershell -command ".\scripts\wait-folder.ps1 -path (${env:ProgramFiles(x86)} + '\Microsoft Visual C++ Build Tools')"
+    - |
+        %USERPROFILE%\.cargo\bin\cargo.exe install cargo-edit
+    desc: install Rust
+  - cmd:
+    - powershell -command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; Invoke-WebRequest https://miktex.org/download/win/miktexsetup-x64.zip -UseBasicParsing -OutFile miktexsetup-x64.zip"
+    - 7z e miktexsetup-x64.zip
+    - miktexsetup.exe --verbose --local-package-repository=C:\temp\miktex --package-set=basic download
+    - miktexsetup.exe --quiet --local-package-repository=C:\temp\miktex --package-set=basic install
+    desc: install MikTeX
   - cmd:
     - powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\default-apps.ps1"
     desc: configure default apps
   - cmd:
-    - mkdir %USERPROFILE%\Documents\WindowsPowerShell 2> NUL
-    - xcopy /y .\configs\Microsoft.PowerShell_profile.ps1 %USERPROFILE%\Documents\WindowsPowerShell
+    - powershell -command ".\scripts\wait-file.ps1 -app code"
+    - code --install-extension ms-vscode.csharp
+    - code --install-extension dart-code.flutter
+    - code --install-extension fwcd.kotlin
+    - code --install-extension ms-vsliveshare.vsliveshare
+    - code --install-extension james-yu.latex-workshop
+    - code --install-extension dbaeumer.vscode-eslint
+    - code --install-extension mushan.vscode-paste-image
+    - code --install-extension rust-lang.rust
+    - code --install-extension shardulm94.trailing-spaces
+    desc: install vscode extensions
+  - cmd:
+    - mkdir %USERPROFILE%\Documents\WindowsPowerShell 2> NUL & xcopy /y .\configs\Microsoft.PowerShell_profile.ps1 %USERPROFILE%\Documents\WindowsPowerShell
     desc: copy powershell config
