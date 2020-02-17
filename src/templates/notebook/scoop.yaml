@@ -1,7 +1,6 @@
 ---
 scoop:
   - bat
-  - crystaldiskmark
   - nvm
   - rclone
   - scrcpy
@@ -26,3 +25,4 @@ scoop:
   - spotify
   - ruby
   - archwsl
+  - aws

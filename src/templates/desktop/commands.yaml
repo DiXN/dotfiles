@@ -6,6 +6,8 @@ commands:
         iex (${env:userprofile} + '\.dotnet\tools\dotnet-script.exe .\scripts\dotnet\sync-files.csx');
         mkdir -Force C:\sync | Out-Null;
         rclone sync db:/ C:\sync --progress; }"
+    - mklink /J %USERPROFILE%\.aws C:\sync\config\.aws
+    - mklink %USERPROFILE%\.gitconfig C:\sync\config\.gitconfig
     desc: Sync files
   - cmd:
     - powershell -command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; Invoke-WebRequest https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe -UseBasicParsing -OutFile rustup-init.exe"
