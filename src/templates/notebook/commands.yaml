@@ -1,13 +1,6 @@
 ---
 commands:
   - cmd:
-    - powershell -command "if (${env:CI} -ne 'true') {
-        .\scripts\wait-file.ps1 -app rclone;
-        iex (${env:userprofile} + '\.dotnet\tools\dotnet-script.exe .\scripts\dotnet\sync-files.csx');
-        mkdir -Force C:\sync | Out-Null;
-        rclone sync db:/ C:\sync --progress; }"
-    desc: Sync files
-  - cmd:
     - powershell -command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; Invoke-WebRequest https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe -UseBasicParsing -OutFile rustup-init.exe"
     - .\rustup-init.exe -yv --default-toolchain stable --default-host x86_64-pc-windows-msvc
     - powershell -command ".\scripts\wait-folder.ps1 -path (${env:ProgramFiles(x86)} + '\Microsoft Visual C++ Build Tools')"

@@ -8,6 +8,7 @@ using System.IO;
 using System.Security;
 using System.Runtime.InteropServices;
 using System.Management.Automation;
+using System.Diagnostics;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
 using Renci.SshNet.Common;
@@ -45,11 +46,34 @@ static bool ProcessBuilder(string process, string args)
         var psi = new ProcessStartInfo(process, args)
         {
             CreateNoWindow = true,
-            UseShellExecute = false
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
         };
 
         p.StartInfo = psi;
         p.Start();
+
+        var title = "Sync files";
+
+        Task.Run(async () =>
+        {
+            string line = string.Empty;
+            while ((line = await p.StandardOutput.ReadLineAsync()) != null)
+            {
+                Console.WriteLine($"[{title}]: {line}");
+            }
+        });
+
+        Task.Run(async () =>
+        {
+            string line = string.Empty;
+            while ((line = await p.StandardError.ReadLineAsync()) != null)
+            {
+                Console.Error.WriteLine($"[{title}]: {line}");
+            }
+        });
+
         p.WaitForExit();
 
         return p.ExitCode == 0;
@@ -96,10 +120,27 @@ if (credentials.Exists)
 
                 client.Disconnect();
 
+                //Wait for rclone to be available.
+                while (!ProcessBuilder("where", "rclone"))
+                {
+                    System.Threading.Thread.Sleep(250);
+                }
+
+                //Sync all files.
+                ProcessBuilder("rclone", $@"sync -v db:/ {(IsDebug ? "F" : "C")}:\sync");
+
+                //Wait for git and aws to be available.
+                while (!ProcessBuilder("where", "git") && !ProcessBuilder("where", "aws"))
+                {
+                    System.Threading.Thread.Sleep(250);
+                }
+
+                //Create symlink for ".gitconfig".
                 var gitignoreLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.gitconfig";
                 var resConfig = ProcessBuilder("cmd.exe", $@" /C mklink {gitignoreLink} {(IsDebug ? "F" : "C")}:\sync\config\.gitconfig");
                 Console.WriteLine($"[{(resConfig ? "Successfully" : "Failed")} creating symlink for \".gitconfig\" ...]");
 
+                //Create junction for ".aws".
                 try
                 {
                     var awsLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.aws";
