@@ -1,6 +1,8 @@
 #r "nuget: SSH.NET, 2016.1.0"
 #r "nuget: Microsoft.PowerShell.SDK, 6.2.3"
 
+#load "JunctionPoints.cs"
+
 using System;
 using System.IO;
 using System.Security;
@@ -9,6 +11,8 @@ using System.Management.Automation;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
 using Renci.SshNet.Common;
+
+private bool IsDebug => Args.Contains("--debugger");
 
 public static void WaitForDebugger()
 {
@@ -34,7 +38,27 @@ static string ToBasicString(this SecureString value)
     }
 }
 
-var credentials = Args.Contains("--debugger") ? new FileInfo("credential.txt") : new FileInfo($"{Path.GetTempPath()}\\dotfiles\\credential.txt");
+static bool ProcessBuilder(string process, string args)
+{
+    using (var p = new Process())
+    {
+        var psi = new ProcessStartInfo(process, args)
+        {
+            CreateNoWindow = true,
+            UseShellExecute = false
+        };
+
+        p.StartInfo = psi;
+        p.Start();
+        p.WaitForExit();
+
+        return p.ExitCode == 0;
+    }
+
+    return false;
+}
+
+var credentials = IsDebug ? new FileInfo("credential.txt") : new FileInfo($"{Path.GetTempPath()}\\dotfiles\\credential.txt");
 
 if (credentials.Exists)
 {
@@ -59,16 +83,33 @@ if (credentials.Exists)
                 var config = new FileInfo(path);
 
                 //Delete previous config to prevent appending of config.
-                if (config.Exists)
+                if (!IsDebug && config.Exists)
                     config.Delete();
 
                 using (var fstream = config.OpenWrite())
                 {
                     Console.WriteLine("[Downloading \"rclone.conf\" ...]");
-                    client.DownloadFile("/share/backup/rclone/rclone.conf", fstream);
+
+                    if (!IsDebug)
+                        client.DownloadFile("/share/backup/rclone/rclone.conf", fstream);
                 }
 
                 client.Disconnect();
+
+                var gitignoreLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.gitconfig";
+                var resConfig = ProcessBuilder("cmd.exe", $@" /C mklink {gitignoreLink} {(IsDebug ? "F" : "C")}:\sync\config\.gitconfig");
+                Console.WriteLine($"[{(resConfig ? "Successfully" : "Failed")} creating symlink for \".gitconfig\" ...]");
+
+                try
+                {
+                    var awsLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.aws";
+                    JunctionPoint.Create(awsLink, $@"{(IsDebug ? "F" : "C")}:\sync\config\.aws", true);
+                    Console.WriteLine("[Successfully creating symlink for \".aws\" ...]");
+                }
+                catch (IOException)
+                {
+                    Console.Error.WriteLine("[Failed creating symlink for \".aws\" ...]");
+                }
             }
             catch (Exception ex)
             {
@@ -77,14 +118,16 @@ if (credentials.Exists)
                 Console.WriteLine(ex.Message);
                 Console.ResetColor();
 
-                credentials.Delete();
+                if (!IsDebug)
+                    credentials.Delete();
 
                 return -1;
             }
         }
     }
 
-    credentials.Delete();
+    if (!IsDebug)
+        credentials.Delete();
 }
 else
 {
