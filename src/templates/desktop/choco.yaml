@@ -4,5 +4,4 @@ choco:
   - visualstudio2019community --package-parameters "--locale de-DE --addProductLang en-US --passive"
   - visualstudio2019-workload-manageddesktop
   - visualstudio2019-workload-netweb
-  - fraps
   - cyg-get
