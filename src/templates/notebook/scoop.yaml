@@ -1,5 +1,6 @@
 ---
 scoop:
+  - aws
   - bat
   - nvm
   - rclone
@@ -25,4 +26,3 @@ scoop:
   - spotify
   - ruby
   - archwsl
-  - aws
