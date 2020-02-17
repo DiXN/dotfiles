@@ -36,6 +36,8 @@ commands:
     - code --install-extension mushan.vscode-paste-image
     - code --install-extension rust-lang.rust
     - code --install-extension shardulm94.trailing-spaces
+    - code --install-extension yzane.markdown-pdf
+    - code --install-extension ms-vscode.powershell
     desc: install vscode extensions
   - cmd:
     - mkdir %USERPROFILE%\Documents\WindowsPowerShell 2> NUL & xcopy /y .\configs\Microsoft.PowerShell_profile.ps1 %USERPROFILE%\Documents\WindowsPowerShell
