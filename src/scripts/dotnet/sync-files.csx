@@ -21,6 +21,9 @@ public static void WaitForDebugger()
     while (!System.Diagnostics.Debugger.IsAttached);
 }
 
+if (Args.Contains("--ci"))
+    return 0;
+
 if (Args.Contains("--debugger"))
     WaitForDebugger();
 
