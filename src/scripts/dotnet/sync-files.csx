@@ -136,8 +136,13 @@ if (credentials.Exists)
                 }
 
                 //Create symlink for ".gitconfig".
-                var gitignoreLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.gitconfig";
-                var resConfig = ProcessBuilder("cmd.exe", $@" /C mklink {gitignoreLink} {(IsDebug ? "F" : "C")}:\sync\config\.gitconfig");
+                var gitconfigLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.gitconfig";
+                var gitconfigInfo = new FileInfo(gitconfigLink);
+
+                if (!IsDebug && gitconfigInfo.Exists)
+                    gitconfigInfo.Delete();
+
+                var resConfig = ProcessBuilder("cmd.exe", $@" /C mklink {gitconfigLink} {(IsDebug ? "F" : "C")}:\sync\config\.gitconfig");
                 Console.WriteLine($"[{(resConfig ? "Successfully" : "Failed")} creating symlink for \".gitconfig\" ...]");
 
                 //Create junction for ".aws".
