@@ -138,3 +138,9 @@ Write-Output "[dotfiles running on $templatePrefix ...]"
 #invoke dotnet-script
 Write-Output "[Installing dotfiles ...]"
 Invoke-Expression ("${env:userprofile}\.dotnet\tools\dotnet-script.exe -c release $downloadLocation\scripts\dotnet\main.csx -- $downloadLocation\templates\$templatePrefix\choco.yaml $downloadLocation\templates\$templatePrefix\scoop.yaml $downloadLocation\templates\$templatePrefix\commands.yaml")
+
+if (${env:CI} -ne 'true') {
+  #sync files
+  Write-Output "[Syncing files ...]"
+  Invoke-Expression ("${env:userprofile}\.dotnet\tools\dotnet-script.exe -c release $downloadLocation\scripts\dotnet\sync-files.csx")
+}

@@ -22,7 +22,7 @@ public static void WaitForDebugger()
 }
 
 if (Args.Contains("--debugger"))
-  WaitForDebugger();
+    WaitForDebugger();
 
 static string ToBasicString(this SecureString value)
 {

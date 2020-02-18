@@ -14,12 +14,12 @@ using System.Threading.Tasks;
 
 public static void WaitForDebugger()
 {
-  Console.WriteLine("Attach Debugger (VS Code)");
-  while (!System.Diagnostics.Debugger.IsAttached) ;
+    Console.WriteLine("Attach Debugger (VS Code)");
+    while (!System.Diagnostics.Debugger.IsAttached);
 }
 
 if (Args.Contains("--debugger"))
-  WaitForDebugger();
+    WaitForDebugger();
 
 Console.WriteLine($"Available Threads: {Environment.ProcessorCount}");
 
