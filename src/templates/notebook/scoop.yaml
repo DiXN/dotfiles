@@ -2,7 +2,6 @@
 scoop:
   - aws
   - bat
-  - nvm
   - rclone
   - scrcpy
   - winrar
@@ -11,6 +10,9 @@ scoop:
   - vscode
   - vlc
   - nodejs
+  - nvm
+  - latex
+  - perl
   - telegram
   - make
   - yarn

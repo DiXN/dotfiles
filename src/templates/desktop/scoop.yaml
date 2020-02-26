@@ -3,7 +3,6 @@ scoop:
   - aws
   - bat
   - crystaldiskmark
-  - nvm
   - rclone
   - scrcpy
   - qbittorrent
@@ -14,6 +13,9 @@ scoop:
   - cmder-full
   - vscode
   - vlc
+  - latex
+  - perl
+  - nvm
   - nodejs
   - telegram
   - make

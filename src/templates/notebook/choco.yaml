@@ -1,3 +1,4 @@
 ---
 choco:
   - visualcppbuildtools
+  - linkshellextension
