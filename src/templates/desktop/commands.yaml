@@ -8,10 +8,11 @@ commands:
         %USERPROFILE%\.cargo\bin\cargo.exe install cargo-edit
     desc: install Rust
   - cmd:
-      - powershell -command ".\scripts\wait-file.ps1 -app mpm"
-      - powershell -command ".\scripts\wait-file.ps1 -app perl"
-      - initexmf --set-config-value [MPM]AutoInstall=1
-      - mpm --install=latexmk
+    - powershell -command "if (${env:CI} -ne 'true') {
+        .\scripts\wait-file.ps1 -app mpm;
+        .\scripts\wait-file.ps1 -app perl;
+        initexmf --set-config-value [MPM]AutoInstall=1;
+        mpm --install=latexmk; }"
     desc: configure MikTeX
   - cmd:
     - powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\default-apps.ps1"
