@@ -99,6 +99,9 @@ if (Test-RegistryValue -Path $registryKeyPath -Value "AllowAllTrustedApps") {
   New-ItemProperty -Path $registryKeyPath -Name "AllowAllTrustedApps" -PropertyType DWORD -Value "1"
 }
 
+#disable compression
+fsutil behavior set disablecompression 1
+
 #disable windows defender real time monitoring during installation
 Write-Output "[Disable windows defender ...]"
 Set-MpPreference -DisableRealtimeMonitoring $true
