@@ -154,7 +154,7 @@ if (credentials.Exists)
                 var powershellConfigInfo = new FileInfo(powershellConfig);
 
                 if(!IsDebug && !Directory.Exists(powershellConfigDir))
-                    Directory.CreateDirectory(powershellConfigDir)
+                    Directory.CreateDirectory(powershellConfigDir);
 
                 if (!IsDebug && powershellConfigInfo.Exists)
                     powershellConfigInfo.Delete();
