@@ -22,6 +22,7 @@ commands:
     - code --install-extension ms-vscode.csharp
     - code --install-extension dart-code.flutter
     - code --install-extension fwcd.kotlin
+    - code --install-extension stkb.rewrap
     - code --install-extension ms-vsliveshare.vsliveshare
     - code --install-extension james-yu.latex-workshop
     - code --install-extension dbaeumer.vscode-eslint
