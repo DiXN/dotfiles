@@ -8,13 +8,6 @@ commands:
         %USERPROFILE%\.cargo\bin\cargo.exe install cargo-edit
     desc: install Rust
   - cmd:
-    - powershell -command "if (${env:CI} -ne 'true') {
-        .\scripts\wait-file.ps1 -app mpm;
-        .\scripts\wait-file.ps1 -app perl;
-        initexmf --set-config-value [MPM]AutoInstall=1;
-        mpm --install=latexmk; }"
-    desc: configure MikTeX
-  - cmd:
     - powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\default-apps.ps1"
     desc: configure default apps
   - cmd:
@@ -31,7 +24,13 @@ commands:
     - code --install-extension shardulm94.trailing-spaces
     - code --install-extension yzane.markdown-pdf
     - code --install-extension ms-vscode.powershell
+    - |
+        %windir%\system32\reg.exe import %USERPROFILE%\scoop\apps\vscode\current\vscode-install-context.reg
     desc: install vscode extensions
   - cmd:
-    - mkdir %USERPROFILE%\Documents\WindowsPowerShell 2> NUL & xcopy /y .\configs\Microsoft.PowerShell_profile.ps1 %USERPROFILE%\Documents\WindowsPowerShell
-    desc: copy powershell config
+    - powershell -command "if (${env:CI} -ne 'true') {
+        .\scripts\wait-file.ps1 -app mpm;
+        .\scripts\wait-file.ps1 -app perl;
+        initexmf --set-config-value [MPM]AutoInstall=1;
+        mpm --install=latexmk; }"
+    desc: configure MikTeX
