@@ -16,6 +16,7 @@ scoop:
   - telegram
   - make
   - yarn
+  - mupdf
   - postman
   - gitkraken
   - firefox

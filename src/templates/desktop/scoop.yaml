@@ -23,6 +23,7 @@ scoop:
   - postman
   - oraclejdk
   - discord
+  - mupdf
   - gitkraken
   - firefox
   - python

@@ -35,11 +35,14 @@ ForEach($appId in
 # Uninstall Windows Media Player.
 Disable-WindowsOptionalFeature -Online -FeatureName "WindowsMediaPlayer" -NoRestart -WarningAction SilentlyContinue | Out-Null
 
-#enable WSL
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart -WarningAction SilentlyContinue | Out-Null
-
 #enable Hyper-V
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart -WarningAction SilentlyContinue | Out-Null
+Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V" -All -NoRestart -WarningAction SilentlyContinue | Out-Null
+
+#enable Sandbox
+Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientVM" -All -NoRestart -WarningAction SilentlyContinue | Out-Null
+
+#enable WSL
+Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -WarningAction SilentlyContinue | Out-Null
 
 # Prevent “Suggested Applications” from returning.
 if (!(Test-Path "HKLM:\Software\Policies\Microsoft\Windows\CloudContent")) {
