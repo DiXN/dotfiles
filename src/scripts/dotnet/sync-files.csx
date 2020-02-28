@@ -148,6 +148,30 @@ if (credentials.Exists)
                 var resConfig = ProcessBuilder("cmd.exe", $@" /C mklink {gitconfigLink} {(IsDebug ? "F" : "C")}:\sync\config\.gitconfig");
                 Console.WriteLine($"[{(resConfig ? "Successfully" : "Failed")} creating symlink for \".gitconfig\" ...]");
 
+                //Create symlink for Microsoft.PowerShell_profile.ps1.
+                var powershellConfigDir = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\Documents\WindowsPowerShell";
+                var powershellConfig = $@"{powershellConfigDir}\Microsoft.PowerShell_profile.ps1";
+                var powershellConfigInfo = new FileInfo(powershellConfig);
+
+                if(!IsDebug && !Directory.Exists(powershellConfigDir))
+                    Directory.CreateDirectory(powershellConfigDir)
+
+                if (!IsDebug && powershellConfigInfo.Exists)
+                    powershellConfigInfo.Delete();
+
+                var resPowerConfig = ProcessBuilder("cmd.exe", $@" /C mklink {powershellConfig} {(IsDebug ? "F" : "C")}:\sync\config\Microsoft.PowerShell_profile.ps1");
+                Console.WriteLine($"[{(resPowerConfig ? "Successfully" : "Failed")} creating symlink for \"Microsoft.PowerShell_profile.ps1\" ...]");
+
+                //Create symlink for VS Code config.
+                var vscodeConfig =  $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\Documents\Code\User\settings.json";
+                var vscodeConfigInfo = new FileInfo(vscodeConfig);
+
+                if (!IsDebug && vscodeConfigInfo.Exists)
+                    vscodeConfigInfo.Delete();
+
+                var resVsConfig = ProcessBuilder("cmd.exe", $@" /C mklink {vscodeConfig} {(IsDebug ? "F" : "C")}:\sync\config\settings.json");
+                Console.WriteLine($"[{(resVsConfig ? "Successfully" : "Failed")} creating symlink for \"Microsoft.PowerShell_profile.ps1\" ...]");
+
                 //Create junction for ".aws".
                 try
                 {
