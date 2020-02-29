@@ -172,16 +172,20 @@ if (credentials.Exists)
                 var resVsConfig = ProcessBuilder("cmd.exe", $@" /C mklink {vscodeConfig} {(IsDebug ? "F" : "C")}:\sync\config\settings.json");
                 Console.WriteLine($"[{(resVsConfig ? "Successfully" : "Failed")} creating symlink for \"Microsoft.PowerShell_profile.ps1\" ...]");
 
-                //Create junction for ".aws".
+                //Create junctions.
                 try
                 {
                     var awsLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.aws";
                     JunctionPoint.Create(awsLink, $@"{(IsDebug ? "F" : "C")}:\sync\config\.aws", true);
                     Console.WriteLine("[Successfully creating symlink for \".aws\" ...]");
+
+                    var sshLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.ssh";
+                    JunctionPoint.Create(sshLink, $@"{(IsDebug ? "F" : "C")}:\sync\config\.ssh", true);
+                    Console.WriteLine("[Successfully creating symlink for \".ssh\" ...]");
                 }
                 catch (IOException)
                 {
-                    Console.Error.WriteLine("[Failed creating symlink for \".aws\" ...]");
+                    Console.Error.WriteLine("[Failed creating junction ...]");
                 }
             }
             catch (Exception ex)
