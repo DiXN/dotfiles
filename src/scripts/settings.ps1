@@ -73,3 +73,8 @@ else {
 Write-Output "[Disabling compression ...]"
 #disable compression
 fsutil behavior set disablecompression 1
+
+#set rclone env
+Write-Output "[Setting \"rclone\" environment variables ...]"
+[Environment]::SetEnvironmentVariable("SYNC_ROOT", "C:\sync", [System.EnvironmentVariableTarget]::User)
+[Environment]::SetEnvironmentVariable("SYNC_ACTIVE", "db", [System.EnvironmentVariableTarget]::User)
