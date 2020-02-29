@@ -4,12 +4,6 @@ function Test-Admin {
   $currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
 }
 
-#check if shell is elevated
-if ((Test-Admin) -eq $false) {
-  Write-Error "Run again in an elevated shell."
-  exit
-}
-
 #https://www.jonathanmedd.net/2014/02/testing-for-the-presence-of-a-registry-key-and-value.html
 function Test-RegistryValue {
   param (
@@ -27,6 +21,11 @@ function Test-RegistryValue {
   }
 }
 
+#check if shell is elevated
+if ((Test-Admin) -eq $false) {
+  Write-Error "Run again in an elevated shell."
+  exit
+}
 #disable UAC
 Write-Output "[Disabling UAC ...]"
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value "0"
@@ -41,8 +40,13 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer
 
 #exec powershell scripts on double click
 Write-Output "[Enabling execution of powershell files on double click ...]"
-New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
-Set-ItemProperty -Path "HKCR:\Microsoft.PowerShellScript.1\Shell\open\command" -Name "(Default)" -Value "'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe' -noLogo -ExecutionPolicy unrestricted -file '%1'"
+
+if (Get-PSDrive HKCR -ErrorAction SilentlyContinue) {
+  Write-Output "Drive already exists."
+} else {
+  New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
+  Set-ItemProperty -Path "HKCR:\Microsoft.PowerShellScript.1\Shell\open\command" -Name "(Default)" -Value "'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe' -noLogo -ExecutionPolicy unrestricted -file '%1'"
+}
 
 #enable developer mode
 Write-Output "[Enabling developer mode ...]"
