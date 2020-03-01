@@ -1,7 +1,8 @@
 #r "nuget: SSH.NET, 2016.1.0"
 #r "nuget: Microsoft.PowerShell.SDK, 6.2.3"
 
-#load "JunctionPoints.cs"
+#load "ProcessBuilder.cs"
+#load "Symlink.cs"
 
 using System;
 using System.IO;
@@ -39,47 +40,6 @@ static string ToBasicString(this SecureString value)
     finally
     {
         Marshal.ZeroFreeGlobalAllocUnicode(valuePtr);
-    }
-}
-
-static bool ProcessBuilder(string process, string args)
-{
-    using (var p = new Process())
-    {
-        var psi = new ProcessStartInfo(process, args)
-        {
-            CreateNoWindow = true,
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        };
-
-        p.StartInfo = psi;
-        p.Start();
-
-        var title = "Sync files";
-
-        Task.Run(async () =>
-        {
-            string line = string.Empty;
-            while ((line = await p.StandardOutput.ReadLineAsync()) != null)
-            {
-                Console.WriteLine($"[{title}]: {line}");
-            }
-        });
-
-        Task.Run(async () =>
-        {
-            string line = string.Empty;
-            while ((line = await p.StandardError.ReadLineAsync()) != null)
-            {
-                Console.Error.WriteLine($"[{title}]: {line}");
-            }
-        });
-
-        p.WaitForExit();
-
-        return p.ExitCode == 0;
     }
 }
 
@@ -130,65 +90,9 @@ if (credentials.Exists)
                 }
 
                 //Sync all files.
-                ProcessBuilder("rclone", $@"sync -v {syncActive}:/uni {syncRoot}\uni");
+                ProcessBuilder("rclone", $@"sync -v {syncActive}:/ {syncRoot}");
 
-                //Wait for git and aws to be available.
-                while (!ProcessBuilder("where", "git") && !ProcessBuilder("where", "aws"))
-                {
-                    System.Threading.Thread.Sleep(250);
-                }
-
-                //Create symlink for ".gitconfig".
-                var gitconfigLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.gitconfig";
-                var gitconfigInfo = new FileInfo(gitconfigLink);
-
-                if (!IsDebug && gitconfigInfo.Exists)
-                    gitconfigInfo.Delete();
-
-                var resConfig = ProcessBuilder("cmd.exe", $@" /C mklink {gitconfigLink} {syncRoot}\config\.gitconfig");
-                Console.WriteLine($"[{(resConfig ? "Successfully" : "Failed")} creating symlink for \".gitconfig\" ...]");
-
-                //Create symlink for Microsoft.PowerShell_profile.ps1.
-                var powershellConfigDir = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\Documents\WindowsPowerShell";
-                var powershellConfig = $@"{powershellConfigDir}\Microsoft.PowerShell_profile.ps1";
-                var powershellConfigInfo = new FileInfo(powershellConfig);
-
-                if(!IsDebug && !Directory.Exists(powershellConfigDir))
-                    Directory.CreateDirectory(powershellConfigDir);
-
-                if (!IsDebug && powershellConfigInfo.Exists)
-                    powershellConfigInfo.Delete();
-
-                var resPowerConfig = ProcessBuilder("cmd.exe", $@" /C mklink {powershellConfig} {syncRoot}\config\Microsoft.PowerShell_profile.ps1");
-                Console.WriteLine($"[{(resPowerConfig ? "Successfully" : "Failed")} creating symlink for \"Microsoft.PowerShell_profile.ps1\" ...]");
-
-                //Create symlink for VS Code config.
-                var vscodeConfig =  $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\Code\User\settings.json";
-                var vscodeConfigInfo = new FileInfo(vscodeConfig);
-
-                if (!IsDebug && vscodeConfigInfo.Exists)
-                    vscodeConfigInfo.Delete();
-
-                var resVsConfig = ProcessBuilder("cmd.exe", $@" /C mklink {vscodeConfig} {syncRoot}\config\settings.json");
-                Console.WriteLine($"[{(resVsConfig ? "Successfully" : "Failed")} creating symlink for \"settings.json\" ...]");
-
-                //Create junctions.
-                try
-                {
-                    var awsLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.aws";
-                    Directory.Delete(awsLink, true);
-                    JunctionPoint.Create(awsLink, $@"{syncRoot}\config\.aws", true);
-                    Console.WriteLine("[Successfully creating symlink for \".aws\" ...]");
-
-                    var sshLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.ssh";
-                    Directory.Delete(sshLink, true);
-                    JunctionPoint.Create(sshLink, $@"{syncRoot}\config\.ssh", true);
-                    Console.WriteLine("[Successfully creating symlink for \".ssh\" ...]");
-                }
-                catch (IOException ex)
-                {
-                    Console.Error.WriteLine($"[{ex.Message} ...]");
-                }
+                SetSymlinks(IsDebug, syncRoot, syncActive);
             }
             catch (Exception ex)
             {
