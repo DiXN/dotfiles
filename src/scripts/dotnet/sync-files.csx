@@ -81,11 +81,11 @@ static bool ProcessBuilder(string process, string args)
 
         return p.ExitCode == 0;
     }
-
-    return false;
 }
 
 var credentials = IsDebug ? new FileInfo("credential.txt") : new FileInfo($"{Path.GetTempPath()}\\dotfiles\\credential.txt");
+var syncRoot = Environment.GetEnvironmentVariable("SYNC_ROOT");
+var syncActive = Environment.GetEnvironmentVariable("SYNC_Active");
 
 if (credentials.Exists)
 {
@@ -130,7 +130,7 @@ if (credentials.Exists)
                 }
 
                 //Sync all files.
-                ProcessBuilder("rclone", $@"sync -v db:/ {(IsDebug ? "F" : "C")}:\sync");
+                ProcessBuilder("rclone", $@"sync -v {syncActive}:/uni {syncRoot}\uni");
 
                 //Wait for git and aws to be available.
                 while (!ProcessBuilder("where", "git") && !ProcessBuilder("where", "aws"))
@@ -145,7 +145,7 @@ if (credentials.Exists)
                 if (!IsDebug && gitconfigInfo.Exists)
                     gitconfigInfo.Delete();
 
-                var resConfig = ProcessBuilder("cmd.exe", $@" /C mklink {gitconfigLink} {(IsDebug ? "F" : "C")}:\sync\config\.gitconfig");
+                var resConfig = ProcessBuilder("cmd.exe", $@" /C mklink {gitconfigLink} {syncRoot}\config\.gitconfig");
                 Console.WriteLine($"[{(resConfig ? "Successfully" : "Failed")} creating symlink for \".gitconfig\" ...]");
 
                 //Create symlink for Microsoft.PowerShell_profile.ps1.
@@ -159,33 +159,35 @@ if (credentials.Exists)
                 if (!IsDebug && powershellConfigInfo.Exists)
                     powershellConfigInfo.Delete();
 
-                var resPowerConfig = ProcessBuilder("cmd.exe", $@" /C mklink {powershellConfig} {(IsDebug ? "F" : "C")}:\sync\config\Microsoft.PowerShell_profile.ps1");
+                var resPowerConfig = ProcessBuilder("cmd.exe", $@" /C mklink {powershellConfig} {syncRoot}\config\Microsoft.PowerShell_profile.ps1");
                 Console.WriteLine($"[{(resPowerConfig ? "Successfully" : "Failed")} creating symlink for \"Microsoft.PowerShell_profile.ps1\" ...]");
 
                 //Create symlink for VS Code config.
-                var vscodeConfig =  $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\Documents\Code\User\settings.json";
+                var vscodeConfig =  $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\Code\User\settings.json";
                 var vscodeConfigInfo = new FileInfo(vscodeConfig);
 
                 if (!IsDebug && vscodeConfigInfo.Exists)
                     vscodeConfigInfo.Delete();
 
-                var resVsConfig = ProcessBuilder("cmd.exe", $@" /C mklink {vscodeConfig} {(IsDebug ? "F" : "C")}:\sync\config\settings.json");
-                Console.WriteLine($"[{(resVsConfig ? "Successfully" : "Failed")} creating symlink for \"Microsoft.PowerShell_profile.ps1\" ...]");
+                var resVsConfig = ProcessBuilder("cmd.exe", $@" /C mklink {vscodeConfig} {syncRoot}\config\settings.json");
+                Console.WriteLine($"[{(resVsConfig ? "Successfully" : "Failed")} creating symlink for \"settings.json\" ...]");
 
                 //Create junctions.
                 try
                 {
                     var awsLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.aws";
-                    JunctionPoint.Create(awsLink, $@"{(IsDebug ? "F" : "C")}:\sync\config\.aws", true);
+                    Directory.Delete(awsLink, true);
+                    JunctionPoint.Create(awsLink, $@"{syncRoot}\config\.aws", true);
                     Console.WriteLine("[Successfully creating symlink for \".aws\" ...]");
 
                     var sshLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.ssh";
-                    JunctionPoint.Create(sshLink, $@"{(IsDebug ? "F" : "C")}:\sync\config\.ssh", true);
+                    Directory.Delete(sshLink, true);
+                    JunctionPoint.Create(sshLink, $@"{syncRoot}\config\.ssh", true);
                     Console.WriteLine("[Successfully creating symlink for \".ssh\" ...]");
                 }
-                catch (IOException)
+                catch (IOException ex)
                 {
-                    Console.Error.WriteLine("[Failed creating junction ...]");
+                    Console.Error.WriteLine($"[{ex.Message} ...]");
                 }
             }
             catch (Exception ex)
