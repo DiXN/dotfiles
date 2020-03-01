@@ -14,7 +14,7 @@ using Renci.SshNet;
 using Renci.SshNet.Sftp;
 using Renci.SshNet.Common;
 
-private bool IsDebug => Args.Contains("--debugger");
+private bool IsDebug => Args.Contains("--debug");
 
 public static void WaitForDebugger()
 {
@@ -25,7 +25,7 @@ public static void WaitForDebugger()
 if (Args.Contains("--ci"))
     return 0;
 
-if (Args.Contains("--debugger"))
+if (Args.Contains("--wait"))
     WaitForDebugger();
 
 static string ToBasicString(this SecureString value)

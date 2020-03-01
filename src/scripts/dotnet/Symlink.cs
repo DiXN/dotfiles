@@ -1,5 +1,4 @@
 #load "ProcessBuilder.cs"
-#load "JunctionPoints.cs"
 
 public static void SetSymlinks(bool isDebug, string syncRoot, string syncActive)
 {
@@ -43,21 +42,21 @@ public static void SetSymlinks(bool isDebug, string syncRoot, string syncActive)
     var resVsConfig = ProcessBuilder("cmd.exe", $@" /C mklink {vscodeConfig} {syncRoot}\config\settings.json");
     Console.WriteLine($"[{(resVsConfig ? "Successfully" : "Failed")} creating symlink for \"settings.json\" ...]");
 
-    //Create junctions.
-    try
-    {
-        var awsLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.aws";
-        Directory.Delete(awsLink, true);
-        JunctionPoint.Create(awsLink, $@"{syncRoot}\config\.aws", true);
-        Console.WriteLine("[Successfully creating symlink for \".aws\" ...]");
+    //Create symlink for AWS.
+    var awsLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.aws";
 
-        var sshLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.ssh";
+    if (!isDebug && Directory.Exists(awsLink))
+        Directory.Delete(awsLink, true);
+
+    var resAwsConfig = ProcessBuilder("cmd.exe", $@" /C mklink /D {awsLink} {syncRoot}\config\.aws");
+    Console.WriteLine($"[{(resAwsConfig ? "Successfully" : "Failed")} creating symlink for \".aws\" ...]");
+
+    //Create symlink for SSH.
+    var sshLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.ssh";
+
+    if (!isDebug && Directory.Exists(sshLink))
         Directory.Delete(sshLink, true);
-        JunctionPoint.Create(sshLink, $@"{syncRoot}\config\.ssh", true);
-        Console.WriteLine("[Successfully creating symlink for \".ssh\" ...]");
-    }
-    catch (IOException ex)
-    {
-        Console.Error.WriteLine($"[{ex.Message} ...]");
-    }
+
+    var resSshLink = ProcessBuilder("cmd.exe", $@" /C mklink /D {sshLink} {syncRoot}\config\.ssh");
+    Console.WriteLine($"[{(resSshLink ? "Successfully" : "Failed")} creating symlink for \".ssh\" ...]");
 }

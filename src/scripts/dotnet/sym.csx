@@ -10,10 +10,10 @@ public static void WaitForDebugger()
 if (Args.Contains("--ci"))
     return 0;
 
-if (Args.Contains("--debugger"))
+if (Args.Contains("--wait"))
     WaitForDebugger();
 
 var syncRoot = Environment.GetEnvironmentVariable("SYNC_ROOT");
 var syncActive = Environment.GetEnvironmentVariable("SYNC_Active");
 
-SetSymlinks(Args.Contains("--debugger"), syncRoot, syncActive);
+SetSymlinks(Args.Contains("--debug"), syncRoot, syncActive);
