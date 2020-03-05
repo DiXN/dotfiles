@@ -59,4 +59,7 @@ public static void SetSymlinks(bool isDebug, string syncRoot, string syncActive)
 
     var resSshLink = ProcessBuilder("cmd.exe", $@" /C mklink /D {sshLink} {syncRoot}\config\.ssh");
     Console.WriteLine($"[{(resSshLink ? "Successfully" : "Failed")} creating symlink for \".ssh\" ...]");
+
+    var emConfig = ProcessBuilder("MailClient.exe", $@" /importsettings {syncRoot}\config\em_client\settings.xml -s");
+    Console.WriteLine($"[{(emConfig ? "Successfully" : "Failed")} importing settings for \"eM Client\" ...]");
 }
