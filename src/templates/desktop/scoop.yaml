@@ -7,14 +7,14 @@ scoop:
   - scrcpy
   - qbittorrent
   - autohotkey
+  - latex
+  - perl
   - cygwin
   - winrar
   - opera
   - cmder-full
   - vscode
   - vlc
-  - latex
-  - perl
   - nvm
   - nodejs
   - telegram
@@ -28,6 +28,9 @@ scoop:
   - firefox
   - python
   - sumatrapdf
+  - rclone_ignore
+  - regjump
+  - eMClient
   - vcredist2015
   - vcredist2019
   - msiafterburner
@@ -44,3 +47,4 @@ scoop:
   - spotify
   - ruby
   - archwsl
+  - surfshark

@@ -22,6 +22,9 @@ scoop:
   - firefox
   - python
   - sumatrapdf
+  - rclone_ignore
+  - regjump
+  - eMClient
   - vcredist2015
   - vcredist2019
   - SuperF4
