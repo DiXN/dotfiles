@@ -1,13 +1,13 @@
 #load "ProcessBuilder.cs"
 
+private static void RunProcessBuilder(string app, string arg, string name)
+{
+    var res = ProcessBuilder(app, arg);
+    Console.WriteLine($"[{(res ? "Successfully" : "Failed")} creating symlink for \"{name}\" ...]");
+}
+
 public static void SetSymlinks(bool isDebug, string syncRoot, string syncActive)
 {
-    //Wait for git and aws to be available.
-    while (!ProcessBuilder("where", "git") && !ProcessBuilder("where", "aws"))
-    {
-        System.Threading.Thread.Sleep(250);
-    }
-
     //Create symlink for ".gitconfig".
     var gitconfigLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.gitconfig";
     var gitconfigInfo = new FileInfo(gitconfigLink);
@@ -15,8 +15,7 @@ public static void SetSymlinks(bool isDebug, string syncRoot, string syncActive)
     if (!isDebug && gitconfigInfo.Exists)
         gitconfigInfo.Delete();
 
-    var resConfig = ProcessBuilder("cmd.exe", $@" /C mklink {gitconfigLink} {syncRoot}\config\.gitconfig");
-    Console.WriteLine($"[{(resConfig ? "Successfully" : "Failed")} creating symlink for \".gitconfig\" ...]");
+    RunProcessBuilder("cmd.exe", $@" /C mklink {gitconfigLink} {syncRoot}\config\.gitconfig", ".gitconfig");
 
     //Create symlink for Microsoft.PowerShell_profile.ps1.
     var powershellConfigDir = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\Documents\WindowsPowerShell";
@@ -29,8 +28,7 @@ public static void SetSymlinks(bool isDebug, string syncRoot, string syncActive)
     if (!isDebug && powershellConfigInfo.Exists)
         powershellConfigInfo.Delete();
 
-    var resPowerConfig = ProcessBuilder("cmd.exe", $@" /C mklink {powershellConfig} {syncRoot}\config\Microsoft.PowerShell_profile.ps1");
-    Console.WriteLine($"[{(resPowerConfig ? "Successfully" : "Failed")} creating symlink for \"Microsoft.PowerShell_profile.ps1\" ...]");
+    RunProcessBuilder("cmd.exe", $@" /C mklink {powershellConfig} {syncRoot}\config\Microsoft.PowerShell_profile.ps1", "Microsoft.PowerShell_profile.ps1");
 
     //Create symlink for VS Code config.
     var vscodeConfig = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\Code\User\settings.json";
@@ -39,8 +37,7 @@ public static void SetSymlinks(bool isDebug, string syncRoot, string syncActive)
     if (!isDebug && vscodeConfigInfo.Exists)
         vscodeConfigInfo.Delete();
 
-    var resVsConfig = ProcessBuilder("cmd.exe", $@" /C mklink {vscodeConfig} {syncRoot}\config\settings.json");
-    Console.WriteLine($"[{(resVsConfig ? "Successfully" : "Failed")} creating symlink for \"settings.json\" ...]");
+    RunProcessBuilder("cmd.exe", $@" /C mklink {vscodeConfig} {syncRoot}\config\settings.json", "settings.json");
 
     //Create symlink for AWS.
     var awsLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.aws";
@@ -48,8 +45,7 @@ public static void SetSymlinks(bool isDebug, string syncRoot, string syncActive)
     if (!isDebug && Directory.Exists(awsLink))
         Directory.Delete(awsLink, true);
 
-    var resAwsConfig = ProcessBuilder("cmd.exe", $@" /C mklink /D {awsLink} {syncRoot}\config\.aws");
-    Console.WriteLine($"[{(resAwsConfig ? "Successfully" : "Failed")} creating symlink for \".aws\" ...]");
+    RunProcessBuilder("cmd.exe", $@" /C mklink /D {awsLink} {syncRoot}\config\.aws", ".aws");
 
     //Create symlink for SSH.
     var sshLink = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\.ssh";
@@ -57,9 +53,8 @@ public static void SetSymlinks(bool isDebug, string syncRoot, string syncActive)
     if (!isDebug && Directory.Exists(sshLink))
         Directory.Delete(sshLink, true);
 
-    var resSshLink = ProcessBuilder("cmd.exe", $@" /C mklink /D {sshLink} {syncRoot}\config\.ssh");
-    Console.WriteLine($"[{(resSshLink ? "Successfully" : "Failed")} creating symlink for \".ssh\" ...]");
+    RunProcessBuilder("cmd.exe", $@" /C mklink /D {sshLink} {syncRoot}\config\.ssh", ".ssh");
 
-    var emConfig = ProcessBuilder("MailClient.exe", $@" /importsettings {syncRoot}\config\em_client\settings.xml -s");
-    Console.WriteLine($"[{(emConfig ? "Successfully" : "Failed")} importing settings for \"eM Client\" ...]");
+    //Import settings for eMClient.
+    RunProcessBuilder("MailClient.exe", $@" /importsettings {syncRoot}\config\em_client\settings.xml -s", "eM Client");
 }
