@@ -1,8 +1,5 @@
-#https://superuser.com/a/532109
-function Test-Admin {
-  $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
-  $currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
-}
+
+#Requires -RunAsAdministrator
 
 #https://www.jonathanmedd.net/2014/02/testing-for-the-presence-of-a-registry-key-and-value.html
 function Test-RegistryValue {
@@ -15,17 +12,11 @@ function Test-RegistryValue {
   try {
     Get-ItemProperty -Path $Path | Select-Object -ExpandProperty $Value -ErrorAction Stop | Out-Null
     return $true
-  }
-  catch {
+  } catch {
     return $false
   }
 }
 
-#check if shell is elevated
-if ((Test-Admin) -eq $false) {
-  Write-Error "Run again in an elevated shell."
-  exit
-}
 #disable UAC
 Write-Output "[Disabling UAC ...]"
 Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value "0"

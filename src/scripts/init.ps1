@@ -1,47 +1,18 @@
+#Requires -RunAsAdministrator
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
 
-Function Detect-Notebook {
+Function Has-Battery {
   Param([string]$computer = "localhost")
-  $isNotebook = $false
 
   if(Get-WmiObject -Class win32_systemenclosure -ComputerName $computer | Where-Object { $_.chassistypes -eq 9 -or $_.chassistypes -eq 10 -or $_.chassistypes -eq 14}) {
-    $isNotebook = $true
+    return $true
   }
 
   if(Get-WmiObject -Class win32_battery -ComputerName $computer) {
-    $isNotebook = $true
-  }
-
-  $isNotebook
-}
-
-#https://www.jonathanmedd.net/2014/02/testing-for-the-presence-of-a-registry-key-and-value.html
-function Test-RegistryValue {
-  param (
-    [parameter(Mandatory=$true)]
-    [ValidateNotNullOrEmpty()]$Path,
-    [parameter(Mandatory=$true)]
-    [ValidateNotNullOrEmpty()]$Value
-  )
-  try {
-  Get-ItemProperty -Path $Path | Select-Object -ExpandProperty $Value -ErrorAction Stop | Out-Null
     return $true
   }
-  catch {
-    return $false
-  }
-}
 
-#https://superuser.com/a/532109
-function Test-Admin {
-  $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
-  $currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
-}
-
-#check if shell is elevated
-if ((Test-Admin) -eq $false) {
-  Write-Error "Run again in an elevated shell."
-  exit
+  return $false
 }
 
 $downloadLocation = [System.IO.Path]::GetTempPath() + "dotfiles"
@@ -94,7 +65,7 @@ dotnet tool install -g dotnet-script
 #check if notebook or desktop
 $templatePrefix = ""
 
-if (Detect-Notebook) {
+if (Has-Battery) {
   $templatePrefix = "notebook"
 }
 else {
