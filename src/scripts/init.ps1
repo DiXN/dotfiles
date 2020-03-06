@@ -74,6 +74,11 @@ else {
 
 Write-Output "[dotfiles running on $templatePrefix ...]"
 
+# merge universal with platform yaml file
+Get-Content "$downloadLocation\templates\base\choco.yaml"    | Select-Object -Skip 2 | Add-Content "$downloadLocation\templates\$templatePrefix\choco.yaml"
+Get-Content "$downloadLocation\templates\base\scoop.yaml"    | Select-Object -Skip 2 | Add-Content "$downloadLocation\templates\$templatePrefix\scoop.yaml"
+Get-Content "$downloadLocation\templates\base\commands.yaml" | Select-Object -Skip 2 | Add-Content "$downloadLocation\templates\$templatePrefix\commands.yaml"
+
 #invoke dotnet-script
 Write-Output "[Installing dotfiles ...]"
 Invoke-Expression ("${env:userprofile}\.dotnet\tools\dotnet-script.exe -c release $downloadLocation\scripts\dotnet\main.csx -- $downloadLocation\templates\$templatePrefix\choco.yaml $downloadLocation\templates\$templatePrefix\scoop.yaml $downloadLocation\templates\$templatePrefix\commands.yaml")

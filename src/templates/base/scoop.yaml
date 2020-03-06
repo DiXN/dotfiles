@@ -1,0 +1,35 @@
+---
+scoop:
+  - aws
+  - bat
+  - rclone
+  - latex
+  - perl
+  - scrcpy
+  - winrar
+  - opera
+  - cmder-full
+  - vscode
+  - vlc
+  - nodejs
+  - nvm
+  - telegram
+  - make
+  - yarn
+  - mupdf
+  - postman
+  - gitkraken
+  - firefox
+  - python
+  - sumatrapdf
+  - rclone_ignore
+  - regjump
+  - eMClient
+  - vcredist2015
+  - vcredist2019
+  - SuperF4
+  - docker
+  - spotify
+  - archwsl
+  - surfshark
+  - ruby

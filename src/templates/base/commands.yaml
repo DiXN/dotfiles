@@ -1,0 +1,36 @@
+---
+commands:
+  - cmd:
+    - powershell -command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; Invoke-WebRequest https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe -UseBasicParsing -OutFile rustup-init.exe"
+    - .\rustup-init.exe -yv --default-toolchain stable --default-host x86_64-pc-windows-msvc
+    - powershell -command ".\scripts\wait-folder.ps1 -path (${env:ProgramFiles(x86)} + '\Microsoft Visual C++ Build Tools')"
+    - |
+        %USERPROFILE%\.cargo\bin\cargo.exe install cargo-edit
+    desc: install Rust
+  - cmd:
+    - powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\default-apps.ps1"
+    desc: configure default apps
+  - cmd:
+    - powershell -command ".\scripts\wait-file.ps1 -app code"
+    - code --install-extension ms-vscode.csharp
+    - code --install-extension dart-code.flutter
+    - code --install-extension fwcd.kotlin
+    - code --install-extension stkb.rewrap
+    - code --install-extension ms-vsliveshare.vsliveshare
+    - code --install-extension james-yu.latex-workshop
+    - code --install-extension dbaeumer.vscode-eslint
+    - code --install-extension mushan.vscode-paste-image
+    - code --install-extension rust-lang.rust
+    - code --install-extension shardulm94.trailing-spaces
+    - code --install-extension yzane.markdown-pdf
+    - code --install-extension ms-vscode.powershell
+    - |
+        %windir%\system32\reg.exe import %USERPROFILE%\scoop\apps\vscode\current\vscode-install-context.reg
+    desc: install vscode extensions
+  - cmd:
+    - powershell -command "if (${env:CI} -ne 'true') {
+        .\scripts\wait-file.ps1 -app mpm;
+        .\scripts\wait-file.ps1 -app perl;
+        initexmf --set-config-value [MPM]AutoInstall=1;
+        mpm --install=latexmk; }"
+    desc: configure MikTeX
