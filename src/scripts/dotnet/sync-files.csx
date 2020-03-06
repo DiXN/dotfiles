@@ -2,7 +2,6 @@
 #r "nuget: Microsoft.PowerShell.SDK, 6.2.3"
 
 #load "ProcessBuilder.cs"
-#load "Symlink.cs"
 
 using System;
 using System.IO;
@@ -92,7 +91,8 @@ if (credentials.Exists)
                 //Sync all files.
                 ProcessBuilder("rclone", $@"sync -v {syncActive}:/ {syncRoot}");
 
-                SetSymlinks(IsDebug, syncRoot, syncActive);
+                //Set symlinks.
+                ProcessBuilder("powershell", @"-command ..\sym.ps1");
             }
             catch (Exception ex)
             {
