@@ -82,6 +82,7 @@ scoop bucket add java
 scoop bucket add JetBrains
 scoop bucket add nonportable
 scoop bucket add Ash258 'https://github.com/Ash258/Scoop-Ash258.git'
+scoop bucket add DiXN 'https://github.com/DiXN/scoop.git'
 
 #install Chocolatey
 Write-Output "[Installing Chocolatey ...]"
