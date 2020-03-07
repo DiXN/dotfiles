@@ -1,4 +1,7 @@
-#Requires -RunAsAdministrator
+param (
+  [string]$platform
+)
+
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
 
 Function Has-Battery {
@@ -15,11 +18,22 @@ Function Has-Battery {
   return $false
 }
 
-$downloadLocation = [System.IO.Path]::GetTempPath() + "dotfiles"
-#create folder in TEMP path if not exists
-mkdir -Force $downloadLocation | Out-Null
+#check platform
+$templatePrefix = ""
 
-Set-Location $downloadLocation
+if ([string]::IsNullOrEmpty($platform)) {
+  if (Has-Battery) {
+    $templatePrefix = "notebook"
+  }
+  else {
+    $templatePrefix = "desktop"
+  }
+}
+else {
+  $templatePrefix = $platform
+}
+
+Write-Output "[dotfiles running on $templatePrefix ...]"
 
 if (${env:CI} -ne 'true') {
   $Credentials = Get-Credential admin
@@ -28,6 +42,12 @@ if (${env:CI} -ne 'true') {
 }
 
 Get-ExecutionPolicy -List
+
+$downloadLocation = [System.IO.Path]::GetTempPath() + "dotfiles"
+#create folder in TEMP path if not exists
+mkdir -Force $downloadLocation | Out-Null
+
+Set-Location $downloadLocation
 
 #download repo
 Write-Output "[Downloading Repo ...]"
@@ -61,18 +81,6 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object
 
 #install dotnet-script
 dotnet tool install -g dotnet-script
-
-#check if notebook or desktop
-$templatePrefix = ""
-
-if (Has-Battery) {
-  $templatePrefix = "notebook"
-}
-else {
-  $templatePrefix = "desktop"
-}
-
-Write-Output "[dotfiles running on $templatePrefix ...]"
 
 # merge universal with platform yaml file
 Get-Content "$downloadLocation\templates\base\choco.yaml"    | Select-Object -Skip 2 | Add-Content "$downloadLocation\templates\$templatePrefix\choco.yaml"
