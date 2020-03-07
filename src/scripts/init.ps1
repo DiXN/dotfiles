@@ -2,6 +2,7 @@ param (
   [string]$platform
 )
 
+#Requires -RunAsAdministrator
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
 
 Function Has-Battery {
@@ -24,12 +25,10 @@ $templatePrefix = ""
 if ([string]::IsNullOrEmpty($platform)) {
   if (Has-Battery) {
     $templatePrefix = "notebook"
-  }
-  else {
+  } else {
     $templatePrefix = "desktop"
   }
-}
-else {
+} else {
   $templatePrefix = $platform
 }
 
