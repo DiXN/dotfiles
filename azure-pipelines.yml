@@ -22,14 +22,25 @@ jobs:
           dotnet tool install -g dotnet-script
           Invoke-Expression ("${env:userprofile}\.dotnet\tools\dotnet-script.exe -c release $downloadLocation\scripts\dotnet\sync-files.csx -- --ci")
         displayName: Compile `sync-files.csx` `dotnet-script`.
-  - job: Dotfiles
+  - job: DotfilesDesktop
     dependsOn: DotNetDotfiles
     condition: succeeded()
     timeoutInMinutes: 200
     pool:
       vmImage: 'win1803'
     steps:
-      - powershell: .\src\scripts\init.ps1
-        displayName: Run `init.ps1`
+      - powershell: .\src\scripts\init.ps1 'desktop'
+        displayName: Run `init.ps1` on "Desktop"
+        env:
+          CI: 'true'
+  - job: DotfilesNotebook
+    dependsOn: DotNetDotfiles
+    condition: succeeded()
+    timeoutInMinutes: 200
+    pool:
+      vmImage: 'win1803'
+    steps:
+      - powershell: .\src\scripts\init.ps1 'notebook'
+        displayName: Run `init.ps1` on "Notebook"
         env:
           CI: 'true'
