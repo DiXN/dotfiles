@@ -7,18 +7,18 @@ using YamlDotNet.Serialization;
 
 class Scoop : TaskBase
 {
-    private ConcurrentQueue<string> _scoopQueue;
+    private ConcurrentQueue<ScoopTuple> _scoopQueue;
 
     public Scoop(string file)
     {
         CmdType = CMD_TYPE.SCOOP;
         FileName = file;
 
-        var deserialize = Serial.Deserialize<ChocoWrapper, string>(file);
+        var deserialize = Serial.Deserialize<ScoopWrapper, ScoopTuple>(file);
 
         deserialize.IfPresent(val =>
         {
-            _scoopQueue = new ConcurrentQueue<string>(val.Commands);
+            _scoopQueue = new ConcurrentQueue<ScoopTuple>(val.Commands);
             Tasks = val.Commands.Count;
         });
     }
@@ -34,27 +34,33 @@ class Scoop : TaskBase
             int returnCode = 0;
             foreach (var scoop in _scoopQueue)
             {
-                for (int i = 0; i < 3; i++)
+                if (!scoop.Ci)
                 {
-                    (int code, string output) res = await ExecCommand($"scoop install {scoop}", scoop);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        (int code, string output) res = await ExecCommand($"scoop {scoop.Args} install {scoop.App}", scoop.App);
 
-                    returnCode = res.code;
+                        returnCode = res.code;
 
-                    if (res.code != 0)
+                        if (res.code != 0)
                         Console.ForegroundColor = ConsoleColor.Red;
-                    else
+                        else
                         Console.ForegroundColor = ConsoleColor.Green;
 
-                    Console.WriteLine($"Scoop task {(i == 0 ? ++_status : _status)} of {Tasks} (\"{res.output}\") finished" + (res.code != 0 ? " with an error." : ".") + Environment.NewLine);
-                    Console.ResetColor();
+                        Console.WriteLine($"Scoop task {(i == 0 ? ++_status : _status)} of {Tasks} (\"{res.output}\") finished" + (res.code != 0 ? " with an error." : ".") + Environment.NewLine);
+                        Console.ResetColor();
 
-                    if (res.code == 0)
-                        break;
-                    else
-                    {
-                        Console.WriteLine($"Retrying Scoop task \"{scoop}\"" + Environment.NewLine);
-                        await ExecCommand($"scoop uninstall {scoop}", scoop);
+                        if (res.code == 0)
+                            break;
+                        else
+                        {
+                            Console.WriteLine($"Retrying Scoop task \"{scoop}\"" + Environment.NewLine);
+                            await ExecCommand($"scoop uninstall {scoop}", scoop.App);
+                        }
                     }
+                } else
+                {
+                    Console.WriteLine($"[Scoop]: Skipping {scoop.App} because of running on CI.");
                 }
             }
 
@@ -62,9 +68,19 @@ class Scoop : TaskBase
         });
     }
 
-    internal class ChocoWrapper : ICommandable<string>
+    internal class ScoopTuple
+    {
+        [YamlMember(Alias = "app")]
+        public string App { get; set; }
+        [YamlMember(Alias = "args")]
+        public string Args { get; set; }
+        [YamlMember(Alias = "ci")]
+        public bool Ci { get; set; }
+    }
+
+    internal class ScoopWrapper : ICommandable<ScoopTuple>
     {
         [YamlMember(Alias = "scoop")]
-        public List<string> Commands { get; set; }
+        public List<ScoopTuple> Commands { get; set; }
     }
 }

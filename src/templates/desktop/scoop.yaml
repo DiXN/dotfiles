@@ -1,17 +1,17 @@
 ---
 scoop:
-  - crystaldiskmark
-  - qbittorrent
-  - autohotkey
-  - discord
-  - msiafterburner
-  - extras/rtss
-  - jdownloader
-  - displayfusion
-  - Origin
-  - Uplay
-  - RPCS3
-  - IntelliJ-IDEA-Ultimate
-  - nvidia-display-driver
-  - cygwin
-  - oraclejdk
+  - app: crystaldiskmark
+  - app: qbittorrent
+  - app: autohotkey
+  - app: discord
+  - app: msiafterburner
+  - app: extras/rtss
+  - app: jdownloader
+  - app: displayfusion
+  - app: Origin
+  - app: Uplay
+  - app: RPCS3
+  - app: IntelliJ-IDEA-Ultimate
+  - app: nvidia-display-driver
+  - app: cygwin
+  - app: oraclejdk

@@ -1,35 +1,37 @@
 ---
 scoop:
-  - aws
-  - bat
-  - rclone
-  - latex
-  - perl
-  - scrcpy
-  - winrar
-  - opera
-  - cmder-full
-  - vscode
-  - vlc
-  - nodejs
-  - nvm
-  - telegram
-  - make
-  - yarn
-  - mupdf
-  - postman
-  - gitkraken
-  - firefox
-  - python
-  - sumatrapdf
-  - rclone_ignore
-  - regjump
-  - eMClient
-  - vcredist2015
-  - vcredist2019
-  - SuperF4
-  - docker
-  - spotify
-  - archwsl
-  - surfshark
-  - ruby
+  - app: aws
+  - app: bat
+  - app: rclone
+  - app: latex
+    ci: false
+  - app: perl
+  - app: scrcpy
+  - app: winrar
+  - app: opera
+  - app: cmder-full
+  - app: vscode
+  - app: vlc
+  - app: nodejs
+  - app: nvm
+  - app: telegram
+  - app: make
+  - app: yarn
+  - app: mupdf
+  - app: postman
+  - app: gitkraken
+  - app: firefox
+  - app: python
+  - app: sumatrapdf
+  - app: rclone_ignore
+  - app: regjump
+  - app: eMClient
+  - app: vcredist2015
+  - app: vcredist2019
+  - app: SuperF4
+  - app: docker
+  - app: spotify
+  - app: archwsl
+  - app: surfshark
+    ci: false
+  - app: ruby
