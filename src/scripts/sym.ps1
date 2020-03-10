@@ -51,3 +51,9 @@ try {
 catch {
   Write-Error '[Symlinks] Failed importing "eMClient" settings.'
 }
+
+#Thunderbird
+Remove-Item "$env:APPDATA\Thunderbird" -Force -Recurse | Out-Null
+New-Item -ItemType SymbolicLink -Path "$env:APPDATA\Thunderbird" -Target "$syncRoot\config\Thunderbird" -Force `
+  | Select-Object -ExpandProperty Name `
+  | Format-Result

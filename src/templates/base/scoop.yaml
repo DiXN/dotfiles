@@ -35,3 +35,4 @@ scoop:
   - app: surfshark
     ci: false
   - app: ruby
+  - app: thunderbird
