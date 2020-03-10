@@ -57,3 +57,11 @@ Remove-Item "$env:APPDATA\Thunderbird" -Force -Recurse | Out-Null
 New-Item -ItemType SymbolicLink -Path "$env:APPDATA\Thunderbird" -Target "$syncRoot\config\Thunderbird" -Force `
   | Select-Object -ExpandProperty Name `
   | Format-Result
+
+try {
+  Invoke-Expression "thunderbird.exe -P 'default-release'"
+  Write-Host '[Symlinks] Successfully importing "Thunderbird" settings.'
+}
+catch {
+  Write-Error '[Symlinks] Failed importing "Thunderbird" settings.'
+}
