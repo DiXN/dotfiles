@@ -27,7 +27,7 @@ jobs:
     condition: succeeded()
     timeoutInMinutes: 200
     pool:
-      vmImage: 'win1803'
+      vmImage: 'windows-latest'
     steps:
       - powershell: .\src\scripts\init.ps1 'desktop'
         displayName: Run `init.ps1` on "Desktop"
@@ -38,7 +38,7 @@ jobs:
     condition: succeeded()
     timeoutInMinutes: 200
     pool:
-      vmImage: 'win1803'
+      vmImage: 'windows-latest'
     steps:
       - powershell: .\src\scripts\init.ps1 'notebook'
         displayName: Run `init.ps1` on "Notebook"
