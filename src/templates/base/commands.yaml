@@ -28,9 +28,9 @@ commands:
         %windir%\system32\reg.exe import %USERPROFILE%\scoop\apps\vscode\current\vscode-install-context.reg
     desc: install vscode extensions
   - cmd:
-    - powershell -command ".\scripts\wait-file.ps1 -app mpm"
     - powershell -command ".\scripts\wait-file.ps1 -app perl"
     - powershell -command ".\scripts\wait-file.ps1 -app rake"
+    - powershell -command ".\scripts\wait-file.ps1 -app latex"
     - initexmf --set-config-value [MPM]AutoInstall=1
     - mpm --install=latexmk
     - git clone https://github.com/reitermarkus/serverless.git
