@@ -37,7 +37,8 @@ class Scoop : TaskBase
                 bool.TryParse(Environment.GetEnvironmentVariable("CI"), out var ci);
                 if (scoop.Ci && ci)
                 {
-                    Console.WriteLine($"[Scoop]: Skipping \"{scoop.App}\" because of running on CI.");
+                    Console.WriteLine($"[Scoop]: Skipping (\"{scoop.App}\") because of running on CI.");
+                    Console.WriteLine($"Scoop task {++_status} of {Tasks} (\"{scoop.App}\") finished" + Environment.NewLine);
                 } else
                 {
                     for (int i = 0; i < 3; i++)
