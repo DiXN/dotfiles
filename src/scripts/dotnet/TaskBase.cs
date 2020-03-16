@@ -131,7 +131,7 @@ abstract class TaskBase
 
                 while (!process.HasExited)
                 {
-                    if (pTimer >= 1_200_000)
+                    if (pTimer >= 1_800_000)
                     {
                         process.Kill();
                         break;

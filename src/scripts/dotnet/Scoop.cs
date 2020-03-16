@@ -34,7 +34,11 @@ class Scoop : TaskBase
             int returnCode = 0;
             foreach (var scoop in _scoopQueue)
             {
-                if (!scoop.Ci)
+                bool.TryParse(Environment.GetEnvironmentVariable("CI"), out var ci);
+                if (scoop.Ci && ci)
+                {
+                    Console.WriteLine($"[Scoop]: Skipping \"{scoop.App}\" because of running on CI.");
+                } else
                 {
                     for (int i = 0; i < 3; i++)
                     {
@@ -43,9 +47,9 @@ class Scoop : TaskBase
                         returnCode = res.code;
 
                         if (res.code != 0)
-                        Console.ForegroundColor = ConsoleColor.Red;
+                            Console.ForegroundColor = ConsoleColor.Red;
                         else
-                        Console.ForegroundColor = ConsoleColor.Green;
+                            Console.ForegroundColor = ConsoleColor.Green;
 
                         Console.WriteLine($"Scoop task {(i == 0 ? ++_status : _status)} of {Tasks} (\"{res.output}\") finished" + (res.code != 0 ? " with an error." : ".") + Environment.NewLine);
                         Console.ResetColor();
@@ -58,9 +62,6 @@ class Scoop : TaskBase
                             await ExecCommand($"scoop uninstall {scoop}", scoop.App);
                         }
                     }
-                } else
-                {
-                    Console.WriteLine($"[Scoop]: Skipping {scoop.App} because of running on CI.");
                 }
             }
 

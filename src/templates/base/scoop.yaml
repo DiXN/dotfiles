@@ -4,7 +4,6 @@ scoop:
   - app: bat
   - app: rclone
   - app: latex
-    ci: false
   - app: perl
   - app: scrcpy
   - app: winrar
@@ -33,6 +32,6 @@ scoop:
   - app: spotify
   - app: archwsl
   - app: surfshark
-    ci: false
+    ci: true
   - app: ruby
   - app: thunderbird

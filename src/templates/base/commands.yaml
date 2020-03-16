@@ -28,9 +28,8 @@ commands:
         %windir%\system32\reg.exe import %USERPROFILE%\scoop\apps\vscode\current\vscode-install-context.reg
     desc: install vscode extensions
   - cmd:
-    - powershell -command "if (${env:CI} -ne 'true') {
-        .\scripts\wait-file.ps1 -app mpm;
-        .\scripts\wait-file.ps1 -app perl;
-        initexmf --set-config-value [MPM]AutoInstall=1;
-        mpm --install=latexmk; }"
+    - powershell -command ".\scripts\wait-file.ps1 -app mpm"
+    - powershell -command ".\scripts\wait-file.ps1 -app perl"
+    - initexmf --set-config-value [MPM]AutoInstall=1
+    - mpm --install=latexmk
     desc: configure MikTeX
