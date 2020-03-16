@@ -5,6 +5,7 @@ scoop:
   - app: rclone
   - app: latex
   - app: perl
+  - app: ruby
   - app: scrcpy
   - app: winrar
   - app: opera
@@ -33,5 +34,4 @@ scoop:
   - app: archwsl
   - app: surfshark
     ci: true
-  - app: ruby
   - app: thunderbird

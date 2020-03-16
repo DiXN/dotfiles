@@ -30,6 +30,10 @@ commands:
   - cmd:
     - powershell -command ".\scripts\wait-file.ps1 -app mpm"
     - powershell -command ".\scripts\wait-file.ps1 -app perl"
+    - powershell -command ".\scripts\wait-file.ps1 -app rake"
     - initexmf --set-config-value [MPM]AutoInstall=1
     - mpm --install=latexmk
+    - git clone https://github.com/reitermarkus/serverless.git
+    - cd serverless
+    - rake tex
     desc: configure MikTeX
