@@ -82,14 +82,14 @@ scoop bucket add DiXN 'https://github.com/DiXN/scoop.git'
 Write-Output "[Installing Chocolatey ...]"
 Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-# merge universal with platform yaml file
-Get-Content "$downloadLocation\templates\base\choco.yaml"    | Select-Object -Skip 2 | Add-Content "$downloadLocation\templates\$templatePrefix\choco.yaml"
-Get-Content "$downloadLocation\templates\base\scoop.yaml"    | Select-Object -Skip 2 | Add-Content "$downloadLocation\templates\$templatePrefix\scoop.yaml"
-Get-Content "$downloadLocation\templates\base\commands.yaml" | Select-Object -Skip 2 | Add-Content "$downloadLocation\templates\$templatePrefix\commands.yaml"
+# merge base with platform yaml file
+Get-Content "$downloadLocation\templates\$templatePrefix\choco.yaml"    | Select-Object -Skip 2 | Add-Content "$downloadLocation\templates\base\choco.yaml"
+Get-Content "$downloadLocation\templates\$templatePrefix\scoop.yaml"    | Select-Object -Skip 2 | Add-Content "$downloadLocation\templates\base\scoop.yaml"
+Get-Content "$downloadLocation\templates\$templatePrefix\commands.yaml" | Select-Object -Skip 2 | Add-Content "$downloadLocation\templates\base\commands.yaml"
 
 #invoke dotnet-script
 Write-Output "[Installing dotfiles ...]"
-Invoke-Expression ("dotnet script -c release $downloadLocation\scripts\dotnet\main.csx -- $downloadLocation\templates\$templatePrefix\choco.yaml $downloadLocation\templates\$templatePrefix\scoop.yaml $downloadLocation\templates\$templatePrefix\commands.yaml")
+Invoke-Expression ("dotnet script -c release $downloadLocation\scripts\dotnet\main.csx -- $downloadLocation\templates\base\choco.yaml $downloadLocation\templates\base\scoop.yaml $downloadLocation\templates\base\commands.yaml")
 
 if (${env:CI} -ne 'true') {
   #sync files
