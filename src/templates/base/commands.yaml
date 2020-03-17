@@ -13,7 +13,6 @@ commands:
     - Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\default-apps.ps1
     desc: configure default apps
   - cmd:
-    - Write-Host "Waiting for vscode"
     - .\scripts\wait-file.ps1 -app code
     - Write-Host "Installing extensions"
     - code --install-extension ms-dotnettools.csharp

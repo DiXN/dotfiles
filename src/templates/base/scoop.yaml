@@ -20,6 +20,7 @@ scoop:
   - app: mupdf
   - app: postman
   - app: gitkraken
+  - app: powerping
   - app: firefox
   - app: python
   - app: sumatrapdf
