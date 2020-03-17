@@ -5,10 +5,9 @@ commands:
     - iwr -useb https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe -OutFile rustup-init.exe
     - Write-Host "Installing rustup"
     - .\rustup-init.exe -yv --default-toolchain stable --default-host x86_64-pc-windows-msvc
-    - Write-Host "Waiting for build tools"
     - .\scripts\wait-folder.ps1 -path (${env:ProgramFiles(x86)} + '\Microsoft Visual C++ Build Tools')
     - Write-Host "Installing cargo-edit"
-    - iex ("$env:userProfile\.cargo\bin\cargo.exe install cargo-edit")
+    - saps "$env:userProfile\.cargo\bin\cargo.exe" -ar "install", "cargo-edit"
     desc: install Rust
   - cmd:
     - Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\default-apps.ps1
@@ -29,7 +28,7 @@ commands:
     - code --install-extension shardulm94.trailing-spaces
     - code --install-extension yzane.markdown-pdf
     - code --install-extension ms-vscode.powershell
-    - iex ("$env:windir\system32\reg.exe import $env:userProfile\scoop\apps\vscode\current\vscode-install-context.reg")
+    - saps "$env:windir\system32\reg.exe" -ar "import", "$env:userProfile\scoop\apps\vscode\current\vscode-install-context.reg"
     desc: install vscode extensions
   - cmd:
     - .\scripts\wait-file.ps1 -app mpm

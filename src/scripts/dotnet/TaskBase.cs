@@ -93,7 +93,7 @@ abstract class TaskBase
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 FileName = "pwsh.exe",
-                Arguments = $"-Command {cmd}",
+                Arguments = $@"-Command {cmd}",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
