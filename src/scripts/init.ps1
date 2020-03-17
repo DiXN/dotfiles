@@ -64,7 +64,11 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 Write-Output "[Installing Scoop ...]"
 Invoke-Expression ((new-object net.webclient).downloadstring("https://get.scoop.sh"))
 
-scoop install aria2 git sudo dotnet-sdk pwsh
+scoop install aria2 git sudo dotnet-sdk dotnet-script
+
+if (${env:CI} -ne 'true') {
+  scoop install pwsh
+}
 
 scoop bucket add extras
 scoop bucket add versions
@@ -78,9 +82,6 @@ scoop bucket add DiXN 'https://github.com/DiXN/scoop.git'
 Write-Output "[Installing Chocolatey ...]"
 Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-#install dotnet-script
-dotnet tool install -g dotnet-script
-
 # merge universal with platform yaml file
 Get-Content "$downloadLocation\templates\base\choco.yaml"    | Select-Object -Skip 2 | Add-Content "$downloadLocation\templates\$templatePrefix\choco.yaml"
 Get-Content "$downloadLocation\templates\base\scoop.yaml"    | Select-Object -Skip 2 | Add-Content "$downloadLocation\templates\$templatePrefix\scoop.yaml"
@@ -88,10 +89,10 @@ Get-Content "$downloadLocation\templates\base\commands.yaml" | Select-Object -Sk
 
 #invoke dotnet-script
 Write-Output "[Installing dotfiles ...]"
-Invoke-Expression ("${env:userprofile}\.dotnet\tools\dotnet-script.exe -c release $downloadLocation\scripts\dotnet\main.csx -- $downloadLocation\templates\$templatePrefix\choco.yaml $downloadLocation\templates\$templatePrefix\scoop.yaml $downloadLocation\templates\$templatePrefix\commands.yaml")
+Invoke-Expression ("dotnet script -c release $downloadLocation\scripts\dotnet\main.csx -- $downloadLocation\templates\$templatePrefix\choco.yaml $downloadLocation\templates\$templatePrefix\scoop.yaml $downloadLocation\templates\$templatePrefix\commands.yaml")
 
 if (${env:CI} -ne 'true') {
   #sync files
   Write-Output "[Syncing files ...]"
-  Invoke-Expression ("${env:userprofile}\.dotnet\tools\dotnet-script.exe -c release $downloadLocation\scripts\dotnet\sync-files.csx")
+  Invoke-Expression ("dotnet script -c release $downloadLocation\scripts\dotnet\sync-files.csx")
 }

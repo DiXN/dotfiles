@@ -8,7 +8,7 @@ Write-Output "Waiting for $app ..."
 
 $count = 0
 
-while ($scoop ? !(Get-ChildItem "~\scoop\shims\$app.ps1" -ErrorAction SilentlyContinue) `
+while ($scoop ? !(Get-ChildItem "~\scoop\apps\$app" -ErrorAction SilentlyContinue) `
               : !(Get-Command $app -ErrorAction SilentlyContinue)) {
   Start-Sleep -Milliseconds 250
   $count++
