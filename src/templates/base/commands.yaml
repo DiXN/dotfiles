@@ -3,7 +3,7 @@ commands:
   - cmd:
     - iwr -useb https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe -OutFile rustup-init.exe
     - .\rustup-init.exe -yv --default-toolchain stable --default-host x86_64-pc-windows-msvc
-    - .\scripts\wait-folder.ps1 -path "$env:ProgramFiles(x86)\Microsoft Visual C++ Build Tools"
+    - .\scripts\wait-folder.ps1 -path (${env:ProgramFiles(x86)} + '\Microsoft Visual C++ Build Tools')
     - saps "$env:userProfile\.cargo\bin\cargo.exe" -ar "install", "cargo-edit"
     desc: install Rust
   - cmd:
@@ -26,8 +26,8 @@ commands:
     - saps "$env:windir\system32\reg.exe" -ar "import", "$env:userProfile\scoop\apps\vscode\current\vscode-install-context.reg"
     desc: install vscode extensions
   - cmd:
-    - .\scripts\wait-file.ps1 -app perl
-    - .\scripts\wait-file.ps1 -app rake
+    - .\scripts\wait-file.ps1 -app perl -scoop $true
+    - .\scripts\wait-file.ps1 -app rake -scoop $true
     - Get-ChildItem ~\scoop\shims\*.ps1
     - initexmf --set-config-value [MPM]AutoInstall=1
     - mpm --install=latexmk

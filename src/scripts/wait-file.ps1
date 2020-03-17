@@ -1,13 +1,15 @@
 param (
   [Parameter(Mandatory = $true)]
-  [String] $app
+  [String] $app,
+  [bool] $scoop = $false
 )
 
 Write-Output "Waiting for $app ..."
 
 $count = 0
 
-while (!(Get-Command $app -ErrorAction SilentlyContinue)) {
+while ($scoop ? !(Get-ChildItem "~\scoop\shims\$app.ps1" -ErrorAction SilentlyContinue) `
+              : !(Get-Command $app -ErrorAction SilentlyContinue)) {
   Start-Sleep -Milliseconds 250
   $count++
 

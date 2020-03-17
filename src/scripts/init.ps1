@@ -64,7 +64,7 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 Write-Output "[Installing Scoop ...]"
 Invoke-Expression ((new-object net.webclient).downloadstring("https://get.scoop.sh"))
 
-scoop install aria2 git sudo dotnet-sdk powershell
+scoop install aria2 git sudo dotnet-sdk pwsh
 
 scoop bucket add extras
 scoop bucket add versions
