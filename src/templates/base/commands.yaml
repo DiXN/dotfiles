@@ -32,12 +32,13 @@ commands:
     - iex ("$env:windir\system32\reg.exe import $env:userProfile\scoop\apps\vscode\current\vscode-install-context.reg")
     desc: install vscode extensions
   - cmd:
-    - .\scripts\wait-file.ps1 -app perl -scoop $true
-    - .\scripts\wait-file.ps1 -app ruby -scoop $true
-    - Get-ChildItem ~\scoop\shims\*.ps1
+    - .\scripts\wait-file.ps1 -app mpm
+    - .\scripts\wait-file.ps1 -app perl
+    - .\scripts\wait-file.ps1 -app rake
     - initexmf --set-config-value [MPM]AutoInstall=1
     - mpm --install=latexmk
     - git clone https://github.com/reitermarkus/serverless.git
     - cd serverless
     - rake tex
     desc: configure MikTeX
+    ci: true
