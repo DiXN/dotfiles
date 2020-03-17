@@ -1,18 +1,17 @@
 ---
 commands:
   - cmd:
-    - powershell -command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; Invoke-WebRequest https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe -UseBasicParsing -OutFile rustup-init.exe"
+    - iwr -useb https://static.rust-lang.org/rustup/dist/i686-pc-windows-gnu/rustup-init.exe -OutFile rustup-init.exe
     - .\rustup-init.exe -yv --default-toolchain stable --default-host x86_64-pc-windows-msvc
-    - powershell -command ".\scripts\wait-folder.ps1 -path (${env:ProgramFiles(x86)} + '\Microsoft Visual C++ Build Tools')"
-    - |
-        %USERPROFILE%\.cargo\bin\cargo.exe install cargo-edit
+    - .\scripts\wait-folder.ps1 -path "$env:ProgramFiles(x86)\Microsoft Visual C++ Build Tools"
+    - saps "$env:userProfile\.cargo\bin\cargo.exe" -ar "install", "cargo-edit"
     desc: install Rust
   - cmd:
-    - powershell -command "Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\default-apps.ps1"
+    - Set-ExecutionPolicy Bypass -Scope Process -Force; .\scripts\default-apps.ps1
     desc: configure default apps
   - cmd:
-    - powershell -command ".\scripts\wait-file.ps1 -app code"
-    - code --install-extension ms-vscode.csharp
+    - .\scripts\wait-file.ps1 -app code
+    - code --install-extension ms-dotnettools.csharp
     - code --install-extension dart-code.flutter
     - code --install-extension fwcd.kotlin
     - code --install-extension stkb.rewrap
@@ -24,13 +23,12 @@ commands:
     - code --install-extension shardulm94.trailing-spaces
     - code --install-extension yzane.markdown-pdf
     - code --install-extension ms-vscode.powershell
-    - |
-        %windir%\system32\reg.exe import %USERPROFILE%\scoop\apps\vscode\current\vscode-install-context.reg
+    - saps "$env:windir\system32\reg.exe" -ar "import", "$env:userProfile\scoop\apps\vscode\current\vscode-install-context.reg"
     desc: install vscode extensions
   - cmd:
-    - powershell -command ".\scripts\wait-file.ps1 -app perl"
-    - powershell -command ".\scripts\wait-file.ps1 -app rake"
-    - powershell -command "Get-ChildItem ~\scoop\shims\*.ps1"
+    - .\scripts\wait-file.ps1 -app perl
+    - .\scripts\wait-file.ps1 -app rake
+    - Get-ChildItem ~\scoop\shims\*.ps1
     - initexmf --set-config-value [MPM]AutoInstall=1
     - mpm --install=latexmk
     - git clone https://github.com/reitermarkus/serverless.git
