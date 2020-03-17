@@ -54,20 +54,30 @@ class Command : TaskBase
             task = Task.Run(async () =>
             {
                 Interlocked.Increment(ref _currentProcesses);
+                bool.TryParse(Environment.GetEnvironmentVariable("CI"), out var ci);
+                int code = 0;
 
-                (int code, string output) res = await ExecCommand(string.Join(" && ", cmd.Cmd ?? (new[] { "" })), cmd.Desc, cmd.Path);
+                if (cmd.Ci && ci)
+                {
+                    Console.WriteLine($"[Command]: Skipping (\"{cmd.Desc}\") because of running on CI.");
+                } else
+                {
+                    (int code, string output) res = await ExecCommand(string.Join(" && ", cmd.Cmd ?? (new[] { "" })), cmd.Desc, cmd.Path);
 
-                if (res.code != 0)
-                    Console.ForegroundColor = ConsoleColor.Red;
-                else
-                    Console.ForegroundColor = ConsoleColor.Green;
+                    if (res.code != 0)
+                        Console.ForegroundColor = ConsoleColor.Red;
+                    else
+                        Console.ForegroundColor = ConsoleColor.Green;
+
+                    code = res.code;
+                }
 
                 Interlocked.Increment(ref _status);
 
-                Console.WriteLine($"Command task {_status} of {Tasks} (\"{res.output}\") finished" + (res.code != 0 ? " with an error." : ".") + Environment.NewLine);
+                Console.WriteLine($"Command task {_status} of {Tasks} (\"{cmd.Desc}\") finished" + (code != 0 ? " with an error." : ".") + Environment.NewLine);
                 Console.ResetColor();
 
-                return res.code;
+                return code;
             }).ContinueWith(x =>
             {
                 Interlocked.Decrement(ref _currentProcesses);
@@ -87,6 +97,8 @@ class Command : TaskBase
         public string Path { get; set; }
         [YamlMember(Alias = "desc")]
         public string Desc { get; set; }
+        [YamlMember(Alias = "ci")]
+        public bool Ci { get; set; }
     }
 
     internal class CommandWrapper : ICommandable<CommandTuple>
