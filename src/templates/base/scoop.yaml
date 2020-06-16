@@ -3,12 +3,13 @@ scoop:
   - app: aws
   - app: bat
   - app: rclone
+  - app: grout
   - app: latex
   - app: perl
   - app: ruby
   - app: scrcpy
   - app: winrar
-  - app: opera
+  - app: brave-nightly
   - app: cmder-full
   - app: vscode
   - app: vlc
