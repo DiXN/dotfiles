@@ -1,0 +1,19 @@
+#!/bin/sh
+# iinstantosterm
+# instantosarg
+
+xrandr --output DP-3 --mode 1360x768 --right-of DVI-D-0
+sleep 2
+xrandr --output DVI-D-0 --brightness .12 && xrandr --output DP-4 --brightness .12
+pacmd set-card-profile 0 output:hdmi-stereo-extra3
+pacmd set-default-sink $(pacmd list-sinks | grep 'extra' | head -n 1 | cut -d '<' -f2 | cut -d '>' -f1)
+
+while [ -z "$(pacmd list-sink-inputs | grep -e 'index:' | cut -d ':' -f2 | xargs)" ]; do
+    sleep 1
+done
+
+for SOURCE in $(pacmd list-sink-inputs | grep -e 'index:' | cut -d ':' -f2 | xargs)
+do
+    pacmd move-sink-input $SOURCE $(pacmd list-sinks | grep 'extra' | head -n 1 | cut -d '<' -f2 | cut -d '>' -f1)
+done
+
