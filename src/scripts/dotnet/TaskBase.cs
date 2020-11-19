@@ -26,7 +26,8 @@ abstract class TaskBase
         COMMAND,
         CHOCO,
         CHOCO_DEPENDENCY,
-        SCOOP
+        SCOOP,
+        PACMAN
     }
 
     public CMD_TYPE CmdType { get; set; }

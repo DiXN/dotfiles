@@ -1,0 +1,15 @@
+---
+pacman:
+  - app: sxiv
+  - app: telegram-desktop-bin
+  - app: rclone
+  - app: bat
+  - app: surfshark-vpn
+  - app: wkhtmltopdf-static
+  - app: podman
+  - app: zathura
+  - app: zathura-pdf-poppler
+  - app: scrcpy
+  - app: usbaudio
+  - app: brave-bin
+  - app: pandoc-bin
