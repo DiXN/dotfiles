@@ -1,5 +1,6 @@
 trigger:
 - master
+- linux
 
 variables:
   CI: 'true'
@@ -47,3 +48,12 @@ jobs:
         displayName: Run `init.ps1` on "Notebook"
         env:
           CI: 'true'
+  - job: arch
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - bash: |
+          docker run -d -it -v $PWD:/dot --name "arch" archlinux:latest
+          docker exec arch /bin/bash "/dot/ci.sh"
+          docker exec -u instantos arch /bin/sh -c "whoami; sudo whoami"
+        displayName: setup user
