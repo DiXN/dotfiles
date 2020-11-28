@@ -55,5 +55,5 @@ jobs:
       - bash: |
           docker run -d -it -v $PWD:/dot --name "arch" archlinux:latest
           docker exec arch /bin/bash "/dot/ci.sh"
-          docker exec -u instantos arch /bin/sh -c "whoami; sudo whoami"
+          docker exec -u instantos arch /bin/bash -c "/dot/src/scripts/init.sh"
         displayName: setup user
