@@ -31,9 +31,13 @@ sh "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
 echo "[Installing dotnet ...]"
 
 yay -S --noconfirm dotnet-sdk-bin
-export PATH="$PATH:/home/mk/.dotnet/tools"
+export PATH="$PATH:/home/$(whoami)/.dotnet/tools"
 
 sudo chmod +x /usr/bin/dotnet
 dotnet --info
 dotnet tool install -g dotnet-script
+
+#invoke dotnet-script
+echo "[Installing dotfiles ...]"
+dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml"
 
