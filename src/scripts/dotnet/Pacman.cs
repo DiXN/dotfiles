@@ -43,6 +43,7 @@ class Pacman : TaskBase
                 {
                     for (int i = 0; i < 3; i++)
                     {
+                        Console.WriteLine($"Running: yay -S --noconfirm {pacman.Args} {pacman.App}");
                         (int code, string output) res = await ExecCommand($"yay -S --noconfirm {pacman.Args} {pacman.App}", pacman.App);
 
                         returnCode = res.code;
@@ -58,10 +59,7 @@ class Pacman : TaskBase
                         if (res.code == 0)
                             break;
                         else
-                        {
-                            Console.WriteLine($"Retrying Pacman task \"{pacman}\"" + Environment.NewLine);
-                            await ExecCommand($"pacman uninstall {pacman}", pacman.App);
-                        }
+                            Console.WriteLine($"Retrying Pacman task \"{pacman.App}\"" + Environment.NewLine);
                     }
                 }
             }

@@ -3,6 +3,7 @@
 #load "Command.cs"
 #load "Scoop.cs"
 #load "Choco.cs"
+#load "Pacman.cs"
 #load "ChocoDependency.cs"
 
 using System;
@@ -37,6 +38,9 @@ foreach (var arg in Args.Distinct())
                 break;
             case "scoop":
                 ExecTask(new Scoop(arg));
+                break;
+            case "pacman":
+                ExecTask(new Pacman(arg));
                 break;
             case "choco":
                 _taskList.Enqueue(new Choco(arg));

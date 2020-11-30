@@ -93,8 +93,8 @@ abstract class TaskBase
             process.StartInfo  = new ProcessStartInfo()
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = OperatingSystem.IsWindows() ? "pwsh.exe" : "sh",
-                Arguments = OperatingSystem.IsWindows() ? $@"-Command {cmd}" : $@"-c {cmd}",
+                FileName = OperatingSystem.IsWindows() ? "pwsh.exe" : "bash",
+                Arguments = OperatingSystem.IsWindows() ? $@"-Command {cmd}" : $"-c \"{cmd}\"",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
