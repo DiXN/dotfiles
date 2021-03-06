@@ -28,6 +28,9 @@ echo "[Installing yay ...]"
 chmod +x "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
 sh "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
 
+echo "[Installing Rust ...]"
+sh "$DOTFILES_DIR/dotfiles/linux/scripts/rust.sh"
+
 echo "[Installing dotnet ...]"
 
 yay -S --noconfirm dotnet-sdk-bin

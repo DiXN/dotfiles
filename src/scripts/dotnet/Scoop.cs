@@ -59,8 +59,8 @@ class Scoop : TaskBase
                             break;
                         else
                         {
-                            Console.WriteLine($"Retrying Scoop task \"{scoop}\"" + Environment.NewLine);
-                            await ExecCommand($"scoop uninstall {scoop}", scoop.App);
+                            Console.WriteLine($"Retrying Scoop task \"{scoop.App}\"" + Environment.NewLine);
+                            await ExecCommand($"scoop uninstall {scoop.App}", scoop.App);
                         }
                     }
                 }

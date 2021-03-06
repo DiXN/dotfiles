@@ -43,7 +43,6 @@ class Pacman : TaskBase
                 {
                     for (int i = 0; i < 3; i++)
                     {
-                        Console.WriteLine($"Running: yay -S --noconfirm {pacman.Args} {pacman.App}");
                         (int code, string output) res = await ExecCommand($"yay -S --noconfirm {pacman.Args} {pacman.App}", pacman.App);
 
                         returnCode = res.code;
