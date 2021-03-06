@@ -31,6 +31,9 @@ sh "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
 echo "[Installing Rust ...]"
 sh "$DOTFILES_DIR/dotfiles/linux/scripts/rust.sh"
 
+echo "[Setup Podman ...]"
+sh "$DOTFILES_DIR/dotfiles/linux/scripts/podman.sh"
+
 echo "[Installing dotnet ...]"
 
 yay -S --noconfirm dotnet-sdk-bin

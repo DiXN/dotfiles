@@ -13,3 +13,7 @@ pacman:
   - app: usbaudio
   - app: brave-bin
   - app: pandoc-bin
+  - app: alacritty-git
+  - app: lazygit-bin
+  - app: dust-bin
+  - app: awesome-git
