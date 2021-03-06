@@ -1,0 +1,19 @@
+[user]
+	email = kaltschmidmichael@gmail.com
+	name = Michael Kaltschmid
+[receive]
+	denyCurrentBranch = updateInstead
+[alias]
+	shove = push --force origin
+	shovel = push --force-with-lease
+	ls = log --oneline
+	lsc = log --pretty=format:%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cgreen\\ [%cn]--decorate --date=short
+	cleanup = !git remote prune origin && git gc && git clean -dfx
+	change = "! f() { git rebase -i \"HEAD~${1:-1}\" --autostash; }; f"
+	ignore = update-index --assume-unchanged
+	unignore = update-index --no-assume-unchanged
+	ignored = !git ls-files -v | grep "^[[:lower:]]"
+[pull]
+	rebase = true
+[core]
+	autocrlf = false

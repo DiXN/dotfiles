@@ -107,11 +107,38 @@ tmux source-file ~/.config/tmux/.tmux.conf
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# clang
+export PATH="/opt/clang-format-static:$PATH"
+
+#lit
+export PATH="~/Documents/repos/lit/bin:$PATH"
+
+# appimage
+export PATH="/home/mk/.cache/appimage:$PATH"
+
+# vulkan
+export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/nvidia_icd.json
+
+VULKAN_SDK="/home/mk/.local/share/vulkan/x86_64"
+export VULKAN_SDK
+export PATH="$VULKAN_SDK/bin:$PATH"
+export LD_LIBRARY_PATH=$VULKAN_SDK/lib
+export VK_LAYER_PATH=$VULKAN_SDK/etc/vulkan/explicit_layer.d
+
+# rust
+# export CARGO_HOME="/home/mk/.config/cargo"
+# export RUSTUP_HOME="/home/mk/.config/rustup"
+
 prompt_context() {}
 # fish like syntax highlighting
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 export BAT_THEME="ansi-dark"
+
+function spell() {
+  bash "/home/mk/Documents/spell.sh $1"
+}
 
 # open ~/.zshrc in using the default editor specified in $EDITOR
 alias ec="$EDITOR $XDG_CONFIG_HOME/zsh/.zshrc"
@@ -135,6 +162,20 @@ alias eb="sudo nvim /usr/bin/instantstatus"
 
 alias v="nvim"
 
+alias la="exa --icons -l -a"
+
+alias du="dust"
+
+# podman
+alias docker="podman"
+
+# sonar
+export SONAR_SCANNER_HOME="/opt/sonar-scanner"
+export PATH="${PATH}:${SONAR_SCANNER_HOME}/bin"
+
+# add dotnet script
+export PATH="$PATH:/home/mk/.dotnet/tools"
+
 up-directory() {
     builtin cd .. && zle reset-prompt
 }
@@ -148,3 +189,5 @@ bindkey -s '^y' "opennewterm\n"
 
 [ -f $XDG_CONFIG_HOME/fzf/.fzf.zsh ] && source $XDG_CONFIG_HOME/fzf/.fzf.zsh
 
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

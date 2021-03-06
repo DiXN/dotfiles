@@ -36,7 +36,7 @@ sh "$DOTFILES_DIR/dotfiles/linux/scripts/rust.sh"
 echo "[Setup Podman ...]"
 sh "$DOTFILES_DIR/dotfiles/linux/scripts/podman.sh"
 
-echo "[Copy all scripts ...]"
+echo "[link scripts and config ...]"
 DOT_DIR="$DOTFILES_DIR" sh "$DOTFILES_DIR/dotfiles/linux/scripts/link.sh"
 
 echo "[Installing zsh and tmux ...]"
