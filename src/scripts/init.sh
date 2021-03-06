@@ -16,7 +16,9 @@ fi
   # exit 1
 # fi
 
-readonly DOTFILES_DIR=$(mktemp --tmpdir --directory dotfiles.XXXXXX)
+readonly DOTFILES_DIR="/home/$(whoami)/Documents/repos"
+mkdir -p "$DOTFILES_DIR"
+
 pushd "$DOTFILES_DIR" || exit 1
 
 git clone "https://github.com/DiXN/dotfiles.git"
@@ -34,8 +36,15 @@ sh "$DOTFILES_DIR/dotfiles/linux/scripts/rust.sh"
 echo "[Setup Podman ...]"
 sh "$DOTFILES_DIR/dotfiles/linux/scripts/podman.sh"
 
-echo "[Installing dotnet ...]"
+echo "[Copy all scripts ...]"
+DOT_DIR="$DOTFILES_DIR" sh "$DOTFILES_DIR/dotfiles/linux/scripts/link.sh"
 
+echo "[Installing zsh and tmux ...]"
+yay -S --noconfirm zsh
+yay -S --noconfirm tmux
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+echo "[Installing dotnet ...]"
 yay -S --noconfirm dotnet-sdk-bin
 export PATH="$PATH:/home/$(whoami)/.dotnet/tools"
 
