@@ -2,8 +2,10 @@
 
 # cache sudo password
 if ! [ -z $CI ]; then
-  while :; do sudo -v; sleep 59; done &
-  SUDO_LOOP=$!
+  {
+    while :; do sudo -v; sleep 59; done
+    SUDO_LOOP=$!
+  } &
 fi
 
 # echo -n "Enter password to start dotfiles process: "
@@ -26,18 +28,18 @@ git clone "https://github.com/DiXN/dotfiles.git"
 pushd "$DOTFILES_DIR/dotfiles" || exit 1
 git checkout linux
 
+echo "[Setup Podman ...]"
+sh "$DOTFILES_DIR/dotfiles/linux/scripts/podman.sh"
+
+echo "[link scripts and config ...]"
+DOT_DIR="$DOTFILES_DIR" sh "$DOTFILES_DIR/dotfiles/linux/scripts/link.sh"
+
 echo "[Installing yay ...]"
 chmod +x "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
 sh "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
 
 echo "[Installing Rust ...]"
 sh "$DOTFILES_DIR/dotfiles/linux/scripts/rust.sh"
-
-echo "[Setup Podman ...]"
-sh "$DOTFILES_DIR/dotfiles/linux/scripts/podman.sh"
-
-echo "[link scripts and config ...]"
-DOT_DIR="$DOTFILES_DIR" sh "$DOTFILES_DIR/dotfiles/linux/scripts/link.sh"
 
 echo "[Installing zsh and tmux ...]"
 yay -S --noconfirm zsh
