@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-user=$(whomai)
+user=$(whoami)
 
 scripts_dir="/home/$user/Documents/scripts"
 mkdir -p "$scripts_dir"
