@@ -64,12 +64,6 @@ Set-MpPreference -DisableRealtimeMonitoring $true
 Write-Output "[Installing Scoop ...]"
 Invoke-Expression ((new-object net.webclient).downloadstring("https://get.scoop.sh"))
 
-scoop install aria2 git sudo dotnet-sdk dotnet-script
-
-if (${env:CI} -ne 'true') {
-  scoop install pwsh
-}
-
 scoop bucket add extras
 scoop bucket add versions
 scoop bucket add java
@@ -77,6 +71,14 @@ scoop bucket add JetBrains
 scoop bucket add nonportable
 scoop bucket add Ash258 'https://github.com/Ash258/Scoop-Ash258.git'
 scoop bucket add DiXN 'https://github.com/DiXN/scoop.git'
+
+scoop install aria2 git sudo dotnet-sdk
+
+if (${env:CI} -ne 'true') {
+  scoop install pwsh
+}
+
+dotnet tool install -g dotnet-script
 
 #install Chocolatey
 Write-Output "[Installing Chocolatey ...]"

@@ -14,3 +14,6 @@ mkdir -p "/home/$user/.config/"
 cp -r -s "$DOT_DIR/linux/.config"/* "/home/$user/.config/"
 ln -s "$DOT_DIR/linux/.gitconfig" "/home/$user/.gitconfig"
 
+ls -a "$scripts_dir"
+ls -a "/home/$user/.config"
+
