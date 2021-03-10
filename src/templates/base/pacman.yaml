@@ -10,10 +10,32 @@ pacman:
   - app: zathura
   - app: zathura-pdf-poppler
   - app: scrcpy
+  - app: python
+  - app: python-dbus
+  - app: imagemagick
+  - app: openssh
+  - app: neofetch
+  - app: pulseaudio
+  - app: pulseaudio-alsa
+  - app: rofi
   - app: usbaudio
   - app: brave-bin
   - app: pandoc-bin
   - app: alacritty-git
   - app: lazygit-bin
   - app: dust-bin
+  - app: xorg-server
+  - app: xorg-xrandr
+  - app: networkmanager
   - app: awesome-git
+  - app: nitrogen
+  - app: pamixer
+  - app: xclip
+  - app: xidlehook
+  - app: exa
+  - app: scrot
+  - app: ttf-material-design-icons-desktop-git
+  - app: shellcheck-bin
+  - app: navi-bin
+  - app: picom-ibhagwan-git
+  - app: rofi
