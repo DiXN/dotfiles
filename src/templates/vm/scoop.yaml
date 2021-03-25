@@ -1,0 +1,12 @@
+---
+scoop:
+  - app: directx
+  - app: vcredist2015
+  - app: vcredist2019
+  - app: bat
+  - app: grout
+  - app: brave-nightly
+  - app: regjump
+  - app: winrar
+  - app: alacritty
+
