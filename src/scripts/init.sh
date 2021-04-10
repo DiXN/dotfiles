@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # cache sudo password
-if ! [ -z $CI ]; then
+if [ -n "$CI" ]; then
   {
     while :; do sudo -v; sleep 59; done
     SUDO_LOOP=$!
@@ -28,15 +28,23 @@ git clone "https://github.com/DiXN/dotfiles.git"
 pushd "$DOTFILES_DIR/dotfiles" || exit 1
 git checkout linux
 
+popd || exit 1
+
+echo "[Installing awesome config ...]"
+readonly AWESOME_PATH="/home/$(whoami)/.config/awesome"
+git clone "https://github.com/DiXN/awesome-cfg.git" "$AWESOME_PATH"
+
 echo "[Setup Podman ...]"
 sh "$DOTFILES_DIR/dotfiles/linux/scripts/podman.sh"
 
 echo "[link scripts and config ...]"
 DOT_DIR="$DOTFILES_DIR" sh "$DOTFILES_DIR/dotfiles/linux/scripts/link.sh"
 
-echo "[Installing yay ...]"
-chmod +x "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
-sh "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
+if ! which yay > /dev/null; then
+  echo "[Installing yay ...]"
+  chmod +x "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
+  sh "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
+fi
 
 echo "[Installing Rust ...]"
 sh "$DOTFILES_DIR/dotfiles/linux/scripts/rust.sh"
