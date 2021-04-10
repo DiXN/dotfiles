@@ -17,6 +17,7 @@ pacman:
   - app: neofetch
   - app: pulseaudio
   - app: pulseaudio-alsa
+  - app: nautilus
   - app: rofi
   - app: usbaudio
   - app: brave-bin
