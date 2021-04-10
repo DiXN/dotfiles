@@ -1,0 +1,5 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =3
+let g:netrw_dirhist_3='/home/mk/Documents/repos/lit'
+let g:netrw_dirhist_2='/home/mk/Documents/repos'
+let g:netrw_dirhist_1='/home/mk/Documents/repos/lit'

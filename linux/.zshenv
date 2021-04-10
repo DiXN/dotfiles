@@ -14,7 +14,7 @@ export ZDOTDIR=$XDG_CONFIG_HOME/zsh
 
 export ANDROID_SDK_HOME=$XDG_CONFIG_HOME/android
 
-# TS3 
+# TS3
 export TS3_CONFIG_DIR=$XDG_CONFIG_HOME/ts3client
 
 # Ruby

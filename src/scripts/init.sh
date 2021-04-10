@@ -14,8 +14,8 @@ fi
 # read -s -p "Retype password: " secondpassword
 # echo
 # if [ $firstpassword != $secondpassword ]; then
-  # echo "You have entered different passwords."
-  # exit 1
+# echo "You have entered different passwords."
+# exit 1
 # fi
 
 readonly DOTFILES_DIR="/home/$(whoami)/Documents/repos"
@@ -23,6 +23,7 @@ mkdir -p "$DOTFILES_DIR"
 
 pushd "$DOTFILES_DIR" || exit 1
 
+pacman -S --noconfirm git
 git clone "https://github.com/DiXN/dotfiles.git"
 
 pushd "$DOTFILES_DIR/dotfiles" || exit 1
@@ -53,6 +54,9 @@ echo "[Installing zsh and tmux ...]"
 yay -S --noconfirm zsh
 yay -S --noconfirm tmux
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+echo "[Installing spacevim ...]"
+curl -sLf https://spacevim.org/install.sh | bash
 
 echo "[Installing dotnet ...]"
 yay -S --noconfirm dotnet-sdk-bin
