@@ -15,8 +15,11 @@ pacman:
   - app: imagemagick
   - app: openssh
   - app: neofetch
-  - app: pulseaudio
   - app: pulseaudio-alsa
+  - app: pipewire
+  - app: pipewire-media-session
+  - app: pipewire-pulse
+  - app: pulseeffects
   - app: nautilus
   - app: rofi
   - app: usbaudio
@@ -38,5 +41,6 @@ pacman:
   - app: ttf-material-design-icons-desktop-git
   - app: shellcheck-bin
   - app: navi-bin
+  - app: lf-bin
   - app: picom-ibhagwan-git
   - app: rofi
