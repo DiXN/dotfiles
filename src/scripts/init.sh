@@ -55,6 +55,9 @@ yay -S --noconfirm zsh
 yay -S --noconfirm tmux
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
+echo "[Change login shell]"
+sudo chsh -s /usr/bin/zsh "$(whoami)"
+
 echo "[Installing spacevim ...]"
 curl -sLf https://spacevim.org/install.sh | bash
 

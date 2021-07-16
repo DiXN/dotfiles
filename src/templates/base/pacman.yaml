@@ -44,3 +44,4 @@ pacman:
   - app: lf-bin
   - app: picom-ibhagwan-git
   - app: rofi
+  - app: jq
