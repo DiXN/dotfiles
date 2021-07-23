@@ -28,7 +28,7 @@ jobs:
         displayName: Compile `sync-files.csx` `dotnet-script`.
   - job: DotfilesDesktop
     dependsOn: DotNetDotfiles
-    condition: succeeded()
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     timeoutInMinutes: 200
     pool:
       vmImage: 'windows-latest'
@@ -39,7 +39,7 @@ jobs:
           CI: 'true'
   - job: DotfilesNotebook
     dependsOn: DotNetDotfiles
-    condition: succeeded()
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     timeoutInMinutes: 200
     pool:
       vmImage: 'windows-latest'
