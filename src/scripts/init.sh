@@ -35,6 +35,8 @@ echo "[Installing awesome config ...]"
 readonly AWESOME_PATH="/home/$(whoami)/.config/awesome"
 git clone "https://github.com/DiXN/awesome-cfg.git" "$AWESOME_PATH"
 
+curl -L -o ~/.config/awesome/liblua_pam.so "https://raw.githubusercontent.com/afreidz/dots/master/awesome/liblua_pam.so"
+
 echo "[Setup Podman ...]"
 sh "$DOTFILES_DIR/dotfiles/linux/scripts/podman.sh"
 
