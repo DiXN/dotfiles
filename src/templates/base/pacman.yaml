@@ -45,3 +45,4 @@ pacman:
   - app: picom-ibhagwan-git
   - app: rofi
   - app: jq
+  - app: numlockx
