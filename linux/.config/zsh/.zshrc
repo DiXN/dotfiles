@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/mk/.oh-my-zsh"
+export ZSH="/home/$USER/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -115,20 +115,20 @@ export PATH="/opt/clang-format-static:$PATH"
 export PATH="~/Documents/repos/lit/bin:$PATH"
 
 # appimage
-export PATH="/home/mk/.cache/appimage:$PATH"
+export PATH="/home/$USER/.cache/appimage:$PATH"
 
 # vulkan
 export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/nvidia_icd.json
 
-VULKAN_SDK="/home/mk/.local/share/vulkan/x86_64"
+VULKAN_SDK="/home/$USER/.local/share/vulkan/x86_64"
 export VULKAN_SDK
 export PATH="$VULKAN_SDK/bin:$PATH"
 export LD_LIBRARY_PATH=$VULKAN_SDK/lib
 export VK_LAYER_PATH=$VULKAN_SDK/etc/vulkan/explicit_layer.d
 
 # rust
-# export CARGO_HOME="/home/mk/.config/cargo"
-# export RUSTUP_HOME="/home/mk/.config/rustup"
+# export CARGO_HOME="/home/$USER/.config/cargo"
+# export RUSTUP_HOME="/home/$USER/.config/rustup"
 
 prompt_context() {}
 # fish like syntax highlighting
@@ -137,7 +137,7 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 export BAT_THEME="ansi-dark"
 
 function spell() {
-  bash "/home/mk/Documents/spell.sh $1"
+  bash "/home/$USER/Documents/spell.sh $1"
 }
 
 # open ~/.zshrc in using the default editor specified in $EDITOR
@@ -174,7 +174,7 @@ export SONAR_SCANNER_HOME="/opt/sonar-scanner"
 export PATH="${PATH}:${SONAR_SCANNER_HOME}/bin"
 
 # add dotnet script
-export PATH="$PATH:/home/mk/.dotnet/tools"
+export PATH="$PATH:/home/$USER/.dotnet/tools"
 
 up-directory() {
     builtin cd .. && zle reset-prompt
