@@ -56,6 +56,7 @@ echo "[Installing zsh and tmux ...]"
 yay -S --noconfirm zsh
 yay -S --noconfirm tmux
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+curl -L https://raw.githubusercontent.com/instantOS/instantSHELL/main/instantos.zsh-theme > .oh-my-zsh/themes/instantos.zsh-theme
 
 echo "[Change login shell]"
 sudo chsh -s /usr/bin/zsh "$(whoami)"
