@@ -40,6 +40,10 @@ curl -L -o ~/.config/awesome/liblua_pam.so "https://raw.githubusercontent.com/af
 echo "[Setup Podman ...]"
 sh "$DOTFILES_DIR/dotfiles/linux/scripts/podman.sh"
 
+echo "[Install LightDM ...]"
+yay -S --noconfirm lightdm lightdm-webkit2-greeter
+systemctl enable lightdm
+
 echo "[link scripts and config ...]"
 DOT_DIR="$DOTFILES_DIR" sh "$DOTFILES_DIR/dotfiles/linux/scripts/link.sh"
 
