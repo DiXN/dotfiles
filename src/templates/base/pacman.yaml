@@ -46,3 +46,6 @@ pacman:
   - app: rofi
   - app: jq
   - app: numlockx
+  - app: otf-nerd-fonts-fira-code
+  - app: fzf
+  - app: kexec
