@@ -75,7 +75,7 @@ DISABLE_AUTO_UPDATE="true"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git common-aliases archlinux autojump)
+plugins=(git common-aliases archlinux autojump z)
 [ -n "$DISPLAY" ] && plugins+=(tmux)
 
 source $ZSH/oh-my-zsh.sh
