@@ -47,7 +47,7 @@
     <ioapic driver='kvm'/>
   </features>
   <cpu mode='custom' match='exact' check='partial'>
-    <model fallback='allow'>Skylake-Client-noTSX-IBRS</model>
+    <model fallback='allow'>Skylake-Client</model>
     <topology sockets='1' dies='1' cores='2' threads='2'/>
   </cpu>
   <clock offset='localtime'>
