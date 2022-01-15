@@ -1,0 +1,20 @@
+trigger:
+  - master
+  - linux
+  - chezmoi
+
+variables:
+  CI: 'true'
+
+jobs:
+  - job: arch
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - bash: |
+          docker run -d -it -v $PWD:/dot --name "arch" archlinux:latest
+          docker exec arch /bin/bash "/dot/ci.sh"
+        displayName: setup user
+      - bash: docker exec -u instantos arch /bin/bash -c "/dot/src/scripts/init.sh"
+        displayName: initializing dotfiles
+
