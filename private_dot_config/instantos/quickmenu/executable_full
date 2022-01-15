@@ -1,0 +1,39 @@
+#!/bin/sh
+# iinstantosterm
+# instantosarg
+
+if ! iconf -i ultra; then
+  echo "no ultrawide setup"
+  xrandr --output DP-3 --mode 1360x768 --right-of DVI-D-0
+  xrandr --output DVI-D-0 --brightness .12 && xrandr --output DP-4 --brightness .12
+else
+  echo "ultrawide setup"
+  xrandr --output DP-4 --mode 3440x1440 --rate 144
+  xrandr --output DP-4 --brightness .12
+  xrandr --output HDMI-0 --off
+  xrandr --output DP-3 --mode 1360x768 --right-of DP-4
+fi
+
+nitrogen --restore &
+
+antimicrox &
+
+# sleep 5
+#
+# pacmd set-card-profile 0 "output:$(pacmd list-sinks | pcregrep -o1 '.*profile.name.*\"(.*hdmi-stereo.*)\"')"
+#
+# SINK=$(pacmd list-sinks | pcregrep -o1 '<(.*hdmi-stereo.*)>')
+#
+# echo "target sink: $SINK"
+#
+# pacmd set-default-sink $SINK
+#
+# while [ -z "$(pacmd list-sink-inputs | grep -e 'index:' | cut -d ':' -f2 | xargs)" ]; do
+    # sleep 1
+# done
+#
+# for SOURCE in $(pacmd list-sink-inputs | grep -e 'index:' | cut -d ':' -f2 | xargs)
+# do
+    # pacmd move-sink-input $SOURCE $SINK
+# done
+

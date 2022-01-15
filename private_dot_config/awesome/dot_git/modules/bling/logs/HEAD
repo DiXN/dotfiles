@@ -1,0 +1,46 @@
+0000000000000000000000000000000000000000 29d4a87347d343eb8204816643cb63d2f3db1224 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634506211 +0200	clone: from https://github.com/BlingCorp/bling
+29d4a87347d343eb8204816643cb63d2f3db1224 2a6afd05942b0192f7e10f0478a9f87183567a2f Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591037 +0200	merge 2a6afd05942b0192f7e10f0478a9f87183567a2f: Fast-forward
+2a6afd05942b0192f7e10f0478a9f87183567a2f 6760bdd18f28bdc9a09428c188a4406a7a766837 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591267 +0200	checkout: moving from master to persistent
+6760bdd18f28bdc9a09428c188a4406a7a766837 2a6afd05942b0192f7e10f0478a9f87183567a2f Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591280 +0200	rebase (start): checkout master
+2a6afd05942b0192f7e10f0478a9f87183567a2f 4e34705e9eb2db194409d7e58df010c9d9f8f026 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591280 +0200	rebase (pick): Init the persistent module
+4e34705e9eb2db194409d7e58df010c9d9f8f026 954a55f14905d49fb56b4b0127bc600eab28de8f Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591280 +0200	rebase (pick): Only save parent bling_tabbed table
+954a55f14905d49fb56b4b0127bc600eab28de8f ec1c6de7185c10001548baf04191f3278dcd4c17 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591280 +0200	rebase (pick): Don't save the parent in the parent clients
+ec1c6de7185c10001548baf04191f3278dcd4c17 3bd27bc1319343669b0ac4d4c5a4ad397326b92d Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591280 +0200	rebase (pick): Remove comment
+3bd27bc1319343669b0ac4d4c5a4ad397326b92d 3b7345a15ee1d5a64ce4e7e8aaede8966a24de04 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591280 +0200	rebase (pick): Formatting and styling
+3b7345a15ee1d5a64ce4e7e8aaede8966a24de04 3f83061a752a1463d0de0d091c6f0ba0205000ef Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591280 +0200	rebase (pick): Turn x, y, width and height to type number
+3f83061a752a1463d0de0d091c6f0ba0205000ef a01b5d0f97dd2e34b732edeeea5d3a1427d616e4 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591280 +0200	rebase (pick): Use enable() to enable the module
+a01b5d0f97dd2e34b732edeeea5d3a1427d616e4 1a7c07b225380d0fc4e64f48b8d1b2d81a571996 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591280 +0200	rebase (pick): This is actually possible
+1a7c07b225380d0fc4e64f48b8d1b2d81a571996 f117536524bcef3be5e4109167594f53a49fbe28 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591280 +0200	rebase (pick): Update parent when on remove/pop
+f117536524bcef3be5e4109167594f53a49fbe28 f117536524bcef3be5e4109167594f53a49fbe28 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591280 +0200	rebase (finish): returning to refs/heads/persistent
+f117536524bcef3be5e4109167594f53a49fbe28 2a6afd05942b0192f7e10f0478a9f87183567a2f Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591304 +0200	checkout: moving from persistent to master
+2a6afd05942b0192f7e10f0478a9f87183567a2f 6760bdd18f28bdc9a09428c188a4406a7a766837 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591312 +0200	checkout: moving from master to persistent
+6760bdd18f28bdc9a09428c188a4406a7a766837 2a6afd05942b0192f7e10f0478a9f87183567a2f Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591319 +0200	rebase (start): checkout master
+2a6afd05942b0192f7e10f0478a9f87183567a2f 73a380fc99805354f2d7101a9c212744c68ab41b Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591319 +0200	rebase (pick): Init the persistent module
+73a380fc99805354f2d7101a9c212744c68ab41b fdb59a4d700ca10d06942c4ac5528f5f1cb0068b Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591319 +0200	rebase (pick): Only save parent bling_tabbed table
+fdb59a4d700ca10d06942c4ac5528f5f1cb0068b 6baaa30cf6531c340b8d2554744f9b067db7d4f2 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591319 +0200	rebase (pick): Don't save the parent in the parent clients
+6baaa30cf6531c340b8d2554744f9b067db7d4f2 a24c699e2cada47c4af514045d102d033df424a6 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591319 +0200	rebase (pick): Remove comment
+a24c699e2cada47c4af514045d102d033df424a6 c1c2203145bc22afee6efa74f3b2b00250c83a99 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591319 +0200	rebase (pick): Formatting and styling
+c1c2203145bc22afee6efa74f3b2b00250c83a99 2dedde6db6ed530d6bd45554388b9bfb4715ac79 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591319 +0200	rebase (pick): Turn x, y, width and height to type number
+2dedde6db6ed530d6bd45554388b9bfb4715ac79 9cbc75b07d6d41b2bf6dbeeae0b243694b559225 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591319 +0200	rebase (pick): Use enable() to enable the module
+9cbc75b07d6d41b2bf6dbeeae0b243694b559225 d28e7c3254c213bf011df73993a1106e934020b2 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591319 +0200	rebase (pick): This is actually possible
+d28e7c3254c213bf011df73993a1106e934020b2 d901b5f5c0a64737bc464db1522f681e8721684f Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591319 +0200	rebase (pick): Update parent when on remove/pop
+d901b5f5c0a64737bc464db1522f681e8721684f d901b5f5c0a64737bc464db1522f681e8721684f Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591319 +0200	rebase (finish): returning to refs/heads/persistent
+d901b5f5c0a64737bc464db1522f681e8721684f 2a6afd05942b0192f7e10f0478a9f87183567a2f Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591321 +0200	checkout: moving from persistent to master
+2a6afd05942b0192f7e10f0478a9f87183567a2f 6760bdd18f28bdc9a09428c188a4406a7a766837 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591330 +0200	checkout: moving from master to persistent
+6760bdd18f28bdc9a09428c188a4406a7a766837 2a6afd05942b0192f7e10f0478a9f87183567a2f Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591341 +0200	checkout: moving from persistent to master
+2a6afd05942b0192f7e10f0478a9f87183567a2f 6760bdd18f28bdc9a09428c188a4406a7a766837 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591343 +0200	rebase (start): checkout persistent
+6760bdd18f28bdc9a09428c188a4406a7a766837 e2e8e2bf07d8022da984207402bd2c0b665006ac Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591343 +0200	rebase (pick): More scratchpad fixes (#109)
+e2e8e2bf07d8022da984207402bd2c0b665006ac 8e364b6b6ed16623698fe8fb9270b73bee03d1e1 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591343 +0200	rebase (pick): Window switcher docs (#111); closes #106
+8e364b6b6ed16623698fe8fb9270b73bee03d1e1 31622d864a1b60263e49c88659ccfb12cf943954 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591343 +0200	rebase (pick): Update Docs (#118)
+31622d864a1b60263e49c88659ccfb12cf943954 91286127f77344a502b5f10b0b1a3410ce27e9cd Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591343 +0200	rebase (pick): Free ram for widgets with clients previews (#117)
+91286127f77344a502b5f10b0b1a3410ce27e9cd 92ad3d036977932a167d76dc62d76e8afc12e770 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591343 +0200	rebase (pick): Add tabbar_{fg,bg}_{normal, focus}_inactive theme vars (#114); closes #112
+92ad3d036977932a167d76dc62d76e8afc12e770 05b6edac818632eb7ae1721399c972edfb764431 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591343 +0200	rebase (pick): fix(docs): missing commas in task preview example (#121)
+05b6edac818632eb7ae1721399c972edfb764431 723f1cd42f169079838593bcf3ca5a8fdfc18ae6 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591343 +0200	rebase (pick): Update docs (#120)
+723f1cd42f169079838593bcf3ca5a8fdfc18ae6 4b95b701ec082f1c9bd73d23d04156ef7ba180b3 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591343 +0200	rebase (pick): Add theme vars to window switcher docs (#122)
+4b95b701ec082f1c9bd73d23d04156ef7ba180b3 d42b19f7b8385a2fc3e8e68da17b4dbc3bedc3dd Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591343 +0200	rebase (pick): Add tabbar inactive theme vars to docs (#123)
+d42b19f7b8385a2fc3e8e68da17b4dbc3bedc3dd d42b19f7b8385a2fc3e8e68da17b4dbc3bedc3dd Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634591343 +0200	rebase (finish): returning to refs/heads/master
+d42b19f7b8385a2fc3e8e68da17b4dbc3bedc3dd 6760bdd18f28bdc9a09428c188a4406a7a766837 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634592487 +0200	checkout: moving from master to persistent
+6760bdd18f28bdc9a09428c188a4406a7a766837 2a6afd05942b0192f7e10f0478a9f87183567a2f Michael Kaltschmid <kaltschmidmichael@gmail.com> 1634592497 +0200	checkout: moving from persistent to master
+2a6afd05942b0192f7e10f0478a9f87183567a2f bc26b9ff89ff09368dd456284c35ee374e223281 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1639189632 +0100	merge bc26b9ff89ff09368dd456284c35ee374e223281: Fast-forward
+bc26b9ff89ff09368dd456284c35ee374e223281 6760bdd18f28bdc9a09428c188a4406a7a766837 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1639189649 +0100	checkout: moving from master to persistent
+6760bdd18f28bdc9a09428c188a4406a7a766837 3b8cc13cd7e4e3bd462300f7bfeb9ced5ad490d1 Michael Kaltschmid <kaltschmidmichael@gmail.com> 1639189665 +0100	merge 3b8cc13cd7e4e3bd462300f7bfeb9ced5ad490d1: Fast-forward

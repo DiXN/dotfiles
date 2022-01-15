@@ -1,9 +1,0 @@
-[user]
-	email = kaltschmidmichael@gmail.com
-	name = Michael Kaltschmid
-[receive]
-	denyCurrentBranch = updateInstead
-[alias]
-	shove = push --force origin
-	ls = log --oneline
-	lsc = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cgreen\\ [%cn]" --decorate --date=short

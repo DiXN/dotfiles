@@ -1,6 +1,0 @@
----
-choco_dependency:
-  - app: git
-  - cmd:
-    - xcopy /y .gitconfig %USERPROFILE%\Documents\
-  - desc: installing git

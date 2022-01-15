@@ -1,5 +1,0 @@
-$LOAD_PATH.unshift 'lib'
-
-require 'require'
-
-Rake.add_rakelib 'lib/tasks'

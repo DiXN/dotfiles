@@ -1,0 +1,25 @@
+#!/bin/sh
+# instantosterm
+# instantosarg
+
+pacmd set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo
+
+if ! iconf -i ultra; then
+  xrandr --output DVI-D-0 --brightness 1 && xrandr --output DP-4 --brightness 1
+  xrandr --output DVI-D-0 --mode 1920x1080 --rate 144 --pos 2560x132 --output DP-0 --off --output DP-4 --primary --mode 2560x1440 --rate 144 --pos 0x0 --output DP-3 --off
+else
+  xrandr --output DP-4 --mode 3440x1440 --rate 144
+  xrandr --output DP-4 --brightness 1
+  xrandr --output DP-3 --off
+  xrandr --output HDMI-0 --off
+fi
+
+while [ -z "$(pacmd list-sink-inputs | grep -e 'index:' | cut -d ':' -f2 | xargs)" ]; do
+    sleep 1
+done
+
+for SOURCE in $(pacmd list-sink-inputs | grep -e 'index:' | cut -d ':' -f2 | xargs)
+do
+    pacmd move-sink-input "$SOURCE" alsa_output.pci-0000_00_1f.3.analog-stereo
+done
+
