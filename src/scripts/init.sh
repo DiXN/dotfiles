@@ -23,8 +23,8 @@ mkdir -p "$DOTFILES_DIR"
 
 pushd "$DOTFILES_DIR" || exit 1
 
-pacman -S --noconfirm git
-pacman -S --noconfirm chezmoi
+sudo pacman -S --noconfirm git
+sudo pacman -S --noconfirm chezmoi
 chezmoi init --branch chezmoi https://github.com/DiXN/dotfiles.git -S "$DOTFILES_DIR/dotfiles"
 
 echo "[Installing awesome config ...]"
