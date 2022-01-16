@@ -36,15 +36,15 @@ curl -L -o ~/.config/awesome/liblua_pam.so "https://raw.githubusercontent.com/af
 echo "[Setup Podman ...]"
 sh "$DOTFILES_DIR/dotfiles/linux/scripts/podman.sh"
 
-echo "[Install LightDM ...]"
-yay -S --noconfirm lightdm lightdm-webkit2-greeter
-systemctl enable lightdm
-
 if ! which yay > /dev/null; then
   echo "[Installing yay ...]"
   chmod +x "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
   sh "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
 fi
+
+echo "[Install LightDM ...]"
+yay -S --noconfirm lightdm lightdm-webkit2-greeter
+systemctl enable lightdm
 
 echo "[Installing Rust ...]"
 sh "$DOTFILES_DIR/dotfiles/linux/scripts/rust.sh"
@@ -73,5 +73,7 @@ dotnet tool install -g dotnet-script
 echo "[Installing dotfiles ...]"
 dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml"
 
+echo "[Applying dotfiles ...]"
+chezmoi cd
 chezmoi apply --verbose
 
