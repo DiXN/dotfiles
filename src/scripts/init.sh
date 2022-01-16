@@ -72,5 +72,7 @@ dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" --
 
 echo "[Applying dotfiles ...]"
 chezmoi cd
-chezmoi apply --verbose
+chezmoi apply -v -k --force
+
+tree -a -L 2 ~
 

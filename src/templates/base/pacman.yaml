@@ -49,3 +49,4 @@ pacman:
   - app: otf-nerd-fonts-fira-code
   - app: fzf
   - app: kexec-tools
+  - app: tree
