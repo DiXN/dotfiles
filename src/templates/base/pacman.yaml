@@ -19,13 +19,13 @@ pacman:
   - app: pipewire
   - app: pipewire-media-session
   - app: pipewire-pulse
-  - app: pulseeffects
+  - app: easyeffects
   - app: nautilus
   - app: rofi
   - app: usbaudio
   - app: brave-bin
   - app: pandoc-bin
-  - app: alacritty-git
+  - app: alacritty
   - app: lazygit-bin
   - app: dust-bin
   - app: xorg-server

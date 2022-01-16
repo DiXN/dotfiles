@@ -46,9 +46,6 @@ echo "[Install LightDM ...]"
 yay -S --noconfirm lightdm lightdm-webkit2-greeter
 systemctl enable lightdm
 
-echo "[Installing Rust ...]"
-sh "$DOTFILES_DIR/dotfiles/linux/scripts/rust.sh"
-
 echo "[Installing zsh and tmux ...]"
 yay -S --noconfirm zsh
 yay -S --noconfirm tmux
@@ -71,7 +68,7 @@ dotnet tool install -g dotnet-script
 
 #invoke dotnet-script
 echo "[Installing dotfiles ...]"
-dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml"
+dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml" "$DOTFILES_DIR/dotfiles/src/templates/base/commands.yaml"
 
 echo "[Applying dotfiles ...]"
 chezmoi cd
