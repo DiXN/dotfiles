@@ -58,6 +58,9 @@ sudo chsh -s /usr/bin/zsh "$(whoami)"
 echo "[Installing spacevim ...]"
 curl -sLf https://spacevim.org/install.sh | bash
 
+echo "[Installing rustup ...]"
+yay -S --noconfirm rustup
+
 echo "[Installing dotnet ...]"
 yay -S --noconfirm dotnet-sdk-bin
 export PATH="$PATH:/home/$(whoami)/.dotnet/tools"
