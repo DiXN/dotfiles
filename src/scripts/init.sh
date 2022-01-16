@@ -75,7 +75,7 @@ dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" --
 
 echo "[Applying dotfiles ...]"
 chezmoi cd
-chezmoi apply -v -k --force
+chezmoi apply -v -k --force --debug --exclude=encrypted
 
 tree -a -L 2 ~
 
