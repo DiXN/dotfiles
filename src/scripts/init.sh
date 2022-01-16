@@ -27,6 +27,11 @@ sudo pacman -S --noconfirm git
 sudo pacman -S --noconfirm chezmoi
 chezmoi init --branch chezmoi https://github.com/DiXN/dotfiles.git -S "$DOTFILES_DIR/dotfiles"
 
+echo "[Applying dotfiles ...]"
+chezmoi apply -v -k --force --debug --exclude=encrypted -S "$DOTFILES_DIR/dotfiles"
+
+tree -a -L 2 ~
+
 echo "[Installing awesome config ...]"
 readonly AWESOME_PATH="/home/$(whoami)/.config/awesome"
 git clone "https://github.com/DiXN/awesome-cfg.git" "$AWESOME_PATH"
@@ -72,10 +77,3 @@ dotnet tool install -g dotnet-script
 #invoke dotnet-script
 echo "[Installing dotfiles ...]"
 dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml" "$DOTFILES_DIR/dotfiles/src/templates/base/commands.yaml"
-
-echo "[Applying dotfiles ...]"
-chezmoi cd
-chezmoi apply -v -k --force --debug --exclude=encrypted
-
-tree -a -L 2 ~
-
