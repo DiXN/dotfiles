@@ -28,10 +28,15 @@ sudo pacman -S --noconfirm chezmoi
 chezmoi init --branch chezmoi https://github.com/DiXN/dotfiles.git -S "$DOTFILES_DIR/dotfiles"
 
 echo "[Applying dotfiles ...]"
-chezmoi apply -k --force --exclude=encrypted -S "$DOTFILES_DIR/dotfiles"
 
-sudo pacman -S --noconfirm tree
-tree -a -L 2 ~
+if [ -n "$CI" ]; then
+  chezmoi apply -k --force -S "$DOTFILES_DIR/dotfiles"
+else
+  chezmoi apply -k --force --exclude=encrypted -S "$DOTFILES_DIR/dotfiles"
+
+  sudo pacman -S --noconfirm tree
+  tree -a -L 2 ~
+fi
 
 echo "[Installing awesome config ...]"
 readonly AWESOME_PATH="/home/$(whoami)/.config/awesome"
