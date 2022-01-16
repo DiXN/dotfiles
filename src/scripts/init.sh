@@ -28,8 +28,9 @@ sudo pacman -S --noconfirm chezmoi
 chezmoi init --branch chezmoi https://github.com/DiXN/dotfiles.git -S "$DOTFILES_DIR/dotfiles"
 
 echo "[Applying dotfiles ...]"
-chezmoi apply -v -k --force --debug --exclude=encrypted -S "$DOTFILES_DIR/dotfiles"
+chezmoi apply -k --force --exclude=encrypted -S "$DOTFILES_DIR/dotfiles"
 
+sudo pacman -S --noconfirm tree
 tree -a -L 2 ~
 
 echo "[Installing awesome config ...]"
