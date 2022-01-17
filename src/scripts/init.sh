@@ -65,7 +65,7 @@ curl -L -o ~/.config/awesome/liblua_pam.so "https://raw.githubusercontent.com/af
 echo "[Setup Podman ...]"
 sh "$DOTFILES_DIR/dotfiles/linux/scripts/podman.sh"
 
-if ! which yay > /dev/null; then
+if ! [ -x "$(command -v 'yay')" ]; then
   echo "[Installing yay ...]"
   chmod +x "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
   sh "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
