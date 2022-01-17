@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=bo3
+Icon=steam
+Exec=/home/mk/Documents/desktop_scripts/bo3.sh
+Categories=Game

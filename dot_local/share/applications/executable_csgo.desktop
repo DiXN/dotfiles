@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=csgo
+Icon=steam
+Exec=/home/mk/Documents/desktop_scripts/csgo.sh
+Categories=Game
