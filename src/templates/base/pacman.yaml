@@ -50,3 +50,4 @@ pacman:
   - app: fzf
   - app: kexec-tools
   - app: tree
+  - app: broot

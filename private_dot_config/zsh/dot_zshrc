@@ -192,9 +192,12 @@ alias opennewterm="st >/dev/null 2>&1 & disown"
 zle -N opennewterm
 bindkey -s '^y' "opennewterm\n"
 
-[ -f $XDG_CONFIG_HOME/fzf/.fzf.zsh ] && source $XDG_CONFIG_HOME/fzf/.fzf.zsh
+# [ -f $XDG_CONFIG_HOME/fzf/.fzf.zsh ] && source $XDG_CONFIG_HOME/fzf/.fzf.zsh
+#
+#
+# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# source /usr/share/fzf/key-bindings.zsh
+# source /usr/share/fzf/completion.zsh
 
 source /home/mk/.config/broot/launcher/bash/br
