@@ -110,3 +110,6 @@ else
   dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml" "$DOTFILES_DIR/dotfiles/src/templates/base/commands.yaml"
 fi
 
+echo "[Cleaning cache ...]"
+sudo pacman -Scc --noconfirm
+
