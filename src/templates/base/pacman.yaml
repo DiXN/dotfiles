@@ -1,12 +1,9 @@
 ---
 pacman:
   - app: sxiv
-  - app: telegram-desktop-bin
   - app: rclone
   - app: bat
-  - app: surfshark-vpn
-  - app: wkhtmltopdf-static
-  - app: podman
+  - app: network-manager-applet
   - app: zathura
   - app: zathura-pdf-poppler
   - app: scrcpy
@@ -19,19 +16,15 @@ pacman:
   - app: pipewire
   - app: pipewire-media-session
   - app: pipewire-pulse
-  - app: easyeffects
   - app: nautilus
   - app: rofi
   - app: usbaudio
-  - app: brave-bin
-  - app: pandoc-bin
   - app: alacritty
   - app: lazygit
   - app: dust
   - app: xorg-server
   - app: xorg-xrandr
   - app: xorg-xinit
-  - app: networkmanager
   - app: awesome-git
   - app: nitrogen
   - app: pamixer
@@ -45,7 +38,6 @@ pacman:
   - app: navi-bin
   - app: lf-bin
   - app: picom-ibhagwan-git
-  - app: rofi
   - app: jq
   - app: numlockx
   - app: otf-nerd-fonts-fira-code
@@ -53,3 +45,8 @@ pacman:
   - app: kexec-tools
   - app: tree
   - app: broot
+  - app: telegram-desktop-bin
+  - app: podman
+  - app: brave-bin
+  - app: easyeffects
+  - app: surfshark-vpn
