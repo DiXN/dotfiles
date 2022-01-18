@@ -72,8 +72,8 @@ if ! [ -x "$(command -v 'yay')" ]; then
 fi
 
 echo "[Install LightDM ...]"
-yay -S --noconfirm lightdm lightdm-webkit2-greeter
-systemctl enable lightdm
+[ -n "$CI" ] && yay -S --noconfirm lightdm lightdm-webkit2-greeter
+[ -n "$CI" ] && systemctl enable lightdm
 
 echo "[Installing zsh and tmux ...]"
 yay -S --noconfirm zsh
@@ -88,7 +88,7 @@ echo "[Installing spacevim ...]"
 curl -sLf https://spacevim.org/install.sh | bash
 
 echo "[Installing rustup ...]"
-yay -S --noconfirm rustup
+[ "$TYPE" != "min" ] && yay -S --noconfirm rustup
 
 echo "[Installing dotnet ...]"
 yay -S --noconfirm dotnet-sdk-bin
@@ -100,4 +100,10 @@ dotnet tool install -g dotnet-script
 
 #invoke dotnet-script
 echo "[Installing dotfiles ...]"
-dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml" "$DOTFILES_DIR/dotfiles/src/templates/base/commands.yaml"
+
+if [ "$TYPE" == "min" ]; then
+  dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml"
+else
+  dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml" "$DOTFILES_DIR/dotfiles/src/templates/base/commands.yaml"
+fi
+
