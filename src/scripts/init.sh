@@ -76,8 +76,8 @@ echo "[Install LightDM ...]"
 [ -n "$CI" ] && systemctl enable lightdm
 
 echo "[Installing zsh, antibody and tmux ...]"
-yay -S --noconfirm zsh tmux antibody
-antibody bundle < ~/zsh_plugins.txt > ~/.zsh_plugins.sh
+yay -S --noconfirm zsh tmux antibody-bin
+antibody bundle < ~/.zsh_plugin.txt > ~/.zsh_plugins.sh
 
 echo "[Change login shell]"
 sudo chsh -s /usr/bin/zsh "$(whoami)"

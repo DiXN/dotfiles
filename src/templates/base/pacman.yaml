@@ -26,7 +26,6 @@ pacman:
   - app: brave-bin
   - app: pandoc-bin
   - app: alacritty
-  - app: antibody
   - app: lazygit
   - app: dust
   - app: xorg-server
