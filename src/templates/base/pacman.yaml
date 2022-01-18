@@ -26,6 +26,7 @@ pacman:
   - app: brave-bin
   - app: pandoc-bin
   - app: alacritty
+  - app: antibody
   - app: lazygit
   - app: dust
   - app: xorg-server
@@ -35,6 +36,7 @@ pacman:
   - app: awesome-git
   - app: nitrogen
   - app: pamixer
+  - app: python-pynvim
   - app: xclip
   - app: xidlehook
   - app: exa

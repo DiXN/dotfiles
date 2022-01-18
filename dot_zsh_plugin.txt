@@ -1,0 +1,9 @@
+zsh-users/zsh-syntax-highlighting
+zsh-users/zsh-history-substring-search
+
+ohmyzsh/ohmyzsh path:plugins/z
+ohmyzsh/ohmyzsh path:plugins/git
+ohmyzsh/ohmyzsh path:plugins/common-aliases
+ohmyzsh/ohmyzsh path:plugins/archlinux
+
+romkatv/powerlevel10k

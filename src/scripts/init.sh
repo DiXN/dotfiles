@@ -75,16 +75,15 @@ echo "[Install LightDM ...]"
 [ -n "$CI" ] && yay -S --noconfirm lightdm lightdm-webkit2-greeter
 [ -n "$CI" ] && systemctl enable lightdm
 
-echo "[Installing zsh and tmux ...]"
-yay -S --noconfirm zsh
-yay -S --noconfirm tmux
-sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-curl -L https://raw.githubusercontent.com/instantOS/instantSHELL/main/instantos.zsh-theme > .oh-my-zsh/themes/instantos.zsh-theme
+echo "[Installing zsh, antibody and tmux ...]"
+yay -S --noconfirm zsh tmux antibody
+antibody bundle < ~/zsh_plugins.txt > ~/.zsh_plugins.sh
 
 echo "[Change login shell]"
 sudo chsh -s /usr/bin/zsh "$(whoami)"
 
 echo "[Installing spacevim ...]"
+yay -S --noconfirm neovim
 curl -sLf https://spacevim.org/install.sh | bash
 
 echo "[Installing rustup ...]"
