@@ -101,7 +101,7 @@ dotnet tool install -g dotnet-script
 #invoke dotnet-script
 echo "[Installing dotfiles ...]"
 
-if [ "$TYPE" == "min" ]; then
+if [ "$TYPE" = "min" ]; then
   dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml"
 else
   dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml" "$DOTFILES_DIR/dotfiles/src/templates/base/commands.yaml"

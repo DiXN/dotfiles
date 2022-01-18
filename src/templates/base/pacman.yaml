@@ -26,10 +26,11 @@ pacman:
   - app: brave-bin
   - app: pandoc-bin
   - app: alacritty
-  - app: lazygit-bin
-  - app: dust-bin
+  - app: lazygit
+  - app: dust
   - app: xorg-server
   - app: xorg-xrandr
+  - app: xorg-xinit
   - app: networkmanager
   - app: awesome-git
   - app: nitrogen
