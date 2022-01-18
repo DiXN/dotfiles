@@ -72,12 +72,12 @@ if ! [ -x "$(command -v 'yay')" ]; then
 fi
 
 echo "[Install NetworkManager ...]"
-[ -n "$CI" ] && yay -S --noconfirm networkmanager
-[ -n "$CI" ] && systemctl enable NetworkManager
+yay -S --noconfirm networkmanager
+systemctl enable NetworkManager
 
 echo "[Install LightDM ...]"
-[ -n "$CI" ] && yay -S --noconfirm lightdm lightdm-webkit2-greeter
-[ -n "$CI" ] && systemctl enable lightdm
+yay -S --noconfirm lightdm lightdm-webkit2-greeter
+systemctl enable lightdm
 
 echo "[Installing zsh, antibody and tmux ...]"
 yay -S --noconfirm zsh tmux antibody-bin
