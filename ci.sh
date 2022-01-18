@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -x
+
+echo "Hello $INST_USER"
+
 L_USER=${INST_USER:-instantos}
 
 pacman -Sy sudo -y --noconfirm
