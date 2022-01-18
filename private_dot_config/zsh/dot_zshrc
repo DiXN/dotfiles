@@ -187,6 +187,9 @@ bindkey -s '^y' "opennewterm\n"
 #
 # [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+autoload -Uz compinit
+compinit
+
 source /usr/share/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
 
