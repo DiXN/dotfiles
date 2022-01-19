@@ -32,6 +32,7 @@ pacman:
   - app: xclip
   - app: xidlehook
   - app: exa
+  - app: htop
   - app: scrot
   - app: ttf-material-design-icons-desktop-git
   - app: shellcheck-bin
@@ -48,5 +49,6 @@ pacman:
   - app: telegram-desktop-bin
   - app: podman
   - app: brave-bin
+  - app: firefox
   - app: easyeffects
   - app: surfshark-vpn

@@ -182,11 +182,6 @@ alias opennewterm="st >/dev/null 2>&1 & disown"
 zle -N opennewterm
 bindkey -s '^y' "opennewterm\n"
 
-# [ -f $XDG_CONFIG_HOME/fzf/.fzf.zsh ] && source $XDG_CONFIG_HOME/fzf/.fzf.zsh
-#
-#
-# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 autoload -Uz compinit
 compinit
 
@@ -194,6 +189,10 @@ source /usr/share/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
 
 source  ~/.zsh_plugins.sh
+
+# Enable HOME and END key
+bindkey  "^[[1~"   beginning-of-line
+bindkey  "^[[4~"   end-of-line
 
 #source /home/mk/.config/broot/launcher/bash/br
 

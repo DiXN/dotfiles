@@ -11,6 +11,8 @@ window:
 
   opacity: 0.9
 
+background_opacity: 0.9
+
 font:
   normal:
     family: Fira Code Nerd Font Mono
