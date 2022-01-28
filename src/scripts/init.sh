@@ -56,39 +56,11 @@ else
   tree -a -L 2 ~
 fi
 
-echo "[Installing awesome config ...]"
-readonly AWESOME_PATH="/home/$(whoami)/.config/awesome"
-git clone --recursive "https://github.com/DiXN/awesome-cfg.git" "$AWESOME_PATH"
-
-curl -L -o ~/.config/awesome/liblua_pam.so "https://raw.githubusercontent.com/afreidz/dots/master/awesome/liblua_pam.so"
-
-echo "[Setup Podman ...]"
-sh "$DOTFILES_DIR/dotfiles/linux/scripts/podman.sh"
-
 if ! [ -x "$(command -v 'yay')" ]; then
   echo "[Installing yay ...]"
   chmod +x "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
   sh "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
 fi
-
-echo "[Install NetworkManager ...]"
-yay -S --noconfirm networkmanager
-systemctl enable NetworkManager
-
-echo "[Install LightDM ...]"
-yay -S --noconfirm lightdm lightdm-webkit2-greeter
-systemctl enable lightdm
-
-echo "[Installing zsh, antibody and tmux ...]"
-yay -S --noconfirm zsh tmux antibody-bin
-antibody bundle < ~/.zsh_plugin.txt > ~/.zsh_plugins.sh
-
-echo "[Change login shell]"
-sudo chsh -s /usr/bin/zsh "$(whoami)"
-
-echo "[Installing spacevim ...]"
-yay -S --noconfirm neovim
-curl -sLf https://spacevim.org/install.sh | bash
 
 echo "[Installing rustup ...]"
 [ "$TYPE" != "min" ] && yay -S --noconfirm rustup
@@ -110,6 +82,7 @@ else
   dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml" "$DOTFILES_DIR/dotfiles/src/templates/base/commands.yaml"
 fi
 
-echo "[Cleaning cache ...]"
-sudo pacman -Scc --noconfirm
+if [ -n "$CI" ]; then
+  bash "$DOTFILES_DIR/dotfiles/linux/scripts/essentials.sh"
+fi
 
