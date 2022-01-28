@@ -18,6 +18,6 @@ jobs:
         displayName: setup user
       - bash: docker exec -u ${INST_USER} arch /bin/bash -c "/dot/src/scripts/init.sh"
         displayName: initializing dotfiles
-      - bash: docker exec -u ${INST_USER} arch /bin/bash -c "/dot/linux/essentials.sh"
+      - bash: docker exec -u ${INST_USER} arch /bin/bash -c "/dot/linux/scripts/essentials.sh"
         displayName: finalizing dotfiles
 
