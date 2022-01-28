@@ -80,10 +80,6 @@ DISABLE_AUTO_UPDATE="true"
 # Source tmux config
 tmux source-file ~/.config/tmux/.tmux.conf
 
-# Set "autocd" and load plugins
-setopt autocd
-source  ~/.zsh_plugins.sh
-
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -157,26 +153,32 @@ alias eb="sudo nvim /usr/bin/instantstatus"
 
 alias v="nvim"
 
-alias la="exa --icons -l -a"
-
 alias du="dust"
 
 # podman
 alias docker="podman"
 
 # vlang
-
 alias vlang="/usr/bin/v"
 
-# sonar
-export SONAR_SCANNER_HOME="/opt/sonar-scanner"
-export PATH="${PATH}:${SONAR_SCANNER_HOME}/bin"
+# Set "autocd" and load plugins
+setopt autocd
+source  ~/.zsh_plugins.sh
+
+alias la="exa --icons -l -a"
 
 # add dotnet script
 export PATH="$PATH:/home/$USER/.dotnet/tools"
 
 up-directory() {
-    builtin cd .. && zle reset-prompt
+  builtin cd ..
+  if (( $? == 0 )); then
+    local precmd
+    for precmd in $precmd_functions; do
+      $precmd
+    done
+    zle reset-prompt
+  fi
 }
 
 zle -N up-directory
@@ -191,7 +193,6 @@ compinit
 
 source /usr/share/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
-
 
 # Enable HOME and END key
 bindkey  "^[[1~"   beginning-of-line
