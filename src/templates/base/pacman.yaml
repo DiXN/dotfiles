@@ -46,6 +46,7 @@ pacman:
   - app: kexec-tools
   - app: tree
   - app: broot
+  - app: playerctl
   - app: arc-gtk-theme
   - app: papirus-icon-theme
   - app: telegram-desktop-bin
