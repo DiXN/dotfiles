@@ -80,6 +80,10 @@ DISABLE_AUTO_UPDATE="true"
 # Source tmux config
 tmux source-file ~/.config/tmux/.tmux.conf
 
+# Set "autocd" and load plugins
+setopt autocd
+source  ~/.zsh_plugins.sh
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -188,7 +192,6 @@ compinit
 source /usr/share/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
 
-source  ~/.zsh_plugins.sh
 
 # Enable HOME and END key
 bindkey  "^[[1~"   beginning-of-line

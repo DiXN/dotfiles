@@ -46,6 +46,8 @@ pacman:
   - app: kexec-tools
   - app: tree
   - app: broot
+  - app: arc-gtk-theme
+  - app: papirus-icon-theme
   - app: telegram-desktop-bin
   - app: podman
   - app: brave-bin
