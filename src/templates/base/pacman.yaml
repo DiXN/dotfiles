@@ -25,6 +25,7 @@ pacman:
   - app: xorg-server
   - app: xorg-xrandr
   - app: xorg-xinit
+  - app: xorg-xinput
   - app: awesome-git
   - app: nitrogen
   - app: pamixer

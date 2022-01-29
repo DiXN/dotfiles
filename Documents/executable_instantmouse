@@ -4,20 +4,13 @@
 ## set mouse speed for libinput ##
 ##################################
 
-case "$1" in
-g*)
-    # detect connected mouse devices
-    IDS=$(xinput | grep -o 'id=[0-9]*' | grep -o '[0-9]*')
-    echo "generating mouse IDS"
-    [ -e /tmp/mouse ] && rm /tmp/mouse
-    while read -r line; do
-        if xinput list-props "$line" | grep -q 'libinput Accel Speed'; then
-            xinput set-prop "$line" "libinput Accel Speed" "${2:--0.195000}"
-        fi
-    done <<<"$IDS"
-    ;;
-l*)
-    # get current sensitivity
-    xinput list-props "$(iconf mouse | head -1)" | grep 'libinput Accel Speed' | head -1 | grep -o '[-.0-9]*$'
-    ;;
-esac
+# detect connected mouse devices
+IDS=$(xinput | grep -o 'id=[0-9]*' | grep -o '[0-9]*')
+echo "generating mouse IDS"
+[ -e /tmp/mouse ] && rm /tmp/mouse
+while read -r line; do
+    if xinput list-props "$line" | grep -q 'libinput Accel Speed'; then
+        xinput set-prop "$line" "libinput Accel Speed" "${1:--0.195000}"
+    fi
+done <<<"$IDS"
+
