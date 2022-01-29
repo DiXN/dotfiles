@@ -161,12 +161,6 @@ alias docker="podman"
 # vlang
 alias vlang="/usr/bin/v"
 
-# Set "autocd" and load plugins
-setopt autocd
-source  ~/.zsh_plugins.sh
-
-alias la="exa --icons -l -a"
-
 # add dotnet script
 export PATH="$PATH:/home/$USER/.dotnet/tools"
 
@@ -191,12 +185,19 @@ bindkey -s '^y' "opennewterm\n"
 autoload -Uz compinit
 compinit
 
+# Set "autocd" and load plugins
+setopt autocd
+source  ~/.zsh_plugins.sh
+
+alias la="exa --icons -l -a"
+
 source /usr/share/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
 
 # Enable HOME and END key
 bindkey  "^[[1~"   beginning-of-line
 bindkey  "^[[4~"   end-of-line
+bindkey  "^[[3~"   delete-char
 
 #source /home/mk/.config/broot/launcher/bash/br
 
