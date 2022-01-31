@@ -50,6 +50,9 @@ pacman:
   - app: playerctl
   - app: arc-gtk-theme
   - app: papirus-icon-theme
+  - app: age
+  - app: expect
+  - app: zenity
   - app: telegram-desktop-bin
   - app: podman
   - app: brave-bin
