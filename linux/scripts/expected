@@ -1,0 +1,26 @@
+#!/usr/bin/expect -f
+
+set timeout 10
+set password $::env(PASSWORD)
+
+spawn chezmoi update -S ~/Documents/repos/dotfiles
+
+expect -exact "Already up to date.\r
+Enter passphrase: "
+
+send -- "$password\r"
+
+while 1 {
+   expect {
+     "*Enter passphrase:*" {
+       send -- "$password\r"
+     }
+     "*has changed*" {
+       send -- "overwrite\r"
+     }
+     eof {
+       break
+     }
+   }
+}
+
