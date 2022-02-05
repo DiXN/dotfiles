@@ -29,7 +29,8 @@ echo "[Installing awesome config ...]"
 readonly AWESOME_PATH="/home/$(whoami)/.config/awesome"
 git clone --recursive "https://github.com/DiXN/awesome-cfg.git" "$AWESOME_PATH"
 
-curl -L -o ~/.config/awesome/liblua_pam.so "https://raw.githubusercontent.com/afreidz/dots/master/awesome/liblua_pam.so"
+yay -S --noconfirm lua-pam-git
+sudo ln -s /usr/lib/lua-pam/liblua_pam.so /usr/lib/lua/5.4
 
 echo "[Cleaning cache ...]"
 sudo pacman -Scc --noconfirm
