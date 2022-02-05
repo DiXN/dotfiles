@@ -12,6 +12,7 @@ function! bootstrap#after() abort
   autocmd BufWinLeave * call clearmatches()
   autocmd BufWritePre * call TrimWhiteSpace()
   g:spacevim_lint_on_save = 0
+  set shada="NONE"
 endfunction
 
 function! bootstrap#before() abort

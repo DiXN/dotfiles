@@ -50,6 +50,7 @@ pacman:
   - app: playerctl
   - app: arc-gtk-theme
   - app: papirus-icon-theme
+  - app: btop
   - app: age
   - app: expect
   - app: zenity
