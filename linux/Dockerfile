@@ -8,7 +8,7 @@ RUN chmod 777 /var/cache/makepkg/pkg
 
 RUN curl -L https://raw.githubusercontent.com/DiXN/dotfiles/chezmoi/ci.sh | INST_USER=mk bash
 
-RUN curl -L https://raw.githubusercontent.com/DiXN/dotfiles/chezmoi/src/scripts/init.sh | CI=true TYPE=min sudo -u mk bash
+RUN curl -L https://raw.githubusercontent.com/DiXN/dotfiles/chezmoi/src/scripts/init.sh | CI=true INSTALL_TYPE="min" sudo -u mk bash
 RUN sudo -u mk bash -c 'yay -Sy --noconfirm nvidia-470xx-dkms nvidia-470xx-utils nvidia-470xx-settings && yay -Scc --noconfirm'
 
 ENV NVIDIA_VISIBLE_DEVICES all

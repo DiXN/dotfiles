@@ -8,15 +8,7 @@ if [ -n "$CI" ]; then
   } &
 fi
 
-# echo -n "Enter password to start dotfiles process: "
-# read -s firstpassword
-# echo
-# read -s -p "Retype password: " secondpassword
-# echo
-# if [ $firstpassword != $secondpassword ]; then
-# echo "You have entered different passwords."
-# exit 1
-# fi
+[ "$INSTALL_TYPE" = "min" ] && echo "[Running minimum configuration ...]"
 
 echo "[Adding chaotic to Pacman configuration ...]"
 sudo pacman-key --init
@@ -63,7 +55,7 @@ if ! [ -x "$(command -v 'yay')" ]; then
 fi
 
 echo "[Installing rustup ...]"
-[ "$TYPE" != "min" ] && yay -S --noconfirm rustup
+[ "$INSTALL_TYPE" != "min" ] && yay -S --noconfirm rustup
 
 echo "[Installing dotnet ...]"
 yay -S --noconfirm dotnet-sdk-bin
@@ -76,7 +68,7 @@ dotnet tool install -g dotnet-script
 #invoke dotnet-script
 echo "[Installing dotfiles ...]"
 
-if [ "$TYPE" = "min" ]; then
+if [ "$INSTALL_TYPE" = "min" ]; then
   dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml"
 else
   dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml" "$DOTFILES_DIR/dotfiles/src/templates/base/commands.yaml"
