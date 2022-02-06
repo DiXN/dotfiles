@@ -24,6 +24,8 @@ sudo chsh -s /usr/bin/zsh "$(whoami)"
 echo "[Installing spacevim ...]"
 yay -S --noconfirm neovim
 curl -sLf https://spacevim.org/install.sh | bash
+mkdir -p ~/.local/share/nvim/shada
+touch ~/.local/share/nvim/shada/main.shada
 
 echo "[Installing awesome config ...]"
 readonly AWESOME_PATH="/home/$(whoami)/.config/awesome"
