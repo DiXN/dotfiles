@@ -35,6 +35,7 @@ pushd "$DOTFILES_DIR" || exit 1
 
 sudo pacman -Syy --noconfirm git
 sudo pacman -S --noconfirm chezmoi
+sudo pacman -S --noconfirm glibc lib32-glibc
 chezmoi init --branch chezmoi https://github.com/DiXN/dotfiles.git -S "$DOTFILES_DIR/dotfiles"
 
 echo "[Applying dotfiles ...]"
@@ -58,7 +59,7 @@ echo "[Installing rustup ...]"
 [ "$INSTALL_TYPE" != "min" ] && yay -S --noconfirm rustup
 
 echo "[Installing dotnet ...]"
-yay -S --noconfirm dotnet-sdk-bin
+yay -S --noconfirm dotnet-sdk
 export PATH="$PATH:/home/$(whoami)/.dotnet/tools"
 
 sudo chmod +x /usr/bin/dotnet

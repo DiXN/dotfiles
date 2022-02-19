@@ -1,8 +1,9 @@
 ---
 pacman:
-  - app: sxiv
+  - app: nsxiv
   - app: rclone
   - app: bat
+  - app: mpv
   - app: network-manager-applet
   - app: zathura
   - app: zathura-pdf-poppler
@@ -35,11 +36,14 @@ pacman:
   - app: exa
   - app: htop
   - app: scrot
+  - app: mesa-utils
+  - app: tectonic
+  - app: biber
   - app: ttf-material-design-icons-desktop-git
   - app: shellcheck-bin
   - app: navi-bin
   - app: lf-bin
-  - app: picom-ibhagwan-git
+  - app: picom
   - app: jq
   - app: numlockx
   - app: otf-nerd-fonts-fira-code
@@ -59,4 +63,3 @@ pacman:
   - app: brave-bin
   - app: firefox
   - app: easyeffects
-  - app: surfshark-vpn

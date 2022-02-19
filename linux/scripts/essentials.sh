@@ -34,6 +34,10 @@ git clone --recursive "https://github.com/DiXN/awesome-cfg.git" "$AWESOME_PATH"
 yay -S --noconfirm lua-pam-git
 sudo ln -s /usr/lib/lua-pam/liblua_pam.so /usr/lib/lua/5.4
 
+echo "[Installing piavpn ...]"
+yay -S --noconfirm piavpn-bin
+sudo systemctl enable piavpn.service
+
 echo "[Cleaning cache ...]"
 sudo pacman -Scc --noconfirm
 
