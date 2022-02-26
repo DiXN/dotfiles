@@ -1,14 +1,4 @@
-#!/bin/bash
-
-# cache sudo password
-if [ -n "$CI" ]; then
-  {
-    while :; do sudo -v; sleep 59; done
-    SUDO_LOOP=$!
-  } &
-fi
-
-[ "$INSTALL_TYPE" = "min" ] && echo "[Running minimum configuration ...]"
+#!/usr/bin/env bash
 
 echo "[Adding chaotic to Pacman configuration ...]"
 sudo pacman-key --init
@@ -55,27 +45,11 @@ if ! [ -x "$(command -v 'yay')" ]; then
   sh "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
 fi
 
-echo "[Installing rustup ...]"
-[ "$INSTALL_TYPE" != "min" ] && yay -S --noconfirm rustup
+yay -S --noconfirm python python-dbus \
+  imagemagick openssh nautilus rofi alacritty \
+  network-manager-applet xorg-xinput awesome-git pamixer python-pynvim \
+  xclip xidlehook exa mesa-utils ttf-material-design-icons-desktop-git \
+  picom numlockx otf-nerd-fonts-fira-code fzf playerctl arc-gtk-theme \
+  papirus-icon-theme age expect zenity nitrogen scrot
 
-echo "[Installing dotnet ...]"
-yay -S --noconfirm dotnet-sdk
-export PATH="$PATH:/home/$(whoami)/.dotnet/tools"
-
-sudo chmod +x /usr/bin/dotnet
-dotnet --info
-dotnet tool install -g dotnet-script
-
-#invoke dotnet-script
-echo "[Installing dotfiles ...]"
-
-if [ "$INSTALL_TYPE" = "min" ]; then
-  dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml"
-else
-  dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml" "$DOTFILES_DIR/dotfiles/src/templates/base/commands.yaml"
-fi
-
-if [ -n "$CI" ]; then
-  bash "$DOTFILES_DIR/dotfiles/linux/scripts/essentials.sh"
-fi
 
