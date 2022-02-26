@@ -43,13 +43,15 @@ if ! [ -x "$(command -v 'yay')" ]; then
   echo "[Installing yay ...]"
   chmod +x "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
   sh "$DOTFILES_DIR/dotfiles/linux/scripts/yay.sh"
+  sudo pacman -R --noconfirm go
 fi
 
 yay -S --noconfirm python python-dbus \
   imagemagick openssh nautilus rofi alacritty \
   network-manager-applet xorg-xinput awesome-git pamixer python-pynvim \
-  xclip xidlehook exa mesa-utils ttf-material-design-icons-desktop-git \
+  xclip exa mesa-utils ttf-material-design-icons-desktop-git \
   picom numlockx otf-nerd-fonts-fira-code fzf playerctl arc-gtk-theme \
   papirus-icon-theme age expect zenity nitrogen scrot
 
+sudo pacman -Scc --noconfirm
 
