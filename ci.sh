@@ -36,3 +36,5 @@ echo "" >>/etc/sudoers
 
 cat /etc/sudoers
 
+pacman -Scc --noconfirm
+
