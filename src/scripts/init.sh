@@ -75,6 +75,9 @@ else
   dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml" "$DOTFILES_DIR/dotfiles/src/templates/base/commands.yaml"
 fi
 
+echo "[Cleaning cache ...]"
+sudo pacman -Scc --noconfirm
+
 if [ -n "$CI" ]; then
   bash "$DOTFILES_DIR/dotfiles/linux/scripts/essentials.sh"
 fi
