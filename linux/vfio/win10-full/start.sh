@@ -44,13 +44,10 @@ sudo modprobe kvm_intel nested=1
 # Start SSH session
 # ssh mk -f "ping google.com"
 
-# sudo cp /etc/X11/simple_intel_xorg.conf /etc/X11/xorg.conf
-sudo cp /etc/X11/simple_nvidia_xorg.conf /etc/X11/xorg.conf
+# Change to DisplayPort on Monitor
+ddccontrol -r 0x60 -w 15 dev:/dev/i2c-4
 
-sudo modprobe nvidia_drm
-sudo modprobe nvidia_modeset
-sudo modprobe nvidia_uvm
-sudo modprobe nvidia
+sudo cp /etc/X11/simple_intel_xorg.conf /etc/X11/xorg.conf
 
 sleep 0.5
 

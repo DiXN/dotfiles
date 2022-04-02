@@ -1,3 +1,4 @@
+
 #!/bin/bash
 set -x
 
@@ -42,6 +43,9 @@ set -x
 ##
 ## Restart Display Manager
 #sudo systemctl start lightdm-plymouth.service
+
+# Change to DisplayPort on Monitor
+ddccontrol -r 0x60 -w 17 dev:/dev/i2c-4
 
 sudo cp /etc/X11/nvidia_duo.xorg.conf /etc/X11/xorg.conf
 
