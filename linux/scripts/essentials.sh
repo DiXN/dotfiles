@@ -8,11 +8,11 @@ sudo usermod --add-subuids 165536-231072 --add-subgids 165536-231072 "$(whoami)"
 
 echo "[Install NetworkManager ...]"
 yay -S --noconfirm networkmanager
-systemctl enable NetworkManager
+sudo systemctl enable NetworkManager
 
 echo "[Install LightDM ...]"
 yay -S --noconfirm lightdm lightdm-webkit2-greeter
-systemctl enable lightdm
+sudo systemctl enable lightdm
 
 echo "[Installing zsh, antibody and tmux ...]"
 yay -S --noconfirm zsh tmux antibody-bin
@@ -23,7 +23,7 @@ sudo chsh -s /usr/bin/zsh "$(whoami)"
 
 echo "[Installing spacevim ...]"
 yay -S --noconfirm neovim
-curl -sLf https://spacevim.org/install.sh | bash
+curl -sLf https://spacevim.org/install.sh | bash -s -- --install neovim
 mkdir -p ~/.local/share/nvim/shada
 touch ~/.local/share/nvim/shada/main.shada
 
