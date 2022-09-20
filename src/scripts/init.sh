@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # cache sudo password
-if [ -n "$CI" ]; then
+if ! [ -z "$CI" ] || ! [ -z "$DOCKER" ]; then
   {
     while :; do sudo -v; sleep 59; done
     SUDO_LOOP=$!
@@ -40,7 +40,7 @@ chezmoi init --branch chezmoi https://github.com/DiXN/dotfiles.git -S "$DOTFILES
 
 echo "[Applying dotfiles ...]"
 
-if [ -n "$CI" ]; then
+if ! [ -z "$CI" ]; then
   chezmoi apply -k --force -S "$DOTFILES_DIR/dotfiles"
 else
   chezmoi apply -k --force --exclude=encrypted -S "$DOTFILES_DIR/dotfiles"
@@ -59,26 +59,21 @@ echo "[Installing rustup ...]"
 [ "$INSTALL_TYPE" != "min" ] && yay -S --noconfirm rustup
 
 echo "[Installing dotnet ...]"
-yay -S --noconfirm dotnet-sdk
+yay -S --noconfirm dotnet-sdk-6.0 dotnet-runtime-6.0
 export PATH="$PATH:/home/$(whoami)/.dotnet/tools"
 
 sudo chmod +x /usr/bin/dotnet
 dotnet --info
 dotnet tool install -g dotnet-script
 
-#invoke dotnet-script
-echo "[Installing dotfiles ...]"
-
-if [ "$INSTALL_TYPE" = "min" ]; then
-  dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml"
-else
-  dotnet script -c release "$DOTFILES_DIR/dotfiles/src/scripts/dotnet/main.csx" -- "$DOTFILES_DIR/dotfiles/src/templates/base/pacman.yaml" "$DOTFILES_DIR/dotfiles/src/templates/base/commands.yaml"
+if [ -z "$DOCKER" ]; then
+  bash "$DOTFILES_DIR/dotfiles/linux/scripts/packages.sh"
 fi
 
 echo "[Cleaning cache ...]"
 sudo pacman -Scc --noconfirm
 
-if [ -n "$CI" ]; then
+if [ -z "$DOCKER" ] && [ -z "$CI" ]; then
   bash "$DOTFILES_DIR/dotfiles/linux/scripts/essentials.sh"
 fi
 

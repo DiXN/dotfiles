@@ -68,3 +68,4 @@ pacman:
   - app: lazydocker
   - app: downgrade
   - app: mesa
+  - app: arandr

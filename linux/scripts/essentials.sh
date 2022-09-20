@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# cache sudo password
+if [ -n "$CI" ]; then
+  {
+    while :; do sudo -v; sleep 59; done
+    SUDO_LOOP=$!
+  } &
+fi
+
 echo "[Setup Podman ...]"
 echo "$(whoami):100000:65536" | sudo tee /etc/subuid
 echo "$(whoami):100000:65536" | sudo tee /etc/subgid

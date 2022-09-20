@@ -39,7 +39,7 @@ foreach (var arg in Args.Distinct())
             case "scoop":
                 ExecTask(new Scoop(arg));
                 break;
-            case "pacman":
+            case string s when s.StartsWith("pacman"):
                 ExecTask(new Pacman(arg));
                 break;
             case "choco":
