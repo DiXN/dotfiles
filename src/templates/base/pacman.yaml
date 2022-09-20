@@ -63,3 +63,8 @@ pacman:
   - app: brave-bin
   - app: firefox
   - app: easyeffects
+  - app: jellyfin-media-player
+  - app: caffeine-ng
+  - app: lazydocker
+  - app: downgrade
+  - app: mesa

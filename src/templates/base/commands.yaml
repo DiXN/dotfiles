@@ -3,4 +3,5 @@ commands:
   - cmd:
     - rustup default stable
     - cargo install cargo-edit
+    - yay -S --noconfirm rust-analyzer
     desc: install Rust
