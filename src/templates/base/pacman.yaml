@@ -46,7 +46,7 @@ pacman:
   - app: picom
   - app: jq
   - app: numlockx
-  - app: otf-nerd-fonts-fira-code
+  - app: nerd-fonts-fira-code
   - app: fzf
   - app: kexec-tools
   - app: tree
@@ -69,3 +69,10 @@ pacman:
   - app: downgrade
   - app: mesa
   - app: arandr
+  - app: pavucontrol
+  - app: radeontop
+  - app: hyperfine
+  - app: github-cli
+  - app: clifm
+  - app: pamixer
+  - app: mailspring

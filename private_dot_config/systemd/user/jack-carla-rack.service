@@ -1,0 +1,10 @@
+[Unit]
+Description=Load Carla Rack JACK host
+
+[Service]
+PassEnvironment="PIPEWIRE_LINK_PASSIVE=true"
+Type=exec
+ExecStart=/usr/bin/pw-jack carla -n
+
+[Install]
+WantedBy=default.target

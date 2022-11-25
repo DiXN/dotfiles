@@ -1,0 +1,11 @@
+[Unit]
+Description=One shot jack
+After=jack-carla-rack.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/sleep 5
+ExecStart=/usr/bin/systemctl --user restart jack-carla-rack.service
+
+[Install]
+WantedBy=default.target

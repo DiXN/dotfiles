@@ -1,0 +1,13 @@
+[Unit]
+Description=Load %i Pulseaudio null sink
+Before=jack-carla-rack.service
+After=pipewire-pulse.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/pactl load-module module-null-sink object.linger=1 media.class=Audio/Sink sink_name=%i channel_map=FL,FR
+ExecStop=/usr/bin/pactl unload-module module-null-sink
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target
