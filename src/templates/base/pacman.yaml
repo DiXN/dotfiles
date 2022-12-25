@@ -76,3 +76,4 @@ pacman:
   - app: clifm
   - app: pamixer
   - app: mailspring
+  - app: rbw
