@@ -50,7 +50,7 @@ pacman:
   - app: jq
   - app: numlockx
   - app: ttf-fira-code
-  - app: ttf-firacode-nerd
+  - app: nerd-fonts-fira-code
   - app: fzf
   - app: kexec-tools
   - app: tree
