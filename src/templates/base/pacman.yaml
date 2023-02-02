@@ -78,7 +78,6 @@ pacman:
   - app: hyperfine
   - app: github-cli
   - app: clifm
-  - app: pamixer
   - app: mailspring
   - app: rbw
   - app: flameshot

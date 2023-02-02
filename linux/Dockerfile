@@ -11,6 +11,8 @@ RUN curl -Ls https://raw.githubusercontent.com/DiXN/dotfiles/chezmoi/linux/scrip
 RUN curl -Ls https://raw.githubusercontent.com/DiXN/dotfiles/chezmoi/linux/scripts/packages.sh | sudo -u mk CI=true INSTALL_TYPE="min" FILE_PATH="/tmp/dotfiles/packages/pacman_2.yaml" bash -x
 RUN curl -Ls https://raw.githubusercontent.com/DiXN/dotfiles/chezmoi/linux/scripts/packages.sh | sudo -u mk CI=true INSTALL_TYPE="min" FILE_PATH="/tmp/dotfiles/packages/pacman_3.yaml" bash -x
 RUN curl -Ls https://raw.githubusercontent.com/DiXN/dotfiles/chezmoi/linux/scripts/packages.sh | sudo -u mk CI=true INSTALL_TYPE="min" FILE_PATH="/tmp/dotfiles/packages/pacman_4.yaml" bash -x
+RUN curl -Ls https://raw.githubusercontent.com/DiXN/dotfiles/chezmoi/linux/scripts/packages.sh | sudo -u mk CI=true INSTALL_TYPE="min" FILE_PATH="/tmp/dotfiles/packages/pacman_5.yaml" bash -x
+RUN curl -Ls https://raw.githubusercontent.com/DiXN/dotfiles/chezmoi/linux/scripts/packages.sh | sudo -u mk CI=true INSTALL_TYPE="min" FILE_PATH="/tmp/dotfiles/packages/pacman_6.yaml" bash -x
 
 USER mk
 
