@@ -41,13 +41,16 @@ pacman:
   - app: tectonic
   - app: biber
   - app: ttf-material-design-icons-desktop-git
+  - app: adobe-source-code-pro-fonts
+  - app: cantarell-fonts
   - app: shellcheck-bin
   - app: navi-bin
   - app: lf-bin
   - app: picom
   - app: jq
   - app: numlockx
-  - app: nerd-fonts-fira-code
+  - app: ttf-fira-code
+  - app: ttf-firacode-nerd
   - app: fzf
   - app: kexec-tools
   - app: tree
@@ -78,3 +81,4 @@ pacman:
   - app: pamixer
   - app: mailspring
   - app: rbw
+  - app: flameshot
