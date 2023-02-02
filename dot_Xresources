@@ -1,4 +1,11 @@
 ! papertheme
+Xft.antialias: 1
+Xft.hinting: 1
+Xft.rgba: rgb
+Xft.hintstyle: hintslight
+! Xft.lcdfilter: lcddefault
+!
+Xft.dpi:108
 
 *.background: #383c4a
 *.foreground: #D2D2D2
