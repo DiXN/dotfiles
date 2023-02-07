@@ -19,7 +19,7 @@ yay -S --noconfirm networkmanager
 sudo systemctl enable NetworkManager
 
 echo "[Install LightDM ...]"
-yay -S --noconfirm lightdm lightdm-webkit2-greeter
+yay -S --noconfirm lightdm lightdm-webkit2-greeter lightdm-gtk-greeter plymouth
 sudo systemctl enable lightdm
 
 echo "[Installing zsh, antibody and tmux ...]"

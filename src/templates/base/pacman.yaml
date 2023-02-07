@@ -1,6 +1,5 @@
 ---
 pacman:
-  - app: linux
   - app: nsxiv
   - app: rclone
   - app: bat
