@@ -152,8 +152,11 @@ alias bu="~/Documents/brightness.sh up"
 alias eb="sudo nvim /usr/bin/instantstatus"
 
 alias v="nvim"
+alias sv="sudo nvim"
 
 alias du="dust"
+
+alias scp="rsync -ah --progress"
 
 # podman
 alias docker="podman"
