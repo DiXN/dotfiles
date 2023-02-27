@@ -28,6 +28,8 @@ ParallelDownloads=$CORES
 Include = /etc/pacman.d/chaotic-mirrorlist
 EOF
 
+echo "KEYMAP=de-latin1" | sudo tee /etc/vconsole.conf
+
 readonly DOTFILES_DIR="/home/$(whoami)/Documents/repos"
 mkdir -p "$DOTFILES_DIR"
 

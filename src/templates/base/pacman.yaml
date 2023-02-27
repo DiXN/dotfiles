@@ -13,6 +13,7 @@ pacman:
   - app: imagemagick
   - app: openssh
   - app: neofetch
+  - app: neovim
   - app: pulseaudio-alsa
   - app: pipewire
   - app: pipewire-media-session
@@ -70,9 +71,11 @@ pacman:
   - app: caffeine-ng
   - app: lazydocker
   - app: downgrade
+  - app: astronvim
   - app: mesa
   - app: arandr
   - app: pavucontrol
+  - app: wezterm-git
   - app: radeontop
   - app: hyperfine
   - app: github-cli
@@ -80,3 +83,5 @@ pacman:
   - app: mailspring
   - app: rbw
   - app: flameshot
+  - app: ntp
+  - app: networkmanager-dispatcher-ntpd

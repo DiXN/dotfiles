@@ -29,12 +29,6 @@ antibody bundle < ~/.zsh_plugin.txt > ~/.zsh_plugins.sh
 echo "[Change login shell]"
 sudo chsh -s /usr/bin/zsh "$(whoami)"
 
-echo "[Installing spacevim ...]"
-yay -S --noconfirm neovim
-curl -sLf https://spacevim.org/install.sh | bash -s -- --install neovim
-mkdir -p ~/.local/share/nvim/shada
-touch ~/.local/share/nvim/shada/main.shada
-
 echo "[Installing awesome config ...]"
 readonly AWESOME_PATH="/home/$(whoami)/.config/awesome"
 git clone --recursive "https://github.com/DiXN/awesome-cfg.git" "$AWESOME_PATH"
