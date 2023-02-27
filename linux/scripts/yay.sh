@@ -3,11 +3,10 @@
 echo '== Installing "yay".'
 
 pushd "/tmp" || exit 1
-git clone 'https://aur.archlinux.org/yay.git'
+git clone https://aur.archlinux.org/yay-bin.git
 
-pushd "yay" || exit 1
+pushd "yay-bin" || exit 1
 makepkg -si --noconfirm
-yay --noconfirm -R go
 
 popd || exit 1
 popd || exit 1
