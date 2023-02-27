@@ -14,6 +14,9 @@ pacman:
   - app: openssh
   - app: neofetch
   - app: neovim
+  - app: rsync
+  - app: nfs-utils
+  - app: unclutter
   - app: pulseaudio-alsa
   - app: pipewire
   - app: pipewire-media-session
