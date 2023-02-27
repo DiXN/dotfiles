@@ -8,6 +8,8 @@ if [ -n "$CI" ]; then
   } &
 fi
 
+readonly DOTFILES_DIR="/home/$(whoami)/Documents/repos"
+
 echo "[Setup Podman ...]"
 echo "$(whoami):100000:65536" | sudo tee /etc/subuid
 echo "$(whoami):100000:65536" | sudo tee /etc/subgid
@@ -19,8 +21,29 @@ yay -S --noconfirm networkmanager
 sudo systemctl enable NetworkManager
 
 echo "[Install LightDM ...]"
-yay -S --noconfirm lightdm lightdm-webkit2-greeter lightdm-gtk-greeter plymouth
+yay -S --noconfirm lightdm lightdm-gtk-greeter plymouth
 sudo systemctl enable lightdm
+
+sudo mkdir -p /usr/share/backgrounds/
+sudo cp "$DOTFILES_DIR/Pictures/wallpapers/4.png"  /usr/share/backgrounds/
+
+# lightdm-gtk-greeter config
+cat << EOF | sudo tee /etc/lightdm/lightdm-gtk-greeter.conf
+[greeter]
+background = /usr/share/backgrounds/4.png
+font-name = Cantarell 10
+xft-antialias = true
+icon-theme-name = Papirus
+screensaver-timeout = 60
+theme-name = Arc
+show-clock = false
+default-user-image = #face-smile
+xft-hintstyle = hintfull
+position = 19%,center 50%,center
+clock-format = 
+panel-position = bottom
+hide-user-image = true
+EOF
 
 echo "[Installing zsh, antibody and tmux ...]"
 yay -S --noconfirm zsh tmux antibody-bin
