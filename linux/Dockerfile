@@ -17,8 +17,6 @@ RUN curl -Ls https://raw.githubusercontent.com/DiXN/dotfiles/chezmoi/linux/scrip
 
 USER mk
 
-RUN chezmoi update -k --force --exclude=encrypted -S /home/mk/Documents/repos/dotfiles
-
 RUN curl -L https://raw.githubusercontent.com/DiXN/dotfiles/chezmoi/linux/scripts/essentials.sh | bash
 
 ENTRYPOINT [ "awesome" ]

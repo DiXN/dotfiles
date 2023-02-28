@@ -8,7 +8,7 @@ if [ -n "$CI" ]; then
   } &
 fi
 
-readonly DOTFILES_DIR="/home/$(whoami)/Documents/repos"
+readonly DOTFILES_DIR="/home/$(whoami)/Documents/repos/dotfiles"
 
 echo "[Setup Podman ...]"
 echo "$(whoami):100000:65536" | sudo tee /etc/subuid
@@ -25,12 +25,12 @@ yay -S --noconfirm lightdm lightdm-gtk-greeter plymouth
 sudo systemctl enable lightdm
 
 sudo mkdir -p /usr/share/backgrounds/
-sudo cp "$DOTFILES_DIR/Pictures/wallpapers/4.png"  /usr/share/backgrounds/
+sudo cp "$DOTFILES_DIR/Pictures/wallpapers/4.jpg"  /usr/share/backgrounds/
 
 # lightdm-gtk-greeter config
 cat << EOF | sudo tee /etc/lightdm/lightdm-gtk-greeter.conf
 [greeter]
-background = /usr/share/backgrounds/4.png
+background = /usr/share/backgrounds/4.jpg
 font-name = Cantarell 10
 xft-antialias = true
 icon-theme-name = Papirus
@@ -58,6 +58,14 @@ git clone --recursive "https://github.com/DiXN/awesome-cfg.git" "$AWESOME_PATH"
 
 yay -S --noconfirm lua-pam-git
 sudo ln -s /usr/lib/lua-pam/liblua_pam.so /usr/lib/lua/5.4
+
+echo "[Applying dotfiles ...]"
+
+if ! [ -z "$CI" ]; then
+  chezmoi apply -k --force -S "$DOTFILES_DIR/dotfiles"
+else
+  chezmoi apply -k --force --exclude=encrypted -S "$DOTFILES_DIR/dotfiles"
+fi
 
 echo "[Installing piavpn ...]"
 yay -S --noconfirm piavpn-bin

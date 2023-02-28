@@ -6,6 +6,7 @@ return {
     default_prog = { '/bin/zsh' },
     window_background_opacity = 0.9,
     color_scheme = 'Abernathy',
+    warn_about_missing_glyphs = false,
     colors = {
         background = '#3c3d4b'
     },
