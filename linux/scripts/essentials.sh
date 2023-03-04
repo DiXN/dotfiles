@@ -1,14 +1,22 @@
 #!/usr/bin/env bash
 
-# cache sudo password
-if [ -z "$CI" ]; then
-  {
-    while :; do sudo -v; sleep 59; done
-    SUDO_LOOP=$!
-  } &
-fi
-
 readonly DOTFILES_DIR="/home/$(whoami)/Documents/repos/dotfiles"
+
+echo "[Applying dotfiles ...]"
+
+if [[ -z "$CI" ]] || [[ -z "$DOCKER" ]]; then
+  PASSWD="$(zenity --password)"
+
+  PASSWORD=$PASSWD expect -f "$DOTFILES_ROOT/linux/scripts/expected"
+
+  EXIT_CODE=$?
+
+  if [ $EXIT_CODE -ne 0 ]; then
+    PASSWORD=$PASSWD expect -f "$DOTFILES_ROOT/linux/scripts/expected"
+  fi
+else
+  chezmoi apply -k --force --exclude=encrypted -S "$DOTFILES_DIR"
+fi
 
 echo "[Install NetworkManager ...]"
 yay -S --noconfirm networkmanager
@@ -39,7 +47,9 @@ panel-position = bottom
 hide-user-image = true
 EOF
 
-if [ -z "$RERUN" ]; then
+readonly AWESOME_PATH="/home/$(whoami)/.config/awesome"
+
+if [[ -z "$RERUN" ]]; then
   echo "[Setup Podman ...]"
   echo "$(whoami):100000:65536" | sudo tee /etc/subuid
   echo "$(whoami):100000:65536" | sudo tee /etc/subgid
@@ -54,25 +64,15 @@ if [ -z "$RERUN" ]; then
   sudo chsh -s /usr/bin/zsh "$(whoami)"
 
   echo "[Installing awesome config ...]"
-  readonly AWESOME_PATH="/home/$(whoami)/.config/awesome"
   git clone --recursive "https://github.com/DiXN/awesome-cfg.git" "$AWESOME_PATH"
 
   yay -S --noconfirm lua-pam-git
   sudo ln -s /usr/lib/lua-pam/liblua_pam.so /usr/lib/lua/5.4
-
 else
   git -c "$AWESOME_PATH" pull
 fi
 
 sudo ln -sf "$DOTFILES_DIR/linux/scripts/system.vsh" /usr/bin
-
-echo "[Applying dotfiles ...]"
-
-if [ -n "$CI" ]; then
-  chezmoi apply -k --force -S "$DOTFILES_DIR/dotfiles"
-else
-  chezmoi apply -k --force --exclude=encrypted -S "$DOTFILES_DIR/dotfiles"
-fi
 
 echo "[Installing piavpn ...]"
 yay -S --noconfirm piavpn-bin
