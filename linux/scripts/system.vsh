@@ -14,6 +14,7 @@ struct Pacman {
 
 fn get_packages() Pacman {
   dotfiles_root := os.getenv('DOTFILES_ROOT')
+  execute('git -c $dotfiles_root pull')
   package_json := execute('cat $dotfiles_root/src/templates/base/pacman.yaml | yq .')
 
   package_output := package_json.output
