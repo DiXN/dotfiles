@@ -51,6 +51,7 @@ pacman:
   - app: lf-bin
   - app: picom
   - app: jq
+  - app: yq
   - app: numlockx
   - app: ttf-fira-code
   - app: nerd-fonts-fira-code
