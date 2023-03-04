@@ -19,6 +19,8 @@ fn get_packages() Pacman {
   }
 
   execute('git -c $dotfiles_root pull')
+
+  // Get JSON representation of the YAML file.
   package_json := execute('cat $dotfiles_root/src/templates/base/pacman.yaml | yq .')
 
   package_output := package_json.output
@@ -48,14 +50,70 @@ fn install_package(package string) {
 	install.close() or { eprintln(error) }
 }
 
+fn print_cmd(command string, error ?string) {
+  mut cmd := os.Command {
+    path: command
+    redirect_stdout: true
+  }
+
+  cmd.start() or {
+    eprintln(error or { err })
+    exit(-1)
+  }
+
+	for !cmd.eof {
+		line := cmd.read_line()
+		println(line)
+	}
+
+	cmd.close() or {
+    eprintln(error or { err })
+    exit(-1)
+	}
+}
+
 mut app := cli.Command{
   name: 'system'
   description: 'system management utility'
   execute: fn (cmd cli.Command) ! {
-    cli.print_help_for_command(cmd) !
     cmd.execute_help()
   }
   commands: [
+    cli.Command{
+      name: 'build'
+      description: 'Build mkosi image.'
+      execute: fn (cmd cli.Command) ! {
+        dotfiles_root := os.getenv_opt('DOTFILES_ROOT') or {
+          eprintln('["DOTFILES_ROOT" environment variable must be set ...]')
+          exit(-1)
+        }
+
+        println('[Build mkosi image ...]')
+
+        os.chdir('$dotfiles_root/linux/mkosi/') or {
+          eprintln(err)
+          exit(-1)
+        }
+
+        execute('rm -f ./mkosi.skeleton.tar')
+        execute('docker export -o ./mkosi.skeleton.tar $(docker run -d arch-full /bin/true)')
+
+        print_cmd('sudo mkosi -ff', none)
+      }
+    },
+    cli.Command{
+      name: 'update'
+      description: 'Runs "essentials.sh".'
+      execute: fn (cmd cli.Command) ! {
+        dotfiles_root := os.getenv_opt('DOTFILES_ROOT') or {
+          eprintln('["DOTFILES_ROOT" environment variable must be set ...]')
+          exit(-1)
+        }
+
+        println('[Rerun "essentials.sh" ...]')
+        print_cmd('RERUN=true bash $dotfiles_root/linux/scripts/essentials.sh', none)
+      }
+    },
     cli.Command{
       name: 'install'
       description: 'Install image on target disk.'
@@ -64,8 +122,8 @@ mut app := cli.Command{
         target_disk := cmd.args.first()
         println('[Installing system on disk: "$target_disk" ...]')
 
-        os.mkdir_all('/mnt/nas') or { 
-          eprintln(err) 
+        os.mkdir_all('/mnt/nas') or {
+          eprintln(err)
           exit(-1)
         }
 
@@ -74,43 +132,14 @@ mut app := cli.Command{
 
         error := '[Could not install system ...]'
 
-        mut dd := os.Command {
-          path: 'sudo dd if=/mnt/nas/iso/arch.img of=$target_disk bs=4096 conv=noerror,sync'
-          redirect_stdout: true
-        }
+        print_cmd('sudo dd if=/mnt/nas/iso/arch.img of=$target_disk bs=4096 conv=noerror,sync', error)
 
-        dd.start() or { 
-          eprintln(error)
-          exit(-1)
-        }
-
-	      for !dd.eof {
-		      line := dd.read_line()
-		      println(line)
-	      }
-
-	      dd.close() !
-
-        mut grow := os.Command {
-          path: 'sudo growpart $target_disk 2'
-          redirect_stdout: true
-        }
-
-        grow.start() or { 
-          eprintln(error)
-          exit(-1)
-        }
-
-	      for !grow.eof {
-		      line := grow.read_line()
-		      println(line)
-	      }
-
-	      grow.close() !
+        print_cmd('sudo growpart $target_disk 2', error)
       },
     },
     cli.Command{
       name: 'packages'
+      description: 'Install or update packages.'
       execute: fn (cmd cli.Command) ! {
         cli.print_help_for_command(cmd) !
         cmd.execute_help()
@@ -152,4 +181,3 @@ mut app := cli.Command{
 
 app.setup()
 app.parse(os.args)
-
