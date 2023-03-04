@@ -19,7 +19,7 @@ pacman:
   - app: unclutter
   - app: pulseaudio-alsa
   - app: pipewire
-  - app: pipewire-media-session
+  - app: wireplumber
   - app: pipewire-pulse
   - app: nautilus
   - app: rofi
@@ -67,6 +67,7 @@ pacman:
   - app: zenity
   - app: telegram-desktop-bin
   - app: podman
+  - app: podman-compose
   - app: brave-bin
   - app: firefox
   - app: easyeffects
@@ -84,6 +85,7 @@ pacman:
   - app: github-cli
   - app: clifm
   - app: mailspring
+  - app: vlang-git
   - app: rbw
   - app: flameshot
   - app: ntp
