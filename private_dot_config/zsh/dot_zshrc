@@ -119,6 +119,12 @@ export PATH="$VULKAN_SDK/bin:$PATH"
 export LD_LIBRARY_PATH=$VULKAN_SDK/lib
 export VK_LAYER_PATH=$VULKAN_SDK/etc/vulkan/explicit_layer.d
 
+
+# dotfiles
+#
+export DOTFILES_ROOT="$HOME/Documents/repos/dotfiles"
+
+
 # rust
 # export CARGO_HOME="/home/$USER/.config/cargo"
 # export RUSTUP_HOME="/home/$USER/.config/rustup"
