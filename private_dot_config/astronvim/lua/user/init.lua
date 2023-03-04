@@ -1,5 +1,8 @@
 return {
     lsp = {
+        servers = {
+          "vls",
+        },
         formatting = {
             format_on_save = false,
             indent_style = "space",
@@ -18,4 +21,16 @@ return {
             tabstop = 2,
         },
     },
+    plugins = {
+        init = {
+            { "cappyzawa/trim.nvim", config = function()
+                    require("trim").setup({
+                        ft_blocklist = {"markdown"},
+                    })
+                end
+            },
+            "lambdalisue/suda.vim",
+            "ollykel/v-vim"
+        },
+    }
 }
