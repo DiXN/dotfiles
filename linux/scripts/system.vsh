@@ -13,7 +13,11 @@ struct Pacman {
 }
 
 fn get_packages() Pacman {
-  dotfiles_root := os.getenv('DOTFILES_ROOT')
+  dotfiles_root := os.getenv_opt('DOTFILES_ROOT') or {
+    eprintln('["DOTFILES_ROOT" environment variable must be set ...]')
+    exit(-1)
+  }
+
   execute('git -c $dotfiles_root pull')
   package_json := execute('cat $dotfiles_root/src/templates/base/pacman.yaml | yq .')
 
