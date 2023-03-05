@@ -5,6 +5,15 @@
 # Add wisely, as too many plugins slow down shell startup.
 [ -n "$DISPLAY" ] && plugins+=(tmux)
 
+# Configure history
+
+export HISTFILE=~/.config/zsh/.zsh_history
+export HISTSIZE=10000
+export SAVEHIST=10000
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt SHARE_HISTORY
+
 # Source tmux config
 tmux source-file ~/.config/tmux/.tmux.conf
 
@@ -207,6 +216,9 @@ source /usr/share/fzf/completion.zsh
 bindkey  "^[[1~"   beginning-of-line
 bindkey  "^[[4~"   end-of-line
 bindkey  "^[[3~"   delete-char
+
+bindkey  "^[[H"   beginning-of-line
+bindkey  "^[[F"   end-of-line
 
 #source /home/mk/.config/broot/launcher/bash/br
 
