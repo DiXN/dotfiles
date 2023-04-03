@@ -35,6 +35,9 @@ echo "[Install Syncthing ...]"
 yay -S --noconfirm syncthing
 sudo systemctl enable syncthing@root.service
 
+echo "[Enable SSH ...]"
+sudo systemctl enable sshd
+
 sudo mkdir -p /usr/share/backgrounds/
 sudo cp "$DOTFILES_DIR/Pictures/wallpapers/4.jpg"  /usr/share/backgrounds/
 
