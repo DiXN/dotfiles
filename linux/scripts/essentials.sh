@@ -26,6 +26,15 @@ echo "[Install LightDM ...]"
 yay -S --noconfirm lightdm lightdm-gtk-greeter plymouth
 sudo systemctl enable lightdm
 
+echo "[Install Docker ...]"
+yay -S --noconfirm docker docker-compose
+sudo systemctl enable docker
+sudo usermod -aG docker mk
+
+echo "[Install Syncthing ...]"
+yay -S --noconfirm syncthing
+sudo systemctl enable syncthing@root.service
+
 sudo mkdir -p /usr/share/backgrounds/
 sudo cp "$DOTFILES_DIR/Pictures/wallpapers/4.jpg"  /usr/share/backgrounds/
 
