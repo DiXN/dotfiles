@@ -10,6 +10,7 @@ pacman:
   - app: scrcpy
   - app: python
   - app: python-dbus
+  - app: awesome-git
   - app: imagemagick
   - app: openssh
   - app: neofetch
@@ -17,13 +18,11 @@ pacman:
   - app: rsync
   - app: nfs-utils
   - app: unclutter
-  - app: pulseaudio-alsa
   - app: pipewire
   - app: wireplumber
   - app: pipewire-pulse
   - app: nautilus
   - app: rofi
-  - app: usbaudio
   - app: alacritty
   - app: lazygit
   - app: dust
@@ -31,13 +30,12 @@ pacman:
   - app: xorg-xrandr
   - app: xorg-xinit
   - app: xorg-xinput
-  - app: awesome-git
   - app: nitrogen
   - app: pamixer
   - app: python-pynvim
   - app: xclip
   - app: xidlehook
-  - app: exa
+  - app: eza
   - app: htop
   - app: scrot
   - app: mesa-utils
