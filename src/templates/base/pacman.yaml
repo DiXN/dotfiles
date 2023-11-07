@@ -14,7 +14,9 @@ pacman:
   - app: openssh
   - app: neofetch
   - app: neovim
+  - app: micro
   - app: rsync
+  - app: wezterm-git
   - app: nfs-utils
   - app: unclutter
   - app: pipewire
@@ -29,17 +31,14 @@ pacman:
   - app: python-pynvim
   - app: eza
   - app: htop
-  - app: mesa-utils
   - app: tectonic
   - app: biber
-  - app: ttf-material-design-icons-desktop-git
-  - app: adobe-source-code-pro-fonts
   - app: cantarell-fonts
   - app: shellcheck-bin
   - app: jq
   - app: yq
   - app: ttf-fira-code
-  - app: nerd-fonts-fira-code
+  - app: ttf-firacode-nerd
   - app: fzf
   - app: kexec-tools
   - app: tree
@@ -61,10 +60,9 @@ pacman:
   - app: caffeine-ng
   - app: lazydocker
   - app: downgrade
-  - app: astronvim
   - app: mesa
+  - app: mesa-utils
   - app: pavucontrol
-  - app: wezterm-git
   - app: radeontop
   - app: hyperfine
   - app: github-cli
