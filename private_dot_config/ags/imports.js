@@ -34,7 +34,7 @@ globalThis['Notifications'] = Notifications;
 // globalThis['SystemTray'] = SystemTray;
 
 const { exec } = Utils;
-const SCREEN_WIDTH = Number(exec(`bash -c "hyprctl monitors -j | gojq '.[].width / .[].scale' | awk '{print int($1+0.5)}'"`));
-const SCREEN_HEIGHT = Number(exec(`bash -c "hyprctl monitors -j | gojq '.[].height / .[].scale' | awk '{print int($1+0.5)}'"`));
+const SCREEN_WIDTH = Number(exec(`bash -c "xrandr --current | grep '*' | uniq | awk '{print $1}' | cut -d 'x' -f1 | head -1"`));
+const SCREEN_HEIGHT = Number(exec(`bash -c "xrandr --current | grep '*' | uniq | awk '{print $1}' | cut -d 'x' -f2 | head -1"`));
 globalThis['SCREEN_WIDTH'] = SCREEN_WIDTH;
 globalThis['SCREEN_HEIGHT'] = SCREEN_HEIGHT;

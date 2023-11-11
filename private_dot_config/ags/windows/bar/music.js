@@ -3,17 +3,18 @@ import Mpris from 'resource:///com/github/Aylur/ags/service/mpris.js';
 import Audio from 'resource:///com/github/Aylur/ags/service/audio.js';
 const { execAsync, exec } = Utils;
 import { AnimatedCircProg } from "../../lib/animatedcircularprogress.js";
+import { showMusicControls } from '../../variables.js';
 
 const TrackProgress = () => {
     const _updateProgress = (circprog) => {
         const mpris = Mpris.getPlayer('');
         if (!mpris) return;
         // Set circular progress (font size cuz that's how this hacky circprog works)
-        circprog.style = `font-size: ${mpris.position / mpris.length * 100}px;`
+        circprog.css = `font-size: ${Math.max(mpris.position / mpris.length * 100, 0)}px;`
     }
     return AnimatedCircProg({
         className: 'bar-music-circprog',
-        valign: 'center',
+        vpack: 'center',
         connections: [ // Update on change/once every 3 seconds
             [Mpris, _updateProgress],
             [3000, _updateProgress]
@@ -24,8 +25,9 @@ const TrackProgress = () => {
 export const ModuleMusic = () => Widget.EventBox({
     onScrollUp: () => execAsync('hyprctl dispatch workspace -1'),
     onScrollDown: () => execAsync('hyprctl dispatch workspace +1'),
-    onSecondaryClick: () => Mpris.getPlayer('')?.next(),
-    onMiddleClick: () => Mpris.getPlayer('')?.playPause(),
+    onPrimaryClickRelease: () => showMusicControls.setValue(!showMusicControls.value),
+    onSecondaryClickRelease: () => Mpris.getPlayer('')?.next(),
+    onMiddleClickRelease: () => Mpris.getPlayer('')?.playPause(),
     child: Widget.Box({
         className: 'bar-group-margin bar-sides',
         children: [
@@ -36,14 +38,16 @@ export const ModuleMusic = () => Widget.EventBox({
                         homogeneous: true,
                         children: [Widget.Overlay({
                             child: Widget.Box({
-                                valign: 'center',
+                                vpack: 'center',
                                 className: 'bar-music-playstate',
+                                homogeneous: true,
                                 children: [Widget.Label({
-                                    valign: 'center',
+                                    vpack: 'center',
                                     className: 'bar-music-playstate-txt',
+                                    justification: 'center',
                                     connections: [[Mpris, label => {
                                         const mpris = Mpris.getPlayer('');
-                                        label.label = `${mpris !== null && mpris.playBackStatus == 'Playing' ? '' : ''}`;
+                                        label.label = `${mpris !== null && mpris.playBackStatus == 'Playing' ? 'pause' : 'play_arrow'}`;
                                     }]],
                                 })],
                                 connections: [[Mpris, label => {

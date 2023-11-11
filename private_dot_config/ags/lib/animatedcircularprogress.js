@@ -11,9 +11,9 @@ import { Utils, Widget } from '../imports.js';
 // color for progress color
 // font size for progress value (0-100px) (hacky i know, but i want animations)
 // TODO: border-radius for rounded ends maybe (unimportant)
-export const AnimatedCircProg = (props) => Widget({
+export const AnimatedCircProg = (props) => Widget.DrawingArea({
     ...props,
-    type: Gtk.DrawingArea,
+    // type: Gtk.DrawingArea,
     setup: (area) => {
         const styleContext = area.get_style_context();
         const width = styleContext.get_property('min-height', Gtk.StateFlags.NORMAL);
@@ -36,7 +36,7 @@ export const AnimatedCircProg = (props) => Widget({
             area.set_size_request(width + marginLeft + marginRight, height + marginTop + marginBottom);
 
             const progressValue = styleContext.get_property('font-size', Gtk.StateFlags.NORMAL) / 100.0;
-            
+
             const bg_stroke = styleContext.get_property('min-width', Gtk.StateFlags.NORMAL);
             const fg_stroke = bg_stroke - padding;
             const radius = Math.min(width, height) / 2.0 - Math.max(bg_stroke, fg_stroke) / 2.0;
@@ -55,6 +55,8 @@ export const AnimatedCircProg = (props) => Widget({
             cr.arc(center_x, center_y, radius, 0, 2 * Math.PI);
             cr.setLineWidth(bg_stroke);
             cr.stroke();
+
+            if (progressValue == 0) return;
 
             // Draw progress
             const color = styleContext.get_property('color', Gtk.StateFlags.NORMAL);

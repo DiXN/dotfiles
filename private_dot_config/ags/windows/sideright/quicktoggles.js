@@ -62,7 +62,7 @@ export const HyprToggleIcon = (icon, name, hyprlandConfigValue, props = {}) => W
             button.toggleClassName('sidebar-button-active', currentOption == 0);
         }).catch(print);
     },
-    child: MaterialIcon(icon, 'norm', { halign: 'center' }),
+    child: MaterialIcon(icon, 'norm', { hpack: 'center' }),
     setup: button => {
         button.toggleClassName('sidebar-button-active', JSON.parse(Utils.exec(`hyprctl -j getoption ${hyprlandConfigValue}`)).int == 1);
         setupCursorHover(button);
@@ -137,6 +137,7 @@ export const ModulePowerIcon = (props = {}) => Widget.Button({
     tooltipText: 'Session',
     onClicked: () => {
         App.toggleWindow('session');
+        App.closeWindow('sideright');
     },
     child: MaterialIcon('power_settings_new', 'norm'),
     setup: button => {
