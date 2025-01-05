@@ -1,51 +1,81 @@
+"use strict";
 // Import
-import { App, Utils } from './imports.js';
-// Windows
-import Bar from './windows/bar/main.js';
-import Cheatsheet from './windows/cheatsheet/main.js';
-import DesktopBackground from './windows/desktopbackground/main.js';
-import Dock from './windows/dock/main.js';
-import { CornerTopleft, CornerTopright, CornerBottomleft, CornerBottomright } from './windows/screencorners/main.js';
-import Indicator from './windows/indicators/main.js';
-import Osk from './windows/onscreenkeyboard/main.js';
-import Overview from './windows/overview/main.js';
-import Session from './windows/session/main.js'; 
-import SideRight from './windows/sideright/main.js';
+import Gdk from 'gi://Gdk';
+import App from 'resource:///com/github/Aylur/ags/app.js'
+import Wallselect from './modules/wallselect/main.js';
+// Stuff
+import userOptions from './modules/.configuration/user_options.js';
+import { firstRunWelcome, startBatteryWarningService } from './services/messages.js';
+import { startAutoDarkModeService } from './services/darkmode.js';
+// Widgets
+import { Bar, BarCornerTopleft, BarCornerTopright } from './modules/bar/main.js';
+import Cheatsheet from './modules/cheatsheet/main.js';
+// import DesktopBackground from './modules/desktopbackground/main.js';
+import Dock from './modules/dock/main.js';
+import Corner from './modules/screencorners/main.js';
+import Crosshair from './modules/crosshair/main.js';
+import Indicator from './modules/indicators/main.js';
+import Osk from './modules/onscreenkeyboard/main.js';
+import Overview from './modules/overview/main.js';
+import Session from './modules/session/main.js';
+import SideLeft from './modules/sideleft/main.js';
+import SideRight from './modules/sideright/main.js';
+import { COMPILED_STYLE_DIR } from './init.js';
 
-const CLOSE_ANIM_TIME = 150;
+const range = (length, start = 1) => Array.from({ length }, (_, i) => i + start);
+function forMonitors(widget) {
+    const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
+    return range(n, 0).map(widget).flat(1);
+}
+function forMonitorsAsync(widget) {
+    const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
+    return range(n, 0).forEach((n) => widget(n).catch(print))
+}
 
-// Init cache
-Utils.exec(`bash -c 'mkdir -p ~/.cache/ags/user'`);
+// Start stuff
+handleStyles(true);
+startAutoDarkModeService().catch(print);
+firstRunWelcome().catch(print);
+startBatteryWarningService().catch(print)
 
-// SCSS compilation
-Utils.exec(`bash -c 'echo "" > ${App.configDir}/scss/_musicwal.scss'`); // reset music styles
-Utils.exec(`bash -c 'echo "" > ${App.configDir}/scss/_musicmaterial.scss'`); // reset music styles
-Utils.exec(`sassc ${App.configDir}/scss/main.scss ${App.configDir}/style.css`);
-App.resetCss();
-App.applyCss(`${App.configDir}/style.css`);
+const Windows = () => [
+    // forMonitors(DesktopBackground),
+    forMonitors(Crosshair),
+    Overview(),
+    forMonitors(Indicator),
+    forMonitors(Cheatsheet),
+    SideLeft(),
+    SideRight(),
+    forMonitors(Osk),
+    forMonitors(Session),
+    ...(userOptions.asyncGet().dock.enabled ? [forMonitors(Dock)] : []),
+    ...(userOptions.asyncGet().appearance.fakeScreenRounding !== 0 ? [
+        forMonitors((id) => Corner(id, 'top left', true)),
+        forMonitors((id) => Corner(id, 'top right', true)),
+        forMonitors((id) => Corner(id, 'bottom left', true)),
+        forMonitors((id) => Corner(id, 'bottom right', true)),
+    ] : []),
+    ...(userOptions.asyncGet().appearance.barRoundCorners ? [
+        forMonitors(BarCornerTopleft),
+        forMonitors(BarCornerTopright),
+    ] : []),
+    Wallselect(),
+];
 
-// Config object
-export default {
-    css: `${App.configDir}/style.css`,
+const CLOSE_ANIM_TIME = 180; // Longer than actual anim time to make sure widgets animate fully
+const closeWindowDelays = {}; // For animations
+for (let i = 0; i < (Gdk.Display.get_default()?.get_n_monitors() || 1); i++) {
+    closeWindowDelays[`osk${i}`] = CLOSE_ANIM_TIME;
+}
+
+App.config({
+    css: `${COMPILED_STYLE_DIR}/style.css`,
     stackTraceOnError: true,
-    closeWindowDelay: { // For animations
-        'sideright': CLOSE_ANIM_TIME,
-        'sideleft': CLOSE_ANIM_TIME,
-        'osk': CLOSE_ANIM_TIME,
-    },
-    windows: [
-        Bar(),
-        CornerTopleft(),
-        CornerTopright(),
-        CornerBottomleft(),
-        CornerBottomright(),
-        DesktopBackground(),
-        Dock(),
-        Overview(),
-        Indicator(),
-        Cheatsheet(),
-        SideRight(),
-        Osk(), // On-screen keyboard
-        Session(), // Power menu, if that's what you like to call it
-    ],
-};
+    closeWindowDelay: closeWindowDelays,
+    windows: Windows().flat(1)
+});
+
+// Stuff that don't need to be toggled. And they're async so ugh...
+forMonitorsAsync(Bar);
+// Bar().catch(print); // Use this to debug the bar. Single monitor only.
+

@@ -1,16 +1,29 @@
 #!/usr/bin/env bash
 
-cd "$HOME/.config/ags" || exit
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+CONFIG_DIR="$XDG_CONFIG_HOME/ags"
+CACHE_DIR="$XDG_CACHE_HOME/ags"
+STATE_DIR="$XDG_STATE_HOME/ags"
 
-# filelist=$(ls 'images/svg/template/' | grep -v /)
+term_alpha=90 #Set this to < 100 make all your terminals transparent
+# sleep 0 # idk i wanted some delay or colors dont get applied properly
+if [ ! -d "$CACHE_DIR"/user/generated ]; then
+    mkdir -p "$CACHE_DIR"/user/generated
+fi
+cd "$CONFIG_DIR" || exit
 
-# cat scss/_material.scss
-colornames=$(cat scss/_material.scss | cut -d: -f1)
-colorstrings=$(cat scss/_material.scss | cut -d: -f2 | cut -d ' ' -f2 | cut -d ";" -f1)
-IFS=$'\n'
-# filearr=( $filelist ) # Get colors
-colorlist=( $colornames ) # Array of color names
-colorvalues=( $colorstrings ) # Array of color values
+colornames=''
+colorstrings=''
+colorlist=()
+colorvalues=()
+
+# wallpath=$(swww query | head -1 | awk -F 'image: ' '{print $2}')
+# wallpath_png="$CACHE_DIR/user/generated/hypr/lockscreen.png"
+# convert "$wallpath" "$wallpath_png"
+# wallpath_png=$(echo "$wallpath_png" | sed 's/\//\\\//g')
+# wallpath_png=$(sed 's/\//\\\\\//g' <<< "$wallpath_png")
 
 transparentize() {
   local hex="$1"
@@ -26,44 +39,12 @@ transparentize() {
 
 get_light_dark() {
     lightdark=""
-    if [ ! -f ~/.cache/ags/user/colormode.txt ]; then
-        echo "" > ~/.cache/ags/user/colormode.txt
-    else 
-        lightdark=$(cat ~/.cache/ags/user/colormode.txt) # either "" or "-l"
+    if [ ! -f "$STATE_DIR/user/colormode.txt" ]; then
+        echo "" > "$STATE_DIR/user/colormode.txt"
+    else
+        lightdark=$(sed -n '1p' "$STATE_DIR/user/colormode.txt")
     fi
     echo "$lightdark"
-}
-
-# apply_svgs() {
-#     for i in "${!filearr[@]}"; do # Loop through folders
-#         colorvalue=$(echo "$colorscss" | grep "${filearr[$i]}" | awk '{print $2}' | cut -d ";" -f1)
-#         for file in images/svg/template/"${filearr[$i]}"/*; do # Loop through files
-#             cp "$file" images/svg/
-#             sed -i "s/black/$colorvalue/g" images/svg/"${file##*/}"
-#         done
-#     done
-# }
-
-apply_gtklock() {
-    # Check if scripts/templates/gtklock/main.scss exists
-    if [ ! -f "scripts/templates/gtklock/main.scss" ]; then
-        echo "SCSS not found. Fallback to CSS."
-    else
-        sassc ~/.config/ags/scripts/templates/gtklock/main.scss ~/.config/gtklock/style.css
-        return
-    fi
-    
-    # Check if scripts/templates/gtklock/style.css exists
-    if [ ! -f "scripts/templates/gtklock/style.css" ]; then
-        echo "Template file not found for Gtklock. Skipping that."
-        return
-    fi
-    # Copy template
-    cp "scripts/templates/gtklock/style.css" "$HOME/.config/gtklock/style.css"
-    # Apply colors
-    for i in "${!colorlist[@]}"; do
-        sed -i "s/${colorlist[$i]};/${colorvalues[$i]};/g" "$HOME/.config/gtklock/style.css"
-    done
 }
 
 apply_fuzzel() {
@@ -73,75 +54,133 @@ apply_fuzzel() {
         return
     fi
     # Copy template
-    cp "scripts/templates/fuzzel/fuzzel.ini" "$HOME/.config/fuzzel/fuzzel.ini"
+    mkdir -p "$CACHE_DIR"/user/generated/fuzzel
+    cp "scripts/templates/fuzzel/fuzzel.ini" "$CACHE_DIR"/user/generated/fuzzel/fuzzel.ini
     # Apply colors
     for i in "${!colorlist[@]}"; do
-        sed -i "s/${colorlist[$i]}ff/${colorvalues[$i]#\#}ff/g" "$HOME/.config/fuzzel/fuzzel.ini"
-        sed -i "s/${colorlist[$i]}cc/${colorvalues[$i]#\#}cc/g" "$HOME/.config/fuzzel/fuzzel.ini"
+        sed -i "s/{{ ${colorlist[$i]} }}/${colorvalues[$i]#\#}/g" "$CACHE_DIR"/user/generated/fuzzel/fuzzel.ini
     done
+
+    cp  "$CACHE_DIR"/user/generated/fuzzel/fuzzel.ini "$XDG_CONFIG_HOME"/fuzzel/fuzzel.ini
 }
 
-apply_foot() {
-    # Check if scripts/templates/foot/foot.ini exists
-    if [ ! -f "scripts/templates/foot/foot.ini" ]; then
-        echo "Template file not found for Foot. Skipping that."
+apply_term() {
+    # Check if terminal escape sequence template exists
+    if [ ! -f "scripts/templates/terminal/sequences.txt" ]; then
+        echo "Template file not found for Terminal. Skipping that."
         return
     fi
     # Copy template
-    cp "scripts/templates/foot/foot.ini" "$HOME/.config/foot/foot.ini"
+    mkdir -p "$CACHE_DIR"/user/generated/terminal
+    cp "scripts/templates/terminal/sequences.txt" "$CACHE_DIR"/user/generated/terminal/sequences.txt
     # Apply colors
     for i in "${!colorlist[@]}"; do
-        sed -i "s/${colorlist[$i]} #/${colorvalues[$i]#\#}/g" "$HOME/.config/foot/foot.ini" # note: ff because theyre opaque
+        sed -i "s/${colorlist[$i]} #/${colorvalues[$i]#\#}/g" "$CACHE_DIR"/user/generated/terminal/sequences.txt
+    done
+
+    sed -i "s/\$alpha/$term_alpha/g" "$CACHE_DIR/user/generated/terminal/sequences.txt"
+
+    for file in /dev/pts/*; do
+      if [[ $file =~ ^/dev/pts/[0-9]+$ ]]; then
+        cat "$CACHE_DIR"/user/generated/terminal/sequences.txt > "$file"
+      fi
     done
 }
 
 apply_hyprland() {
-    # Check if scripts/templates/hypr/colors.conf exists
-    if [ ! -f "scripts/templates/hypr/colors.conf" ]; then
+    # Check if scripts/templates/hypr/hyprland/colors.conf exists
+    if [ ! -f "scripts/templates/hypr/hyprland/colors.conf" ]; then
         echo "Template file not found for Hyprland colors. Skipping that."
         return
     fi
     # Copy template
-    cp "scripts/templates/hypr/colors.conf" "$HOME/.config/hypr/colors.conf"
+    mkdir -p "$CACHE_DIR"/user/generated/hypr/hyprland
+    cp "scripts/templates/hypr/hyprland/colors.conf" "$CACHE_DIR"/user/generated/hypr/hyprland/colors.conf
     # Apply colors
     for i in "${!colorlist[@]}"; do
-        sed -i "s/{{ ${colorlist[$i]} }}/${colorvalues[$i]#\#}/g" "$HOME/.config/hypr/colors.conf"
+        sed -i "s/{{ ${colorlist[$i]} }}/${colorvalues[$i]#\#}/g" "$CACHE_DIR"/user/generated/hypr/hyprland/colors.conf
     done
+
+    cp "$CACHE_DIR"/user/generated/hypr/hyprland/colors.conf "$XDG_CONFIG_HOME"/hypr/hyprland/colors.conf
+}
+
+apply_hyprlock() {
+    # Check if scripts/templates/hypr/hyprlock.conf exists
+    if [[ ! -f "scripts/templates/hypr/hyprlock.conf" ]] then
+        echo "Template file not found for hyprlock. Skipping that."
+        return
+    fi
+    # Copy template
+    mkdir -p "$CACHE_DIR"/user/generated/hypr/
+    if [[ -f "$HOME/.ags/templates/hypr/hyprlock.conf" ]] then
+        cp "$HOME/.ags/templates/hypr/hyprlock.conf" "$CACHE_DIR"/user/generated/hypr/hyprlock.conf
+    else
+        cp "scripts/templates/hypr/hyprlock.conf" "$CACHE_DIR"/user/generated/hypr/hyprlock.conf
+    fi
+    # Apply colors
+    # sed -i "s/{{ SWWW_WALL }}/${wallpath_png}/g" "$CACHE_DIR"/user/generated/hypr/hyprlock.conf
+    for i in "${!colorlist[@]}"; do
+        sed -i "s/{{ ${colorlist[$i]} }}/${colorvalues[$i]#\#}/g" "$CACHE_DIR"/user/generated/hypr/hyprlock.conf
+    done
+
+    cp "$CACHE_DIR"/user/generated/hypr/hyprlock.conf "$XDG_CONFIG_HOME"/hypr/hyprlock.conf
+}
+
+apply_lightdark() {
+    lightdark=$(get_light_dark)
+    if [ "$lightdark" = "light" ]; then
+        gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
+    else
+        gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+    fi
 }
 
 apply_gtk() { # Using gradience-cli
-    lightdark=$(get_light_dark)
+    usegradience=$(sed -n '4p' "$STATE_DIR/user/colormode.txt")
+    if [[ "$usegradience" = "nogradience" ]]; then
+        rm "$XDG_CONFIG_HOME/gtk-3.0/gtk.css"
+        rm "$XDG_CONFIG_HOME/gtk-4.0/gtk.css"
+        return
+    fi
 
-    background=$(cat scss/_material.scss | grep "background" | awk '{print $2}' | cut -d ";" -f1)
-    secondaryContainer=$(cat scss/_material.scss | grep "secondaryContainer" | awk '{print $2}' | cut -d ";" -f1)
-    
-    # Copy template 
-    cp "scripts/templates/gradience/preset_template.json" "scripts/templates/gradience/preset.json"
+    # Copy template
+    mkdir -p "$CACHE_DIR"/user/generated/gradience
+    cp "scripts/templates/gradience/preset.json" "$CACHE_DIR"/user/generated/gradience/preset.json
 
     # Apply colors
     for i in "${!colorlist[@]}"; do
-        sed -i "s/{{ ${colorlist[$i]} }}/${colorvalues[$i]}/g" "scripts/templates/gradience/preset.json"
+        sed -i "s/{{ ${colorlist[$i]} }}/${colorvalues[$i]}/g" "$CACHE_DIR"/user/generated/gradience/preset.json
     done
 
-    gradience-cli apply -p scripts/templates/gradience/preset.json --gtk both
+    mkdir -p "$XDG_CONFIG_HOME/presets" # create gradience presets folder
+    gradience-cli apply -p "$CACHE_DIR"/user/generated/gradience/preset.json --gtk both
 
-    # Set light/dark preference 
-    # And set GTK theme manually as Gradience defaults to light adw-gtk3 
+    # And set GTK theme manually as Gradience defaults to light adw-gtk3
     # (which is unreadable when broken when you use dark mode)
-    if [ "$lightdark" = "-l" ]; then
-        gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
-        gsettings set org.gnome.desktop.interface gtk-application-prefer-dark-theme false
-        gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3
+    lightdark=$(get_light_dark)
+    if [ "$lightdark" = "light" ]; then
+        gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3'
     else
-        gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-        gsettings set org.gnome.desktop.interface gtk-application-prefer-dark-theme true
         gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
     fi
 }
 
-# apply_svgs
-apply_gtklock
-apply_fuzzel
-apply_foot
-apply_hyprland
-apply_gtk
+apply_ags() {
+    ags run-js "handleStyles(false);"
+    ags run-js 'openColorScheme.value = true; Utils.timeout(2000, () => openColorScheme.value = false);'
+}
+
+
+colornames=$(cat $STATE_DIR/scss/_material.scss | cut -d: -f1)
+colorstrings=$(cat $STATE_DIR/scss/_material.scss | cut -d: -f2 | cut -d ' ' -f2 | cut -d ";" -f1)
+IFS=$'\n'
+colorlist=( $colornames ) # Array of color names
+colorvalues=( $colorstrings ) # Array of color values
+
+apply_ags &
+apply_hyprland &
+apply_hyprlock &
+apply_lightdark &
+apply_gtk &
+apply_fuzzel &
+apply_term &

@@ -1,32 +1,33 @@
-// Made to be pixel-perfect with 11pt font size
 // 1rem = 11pt = 14.6666666667px
+$bar_ws_width: 1.774rem;
+$bar_ws_width_focus: 0.614rem;
+$bar_ws_width_focus_active: 2.045rem;
 
-// Init
-$black: black;
-$white: white;
-$notchSecondaryContainer: $secondaryContainer;
-$notchOnSecondaryContainer: $onSecondaryContainer;
-$notchPrimary: $primary;
-$notchOnPrimary: $onPrimary;
-
-// Check dark mode. Set colors accordingly for the fake snotch that's always black
-@if $darkmode ==true {
-    $notchSecondaryContainer: $secondaryContainer;
-    $notchOnSecondaryContainer: $onSecondaryContainer;
-    $notchPrimary: $primary;
-    $notchOnPrimary: $onPrimary;
+@mixin bar-group-rounding {
+    @include small-rounding;
 }
 
-@else {
-    $notchSecondaryContainer: $onSecondaryContainer;
-    $notchOnSecondaryContainer: $secondaryContainer;
-    $notchPrimary: $primaryContainer;
-    $notchOnPrimary: $onPrimaryContainer;
+.bar-height {
+    min-height: 2.727rem;
 }
 
 .bar-bg {
-    background-color: $t_background;
+    background-color: $layer0;
     min-height: 2.727rem;
+}
+
+.bar-bg-focus {
+    background-color: $layer0;
+    min-height: 1.364rem;
+}
+
+.bar-bg-nothing {
+    background-color: $layer0;
+    min-height: 2px;
+}
+
+.bar-bg-focus-batterylow {
+    background-color: mix($layer0, $errorContainer, 80%);
 }
 
 .bar-sidespace {
@@ -34,31 +35,15 @@ $notchOnPrimary: $onPrimary;
 }
 
 .bar-group-margin {
-    padding: 0.2rem;
+    padding: 0.273rem 0rem;
 }
 
 .bar-group {
-    // @include elevation-border;
-    background-color: $t_surface;
-}
-
-.bar-group-center {
-    border-bottom-left-radius: 1.364rem;
-    border-bottom-right-radius: 1.364rem;
-    padding: 0.2rem;
-    // background-color: $t_surface;
-    background-color: $black; // Hard code: fake notch
-}
-
-.corner-bar-group {
-    border-radius: 1.364rem; // Half of bar height
-    border-width: 0.068rem;
-    // background-color: $t_surface;
-    background-color: $black; // Hard code: fake notch
+    background-color: $layer1;
 }
 
 .bar-group-pad {
-    padding: 0rem 1.023rem;
+    padding: 0.205rem;
 }
 
 .bar-group-pad-less {
@@ -66,35 +51,16 @@ $notchOnPrimary: $onPrimary;
 }
 
 .bar-group-pad-system {
-    padding-left: 1.023rem;
-    padding-right: 0.547rem;
+    padding: 0rem 0.341rem;
 }
 
 .bar-group-pad-music {
     padding-right: 1.023rem;
-    // padding-left: 0.273rem;
-}
-
-.bar-group-pad-left {
-    padding-left: 1.364rem;
-    padding-right: 0.681rem;
-}
-
-.bar-group-pad-right {
-    padding-left: 0.681rem;
-    padding-right: 1.364rem;
-}
-
-.bar-group-pad-leftonly {
-    padding-left: 0.681rem;
-}
-
-.bar-group-pad-rightonly {
-    padding-right: 0.681rem;
+    padding-left: 0.341rem;
 }
 
 .bar-group-standalone {
-    border-radius: 1.364rem;
+    @include bar-group-rounding;
     -gtk-outline-radius: 1.364rem;
 }
 
@@ -122,173 +88,196 @@ $notchOnPrimary: $onPrimary;
     border-bottom-right-radius: 1.364rem;
 }
 
+.bar-sidemodule {
+    min-width: 26rem;
+}
+
 .bar-ws-width {
-    min-width: 18.614rem;
+    min-width: 18.341rem;
 }
 
-.bar-separator {
-    @include full-rounding;
-    min-width: 0.341rem;
-    min-height: 0.341rem;
-    background-color: mix($t_surface, $t_onSurface, 90%);
-    margin: 0rem 0.341rem;
-}
 
-.bar-clock {
-    @include titlefont;
-    font-size: 1.2727rem;
-    color: $onBackground;
-}
-
-.bar-date {
-    @include titlefont;
-    font-size: 1rem;
-    color: $onBackground;
+.bar-ws-container {
+    transition: 700ms cubic-bezier(0.1, 1, 0, 1);
 }
 
 .bar-ws {
-    min-height: 1.636rem;
-    min-width: 1.772rem;
-    font-size: 1.091rem;
-    @include mainfont;
-    border-top: 0.068rem solid;
-    border-bottom: 0.068rem solid;
-    border-color: transparent;
-    color: $white;
-}
-
-.bar-ws-active-box {
-    transition: 100ms cubic-bezier(0.05, 0.7, 0.1, 1);
+    font-size: 1.02rem;
+    font-weight: 600;
+    min-width: $bar_ws_width;
+    color: $workspaceOnLayer1Inactive;
 }
 
 .bar-ws-active {
-    min-height: 1.5rem;
-    min-width: 1.5rem;
-    font-size: 1.091rem;
-    @include mainfont;
-
-    background-color: $notchPrimary;
-    color: $notchOnPrimary;
-    border-radius: 999px;
-    margin: 0.068rem;
-    // background-color: red;
-}
-
-.bar-ws-active-middledecor {
-    min-width: 0.682rem;
-    min-height: 0.682rem;
-    border-radius: 9999px;
-    background-color: $black;
-    margin: 0rem 0.409rem;
+    background-color: $workspaceLayer3;
+    color: $workspaceOnLayer3;
 }
 
 .bar-ws-occupied {
-    background-color: $notchSecondaryContainer;
-    color: $notchOnSecondaryContainer;
-    min-width: 1.772rem;
-    border-top: 0.068rem solid $notchOnSecondaryContainer;
-    border-bottom: 0.068rem solid $notchOnSecondaryContainer;
+    background-color: $layer2;
+    color: $workspaceOnLayer2;
 }
 
-.bar-ws-occupied-left {
-    background-color: $notchSecondaryContainer;
-    color: $notchOnSecondaryContainer;
-    min-width: 1.704rem;
-    border-top-left-radius: 999px;
-    border-bottom-left-radius: 999px;
+// Focus is the bar mode name, not the workspace state!
 
-    border-left: 0.068rem solid $notchOnSecondaryContainer;
-    border-top: 0.068rem solid $notchOnSecondaryContainer;
-    border-bottom: 0.068rem solid $notchOnSecondaryContainer;
-    border-right: 0px solid transparent;
+.bar-ws-focus {
+    background-color: $surfaceVariant;
+    min-width: $bar_ws_width_focus;
 }
 
-.bar-ws-occupied-right {
-    background-color: $notchSecondaryContainer;
-    color: $notchOnSecondaryContainer;
-    min-width: 1.704rem;
-    border-top-right-radius: 999px;
-    border-bottom-right-radius: 999px;
-
-    border-right: 0.068rem solid $notchOnSecondaryContainer;
-    border-top: 0.068rem solid $notchOnSecondaryContainer;
-    border-bottom: 0.068rem solid $notchOnSecondaryContainer;
-    border-left: 0px solid transparent;
+.bar-ws-focus-active {
+    min-width: $bar_ws_width_focus_active;
+    background-color: $onLayer0;
 }
 
-.bar-ws-occupied-left-right {
-    @include full-rounding;
-    background-color: $notchSecondaryContainer;
-    color: $notchOnSecondaryContainer;
-    min-width: 1.636rem;
-    border: 0.068rem solid $notchOnSecondaryContainer;
+.bar-ws-focus-occupied {
+    background-color: $secondaryContainer;
 }
 
-.bar-ws-empty {
-    color: $onBackground;
-    border-color: transparent;
+.bar-clock-box {
+    margin: 0rem 0.682rem;
+}
+
+.bar-time {
+    @include titlefont;
+    font-size: 1.2727rem;
+    color: $timeOnLayer1;
+}
+
+.bar-date {
+    color: $dateOnLayer1;
 }
 
 .bar-batt {
     @include full-rounding;
-    padding: 0rem 0.341rem;
-    background-color: $t_secondaryContainer;
-    color: $t_onSecondaryContainer;
-    // border: 1px solid $onSecondaryContainer;
+    @include element_decel;
+    min-height: 1.77rem;
+    min-width: 1.77rem;
+    border-radius: 10rem;
+    color: $battOnLayer2;
 }
 
-.bar-sidemodule {
-    min-width: 26rem;
+.bar-batt-txt {
+    color: $battOnLayer1;
 }
+
+.bar-batt-circprog {
+    @include fluent_decel_long;
+    min-width: 0.136rem; // line width
+    min-height: 1.636rem;
+    padding: 0rem;
+    background-color: $battLayer2;
+    color: $battOnLayer2;
+}
+
+.bar-batt-circprog-low {
+    background-color: $error;
+    color: $errorContainer;
+}
+
 
 .bar-batt-low {
     background-color: $error;
     color: $errorContainer;
 }
 
-.bar-batt-full {
-    background-color: $successContainer;
-    color: $onSuccessContainer;
+.bar-ram-icon {
+    @include full-rounding;
+    @include element_decel;
+    min-height: 1.77rem;
+    min-width: 1.77rem;
+    border-radius: 10rem;
+    color: $ramOnLayer2;
 }
 
-.bar-batt-prog-low {
-    background-color: $error;
-    color: $errorContainer;
+.bar-ram-circprog {
+    @include fluent_decel_long;
+    min-width: 0.136rem; // line width
+    min-height: 1.636rem;
+    padding: 0rem;
+    background-color: $ramLayer2;
+    color: $ramOnLayer2;
 }
 
-.bar-batt-prog-full {
-    background-color: $successContainer;
-    color: $onSuccessContainer;
+.bar-ram-txt {
+    color: $ramOnLayer1;
+}
+
+.bar-swap-icon {
+    @include full-rounding;
+    @include element_decel;
+    min-height: 1.77rem;
+    min-width: 1.77rem;
+    border-radius: 10rem;
+    color: $swapOnLayer2;
+}
+
+.bar-swap-circprog {
+    @include fluent_decel_long;
+    min-width: 0.136rem; // line width
+    min-height: 1.636rem;
+    padding: 0rem;
+    background-color: $swapLayer2;
+    color: $swapOnLayer2;
+}
+
+.bar-swap-txt {
+    color: $swapOnLayer1;
+}
+
+.bar-cpu-icon {
+    @include full-rounding;
+    @include element_decel;
+    min-height: 1.77rem;
+    min-width: 1.77rem;
+    border-radius: 10rem;
+    color: $cpuOnLayer2;
+}
+
+.bar-cpu-circprog {
+    @include fluent_decel_long;
+    min-width: 0.136rem; // line width
+    min-height: 1.636rem;
+    padding: 0rem;
+    background-color: $cpuLayer2;
+    color: $cpuOnLayer2;
+}
+
+.bar-cpu-txt {
+    color: $cpuOnLayer1;
 }
 
 .bar-music-playstate {
-    min-height: 1.770rem;
-    min-width: 1.770rem;
+    @include element_decel;
+    min-height: 1.77rem;
+    min-width: 1.77rem;
     border-radius: 10rem;
-    background-color: $secondaryContainer;
-    color: $onSecondaryContainer;
+    color: $musicOnLayer2;
 }
 
 .bar-music-circprog {
     @include fluent_decel_long;
-    min-width: 0.068rem; // line width
-    min-height: 1.770rem;
+    min-width: 0.136rem; // line width
+    min-height: 1.636rem;
     padding: 0rem;
-    background-color: $secondaryContainer;
-    color: $onSecondaryContainer;
+    background-color: $musicLayer2;
+    color: $musicOnLayer2;
 }
 
 .bar-music-playstate-playing {
-    min-height: 1.770rem;
-    min-width: 1.770rem;
+    min-height: 1.77rem;
+    min-width: 1.77rem;
     border-radius: 10rem;
-    background-color: $secondaryContainer;
-    color: $onSecondaryContainer;
+    color: $musicOnLayer2;
 }
 
 .bar-music-playstate-txt {
     transition: 100ms cubic-bezier(0.05, 0.7, 0.1, 1);
     @include icon-material;
+}
+
+.bar-music-txt {
+    color: $musicOnLayer1;
 }
 
 .bar-music-cover {
@@ -303,125 +292,41 @@ $notchOnPrimary: $onPrimary;
     min-width: 34.091rem;
 }
 
-.bar-music-extended-ctl-bg {
-    border-radius: 1.364rem;
-    background-color: rgba(30, 30, 30, 0.6);
-}
-
-.bar-music-bottom-bg {
-    border-radius: 1.364rem;
-    min-width: 34.091rem;
-}
-
-.bar-music-bottom-ctl-bg {
-    border-radius: 1.364rem;
-    background-color: rgba(30, 30, 30, 0.6);
-}
-
-.bar-music-extended-textbox {
-    margin: 1.023rem;
-}
-
-.bar-music-bottom-cover {
-    border-radius: 10rem;
-}
-
 .bar-music-hide-false {
-    @include md3_decel;
+    @include menu_decel;
     transition-duration: 100ms;
     opacity: 1;
 }
 
 .bar-music-hide-true {
-    @include md3_accel;
+    @include menu_accel;
     transition-duration: 100ms;
     opacity: 0;
 }
 
-.bar-music-btn {
-    font-size: 1.364rem;
-    border-radius: 10rem;
-    min-height: 2.591rem;
-    min-width: 2.591rem;
-}
-
-.bar-music-btn:hover {
-    background-color: $hovercolor;
-}
-
-.bar-prog-batt {
-    min-height: 0.955rem;
-    min-width: 0.068rem;
-    padding: 0rem;
-    border-radius: 10rem;
-
-    trough {
-        min-height: 0.954rem;
-        min-width: 0.068rem;
-        border-radius: 10rem;
-    }
-
-    progress {
-        min-height: 0.680rem;
-        min-width: 0.680rem;
-        margin: 0rem 0.137rem;
-        border-radius: 10rem;
-        background-color: $t_onSecondaryContainer;
-    }
-}
-
-.bar-prog-batt-low {
-    progress {
-        background-color: $errorContainer;
-    }
-}
-
-.bar-prog-batt-full {
-    progress {
-        background-color: $onSuccessContainer;
-    }
-}
-
-.bar-batt-chargestate {
-    border-radius: 10rem;
-    background-color: transparent;
-}
-
-.bar-batt-chargestate-charging {
-    border-radius: 10rem;
-    min-width: 0.681rem;
-    min-height: 0.681rem;
-    background-color: $t_onSecondaryContainer;
-}
-
-.bar-batt-chargestate-low {
-    background-color: $errorContainer;
-}
-
-.bar-batt-chargestate-full {
-    background-color: $onSuccessContainer;
-}
-
-.bar-batt-percentage {
-    font-size: 1rem;
-    margin-top: -0.068rem;
-    font-weight: 500;
+.bar-corner-spacing {
+    min-width: 0.882rem;
+    min-height: $rounding_large;
 }
 
 .corner {
-    background-color: $t_background;
+    background-color: $layer0;
     @include large-rounding;
 }
 
 .corner-black {
-    background-color: $black; // Hard code because fake screen corner
+    background-color: $black; // Hard code: fake screen corner
     @include large-rounding;
 }
 
-.bar-topdesc {
+.bar-wintitle-topdesc {
     margin-top: -0.136rem;
     margin-bottom: -0.341rem;
-    color: $subtext;
+    color: $windowtitleOnLayer0Inactive;
+}
+
+.bar-wintitle-txt {
+    color: $windowtitleOnLayer0;
 }
 
 .bar-space-button {
@@ -433,14 +338,6 @@ $notchOnPrimary: $onPrimary;
     padding: 0rem 0.682rem;
 }
 
-.bar-space-button:hover>box:first-child {
-    background-color: $hovercolor;
-}
-
-.bar-space-button:active>box:first-child {
-    background-color: $activecolor;
-}
-
 .bar-space-button-leftmost {
     box {
         margin: 0rem 0.682rem;
@@ -448,16 +345,83 @@ $notchOnPrimary: $onPrimary;
 }
 
 .bar-space-area-rightmost>box {
-    padding-right: 2.386rem;
+    padding-right: 1.364rem;
 }
 
 .bar-systray {
     @include full-rounding;
-    min-height: 1.909rem;
-    min-width: 1.909rem;
+    margin: 0.137rem 0rem;
+    padding: 0rem 0.682rem;
 }
 
 .bar-systray-item {
     @include full-rounding;
-    min-width: 1.909rem;
+    @include element_decel;
+    @include symbolic-icon;
+    min-height: 1.032rem;
+    min-width: 1.032rem;
+    font-size: 1.032rem;
+    color: $trayOnLayer0;
+}
+
+.bar-statusicons {
+    @include full-rounding;
+    @include element_decel;
+    margin: 0.273rem;
+    padding: 0rem 0.614rem;
+}
+
+.bar-statusicons-active {
+    background-color: $layer0Active;
+    color: $onLayer0Active;
+}
+
+.bar-util-btn {
+    @include full-rounding;
+    @include element_decel;
+    min-height: 1.77rem;
+    min-width: 1.77rem;
+    background-color: $utilsLayer2;
+    color: $utilsOnLayer2;
+}
+
+.bar-util-btn:hover,
+.bar-util-btn:focus {
+    background-color: $layer2Hover;
+}
+
+.bar-util-btn:active {
+    background-color: $layer2Active;
+}
+
+.bar-spaceright {
+    color: $barspacerightOnLayer0;
+}
+
+.bar-bluetooth-device {
+    @include full-rounding;
+    @include symbolic-icon;
+    min-height: 1.032rem;
+    min-width: 1.032rem;
+    font-size: 1.032rem;
+    padding: 0.205rem 0.341rem;
+}
+
+.bar-time-module {
+    margin-left: 0.5rem;
+    margin-right: 1rem;
+    color: $timeOnLayer1;
+}
+
+.status-icons-group {
+    padding-left: 0.273rem;
+    padding-right: 1rem;
+}
+
+.time-with-margin {
+    margin-left: 0.5rem;
+}
+
+.bar-wintitle-icon-spacer {
+    min-width: 0.714rem;
 }

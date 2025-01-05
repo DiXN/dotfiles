@@ -1,14 +1,34 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
-cd ~/Videos || exit
-if [[ "$(pidof wf-recorder)" == "" ]]; then
-    notify-send "Starting recording" './recording_'"$(date '+%Y_%m_%_d..%H.%M.%S')"'.mp4' -a 'record-script.sh'
-    if [[ "$1" == "--sound" ]]; then
-        wf-recorder -t -f './recording_'"$(date '+%Y_%m_%_d..%H.%M.%S')"'.mp4' --geometry "$(slurp)"  --audio=alsa_output.pci-0000_08_00.6.analog-stereo.monitor
-    else 
-        wf-recorder -t -f './recording_'"$(date '+%Y_%m_%_d..%H.%M.%S')"'.mp4' --geometry "$(slurp)" 
-    fi
+getdate() {
+    date '+%Y%m%d_%H%M%S'
+}
+getaudiooutput() {
+    pactl list short sources | grep monitor | head -n1 | cut -f1
+}
+getactivemonitor() {
+    hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name'
+}
+
+videos_dir="$(xdg-user-dir VIDEOS)"
+mkdir -p "$videos_dir"
+cd "$videos_dir" || exit
+
+if pidof wf-recorder > /dev/null; then
+    notify-send "Запись остановлена" -a 'record-script.sh' &
+    killall -SIGINT wf-recorder &
 else
-    /usr/bin/kill --signal SIGINT wf-recorder
-    notify-send "Recording Stopped" "Stopped" -a 'record-script.sh'
+    output_file="./rec_$(getdate).mp4"
+    notify-send "Начало записи" "$output_file" -a 'record-script.sh'
+    if [[ "$1" == "--fullscreen" ]]; then
+        wf-recorder -c h264_vaapi -d /dev/dri/renderD128 \
+            -o "$(getactivemonitor)" \
+            -f "$output_file" \
+            --audio="$(getaudiooutput)" & disown
+    else
+        wf-recorder -c h264_vaapi -d /dev/dri/renderD128 \
+            -g "$(slurp)" \
+            -f "$output_file" \
+            --audio="$(getaudiooutput)" & disown
+    fi
 fi
