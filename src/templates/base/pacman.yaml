@@ -69,6 +69,7 @@ pacman:
   - app: github-cli
   - app: thunderbird
   - app: vlang-git
+  - app: ddcutil
   - app: rbw
   - app: ntp
   - app: networkmanager-dispatcher-ntpd
