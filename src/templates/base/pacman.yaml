@@ -10,18 +10,20 @@ pacman:
   - app: scrcpy
   - app: python
   - app: python-dbus
-  - app: imagemagick
   - app: openssh
   - app: neofetch
   - app: neovim
   - app: micro
+  - app: kitty
+  - app: hyprlock-git
   - app: rsync
-  - app: wezterm-git
   - app: nfs-utils
   - app: unclutter
   - app: pipewire
   - app: wireplumber
   - app: pipewire-pulse
+  - app: grimblast-git
+  - app: wlr-randr
   - app: nautilus
   - app: alacritty
   - app: lazygit
@@ -31,8 +33,7 @@ pacman:
   - app: python-pynvim
   - app: eza
   - app: htop
-  - app: tectonic
-  - app: biber
+  - app: typst
   - app: cantarell-fonts
   - app: shellcheck-bin
   - app: jq
@@ -41,6 +42,7 @@ pacman:
   - app: ttf-firacode-nerd
   - app: fzf
   - app: kexec-tools
+  - app: less
   - app: tree
   - app: broot
   - app: playerctl
@@ -53,8 +55,7 @@ pacman:
   - app: telegram-desktop-bin
   - app: podman
   - app: podman-compose
-  - app: brave-bin
-  - app: firefox
+  - app: zen-browser-bin
   - app: easyeffects
   - app: jellyfin-media-player
   - app: caffeine-ng
@@ -66,10 +67,8 @@ pacman:
   - app: radeontop
   - app: hyperfine
   - app: github-cli
-  - app: clifm
-  - app: mailspring
+  - app: thunderbird
   - app: vlang-git
   - app: rbw
-  - app: flameshot
   - app: ntp
   - app: networkmanager-dispatcher-ntpd
