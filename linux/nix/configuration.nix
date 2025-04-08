@@ -8,6 +8,42 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.plymouth.enable = true;
 
+  # Set hostname
+  networking.hostName = "mk";
+
+  # Set timezone
+  time.timeZone = "Europe/Vienna";
+
+  # Localization settings
+  i18n.defaultLocale = "en_US.UTF-8";
+  console = {
+    font = "Lat2-Terminus16";
+    keyMap = "de-latin1";
+  };
+
+  # Enable sound
+  sound.enable = true;
+  hardware.pulseaudio.enable = false;
+
+  # Power management
+  services.thermald.enable = true;
+  powerManagement.enable = true;
+
+  # Nix configuration
+  nix = {
+    package = pkgs.nixFlakes;
+    settings = {
+      auto-optimise-store = true;
+      experimental-features = [ "nix-command" "flakes" ];
+      trusted-users = [ "root" "mk" ];
+    };
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
+  };
+
   # User configuration
   users.users.mk = {
     isNormalUser = true;
@@ -148,7 +184,7 @@
 
   # Enable services for some packages
   services = {
-    # Add to your existing services
+    # Pipewire
     pipewire = {
       enable = true;
       alsa.enable = true;
@@ -156,18 +192,15 @@
       pulse.enable = true;
       jack.enable = true;
     };
-  };
 
-  # Services from essentials.sh
-  services = {
     # NetworkManager
     networkmanager.enable = true;
 
-    # SDDM configuration
+    # Display Manager
     displayManager = {
       sddm = {
         enable = true;
-        theme = "breeze";
+        theme = "astronaut";
         settings = {
           Theme = {
             CursorTheme = "Adwaita";
@@ -181,7 +214,6 @@
           };
         };
       };
-      # Disable LightDM
       lightdm.enable = false;
     };
 
@@ -203,7 +235,7 @@
     openssh.enable = true;
   };
 
-  # Podman configuration (from essentials.sh)
+  # Podman configuration
   virtualisation.podman = {
     enable = true;
     dockerCompat = true;
@@ -219,24 +251,6 @@
     libsForQt5.sddm-kcm
   ];
 
-  # Install and configure Astronaut theme for SDDM
-  services.displayManager.sddm = {
-    enable = true;
-    theme = "astronaut";
-    settings = {
-      Theme = {
-        CursorTheme = "Adwaita";
-        Font = "Cantarell 10";
-      };
-      Users = {
-        DefaultUser = "mk";
-      };
-      Wayland = {
-        EnableHiDPI = true;
-      };
-    };
-  };
-
   # Install the Astronaut theme using fetchGit (no hash needed)
   environment.etc."sddm/themes/astronaut" = {
     source = builtins.fetchGit {
@@ -245,9 +259,6 @@
     };
     recursive = true;
   };
-
-  # Disable LightDM
-  services.displayManager.lightdm.enable = false;
 
   # Copy wallpaper for SDDM
   environment.etc."sddm/backgrounds/wallpaper.jpg" = {
@@ -262,36 +273,16 @@
     syntaxHighlighting.enable = true;
   };
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
-  # Console keymap
-  console.keyMap = "de-latin1";
-
-  # X11 keyboard layout
-  services.xserver.layout = "de";
-  services.xserver.xkbVariant = "nodeadkeys";
-
   # For Wayland/Hyprland
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
   };
 
-  # Enable flakes and other nix features
-  nix = {
-    package = pkgs.nixFlakes;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-    settings = {
-      auto-optimise-store = true;
-      trusted-users = [ "root" "mk" ];
-    };
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 30d";
-    };
-  };
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
+  # X11 keyboard layout
+  services.xserver.layout = "de";
+  services.xserver.xkbVariant = "nodeadkeys";
 }
