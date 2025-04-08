@@ -285,4 +285,42 @@
   # X11 keyboard layout
   services.xserver.layout = "de";
   services.xserver.xkbVariant = "nodeadkeys";
+
+  boot = {
+    initrd.kernelModules = [ "amdgpu" ];
+
+    kernelModules = [ "amdgpu" ];
+
+    kernelParams = [
+      "amdgpu.ppfeaturemask=0xffffffff"
+      "amdgpu.dc=1"
+      "amdgpu.dpm=1"
+    ];
+  };
+
+  hardware.opengl = {
+    enable = true;
+    driSupport = true;
+    driSupport32Bit = true;
+
+    extraPackages = with pkgs; [
+      mesa
+      libva
+      rocm-opencl-icd
+      rocm-opencl-runtime
+    ];
+
+    extraPackages32 = with pkgs.pkgsi686Linux; [
+      mesa
+      libva
+    ];
+  };
+
+  environment.variables = {
+    AMD_VULKAN_ICD = "RADV";  # Use RADV Vulkan driver from Mesa
+  };
+
+  hardware.firmware = with pkgs; [
+    firmwareLinuxNonfree  # Contains firmware for various hardware
+  ];
 }
