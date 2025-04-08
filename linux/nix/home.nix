@@ -1,8 +1,12 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, system, zen-browser, ... }:
 
 {
   home.username = "mk";
   home.homeDirectory = "/home/mk";
+
+  home.packages = with pkgs; [
+    zen-browser.packages.${system}.default
+  ];
 
   # Dotfiles management with home-manager instead of chezmoi
   home.file = {
