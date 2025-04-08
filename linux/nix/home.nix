@@ -252,4 +252,50 @@
       toggle_fps_limit = "F1";
     };
   };
+
+  # GTK theming for dark mode
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Arc-Dark";
+      package = pkgs.arc-theme;
+    };
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+    gtk3.extraConfig = {
+      gtk-application-prefer-dark-theme = true;
+    };
+    gtk4.extraConfig = {
+      gtk-application-prefer-dark-theme = true;
+    };
+  };
+
+  # Qt theming to match GTK
+  qt = {
+    enable = true;
+    platformTheme = "gtk";
+    style = {
+      name = "adwaita-dark";
+      package = pkgs.adwaita-qt;
+    };
+  };
+
+  # Dark mode for various applications
+  dconf.settings = {
+    "org/gnome/desktop/interface" = {
+      color-scheme = "prefer-dark";
+      gtk-theme = "Arc-Dark";
+      icon-theme = "Papirus-Dark";
+    };
+    "org/gnome/desktop/wm/preferences" = {
+      theme = "Arc-Dark";
+    };
+  };
+
+  # For applications that use Electron
+  xdg.configFile."electron-flags.conf".text = ''
+    --force-dark-mode
+  '';
 }
