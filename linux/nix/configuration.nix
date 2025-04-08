@@ -53,118 +53,75 @@
   };
   security.sudo.wheelNeedsPassword = false;
 
-  # Package management (from essentials.sh)
+  # Package management (system-wide packages)
   environment.systemPackages = with pkgs; [
-    # Basic utilities
-    nsxiv
-    rclone
-    bat
-    mpv
-    networkmanagerapplet
-    zathura
-    zathura-poppler-pdf
-    scrcpy
-    python3
-    python3Packages.dbus-python
+    # Core system utilities
+    git
     openssh
-    neofetch
-    neovim
-    micro
-    kitty
     rsync
     nfs-utils
-    unclutter
+    kexec-tools
+    less
+    tree
 
-    # Audio/Video
+    # System monitoring and management
+    btop
+    htop
+    radeontop
+
+    # Hardware support
+    mesa
+    libva
+    rocm-opencl-icd
+    rocm-opencl-runtime
+    firmwareLinuxNonfree
+    ddcutil
+
+    # Network tools
+    networkmanager
+    networkmanagerapplet
+    ntp
+
+    # Audio/Video core
     pipewire
     wireplumber
     pipewire-pulse
 
-    # Wayland tools
-    wl-clipboard
-    grim
-    slurp
-    wlr-randr
-
-    # File managers and GUI tools
-    gnome.nautilus
-    alacritty
-    lazygit
-    dust
-    nitrogen
-    pamixer
-
-    # Python packages
-    python3Packages.pynvim
-
-    # File utilities
-    eza
-    htop
-    typst
-
-    # Fonts
-    cantarell-fonts
-    shellcheck
-    jq
-    yq
-    fira-code
-    fira-code-nerdfont
-    fzf
-
-    # System tools
-    kexec-tools
-    less
-    tree
-    broot
-    playerctl
-
-    # Themes
-    arc-theme
-    papirus-icon-theme
-    btop
-
-    # Security and utilities
-    age
-    expect
-    zenity
-
-    # Applications
+    # Virtualization and containers
     podman
     podman-compose
-    easyeffects
-    jellyfin-media-player
-    pavucontrol
-    radeontop
-    hyperfine
-    github-cli
-    thunderbird
-    ddcutil
+    docker
+    docker-compose
+    distrobox
+    slirp4netns
+    fuse-overlayfs
 
-    # Network tools
-    ntp
+    # Security tools
+    age
 
-    # From essentials.sh
-    networkmanager
+    # Display manager and core desktop components
     lightdm
     lightdm-gtk-greeter
     plymouth
-    docker
-    docker-compose
-    syncthing
+    libsForQt5.qt5.qtgraphicaleffects
+    libsForQt5.qt5.qtquickcontrols2
+    libsForQt5.qt5.qtsvg
+    libsForQt5.sddm-kcm
+
+    # Wayland core components
+    wl-clipboard
+    wlr-randr
+
+    # System shells
     zsh
     tmux
-    antibody
-    lua
-    piavpn
 
-    # From init.sh
-    git
-    chezmoi
+    # Core development tools
     glibc
     lib32-glibc
-    rustup
-    dotnet-sdk_6
-    dotnet-runtime_6
+
+    # System services
+    syncthing
   ];
 
   # For AUR packages that need special handling
