@@ -4,75 +4,46 @@
   home.username = "mk";
   home.homeDirectory = "/home/mk";
 
+  home.stateVersion = "24.11";
+
+  wayland.windowManager.hyprland = {
+    enable = true;
+
+    package = pkgs.hyprland;
+
+    xwayland.enable = true;
+  };
+
   # User-specific packages
   home.packages = with pkgs; [
     # Browsers
     zen-browser.packages.${system}.default # beta
-    thunderbird
-
-    # Terminal emulators (user preference)
-    kitty
-    alacritty
   ];
 
-  # Dotfiles management with home-manager instead of chezmoi
-  home.file = {
-    ".config/git/config".text = ''
-      [user]
-        name = Michael Kaltschmid
-        email = kaltschmidmichael@gmail.com
-    '';
-
-    # Pictures integration - fetch wallpapers from Git repository without hash
-    "Pictures/wallpapers".source = builtins.fetchGit {
-      url = "https://github.com/DiXN/dotfiles.git";
-      ref = "chezmoi"; # Using the chezmoi branch
-      submodules = false;
-    } + "/Pictures/wallpapers";
-
-    # Documents integration with executable scripts
-    "Documents".source = let
-      repo = builtins.fetchGit {
-        url = "https://github.com/DiXN/dotfiles.git";
-        ref = "chezmoi";
-      };
-
-      # Process the Documents directory to make executable files executable
-      processedDocs = pkgs.runCommand "processed-documents" {} ''
-        mkdir -p $out
-        cp -r ${repo}/Documents/* $out/
-
-        # Make executable_* files executable and rename them
-        for file in $out/executable_*; do
-          if [ -f "$file" ]; then
-            chmod +x "$file"
-            mv "$file" "''${file/executable_/}"
-          fi
-        done
-      '';
-    in processedDocs;
+  programs.git = {
+    enable = true;
+    userEmail = "kaltschmidmichael@gmail.com";
+    userName = "Michael Kaltschmid";
   };
 
   # Zsh configuration
   programs.zsh = {
     enable = true;
-    dotDir = ".config/zsh";
     history = {
-      path = "${config.xdg.configHome}/zsh/.zsh_history";
       size = 10000;
       save = 10000;
       ignoreDups = true;
       share = true;
     };
     shellAliases = {
-      ec = "$EDITOR $XDG_CONFIG_HOME/zsh/.zshrc";
-      sc = "source $XDG_CONFIG_HOME/zsh/.zshrc";
+      ec = "$EDITOR ${config.users.users.mk.home}/zsh/.zshrc";
+      sc = "source ${config.users.users.mk.home}/zsh/.zshrc";
       yas = "yay -S --noconfirm";
       ze = "z -e";
       yar = "yay -Rcns";
-      ads = "~/Documents/androidshare.sh";
-      bd = "~/Documents/brightness.sh down";
-      bu = "~/Documents/brightness.sh up";
+      ads = "${config.users.users.mk.home}/Documents/androidshare.sh";
+      bd = "${config.users.users.mk.home}/Documents/brightness.sh down";
+      bu = "${config.users.users.mk.home}/Documents/brightness.sh up";
       eb = "sudo nvim /usr/bin/instantstatus";
       v = "nvim";
       sv = "sudo nvim";
@@ -89,20 +60,8 @@
       export BAT_THEME="ansi-dark"
 
       function spell() {
-        bash "/home/$USER/Documents/spell.sh $1"
+        bash "${config.users.users.mk.home}/Documents/spell.sh $1"
       }
-
-      # Vulkan setup
-      export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/nvidia_icd.json
-
-      VULKAN_SDK="/home/$USER/.local/share/vulkan/x86_64"
-      export VULKAN_SDK
-      export PATH="$VULKAN_SDK/bin:$PATH"
-      export LD_LIBRARY_PATH=$VULKAN_SDK/lib
-      export VK_LAYER_PATH=$VULKAN_SDK/etc/vulkan/explicit_layer.d
-
-      # Dotfiles
-      export DOTFILES_ROOT="$HOME/Documents/repos/dotfiles"
 
       # Key bindings
       function up-directory() {
@@ -127,78 +86,22 @@
       bindkey  "^[[F"   end-of-line
 
       # Source p10k config if it exists
-      [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
+      [[ ! -f ${config.users.users.mk.home}/.config/zsh/.p10k.zsh ]] || source ${config.users.users.mk.home}/.config/zsh/.p10k.zsh
     '';
-    plugins = [
-      # Powerlevel10k theme
-      {
-        name = "powerlevel10k";
-        src = pkgs.zsh-powerlevel10k;
-        file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-      }
-      # Syntax highlighting
-      {
-        name = "zsh-syntax-highlighting";
-        src = pkgs.fetchFromGitHub {
-          owner = "zsh-users";
-          repo = "zsh-syntax-highlighting";
-          rev = "0.7.1";
-          sha256 = "gOG0NLlaJfotJfs+SUhGgLTNOnGLjoqnUp54V9aFJg8=";
-        };
-      }
-      # History substring search
-      {
-        name = "zsh-history-substring-search";
-        src = pkgs.fetchFromGitHub {
-          owner = "zsh-users";
-          repo = "zsh-history-substring-search";
-          rev = "v1.0.2";
-          sha256 = "0y8va5kc2y9gsmjvfzptiw70jb4s8hlxy5gv2pgsj1r4n9iq4wh1";
-        };
-      }
-      # Auto suggestions
-      {
-        name = "zsh-autosuggestions";
-        src = pkgs.fetchFromGitHub {
-          owner = "zsh-users";
-          repo = "zsh-autosuggestions";
-          rev = "v0.7.0";
-          sha256 = "KLUYpUu4DHRumQZ3w59m9aTW6TBKMCXl2UcKi4uMd7w=";
-        };
-      }
-      # Oh-My-Zsh plugins
-      {
-        name = "z";
-        src = pkgs.fetchFromGitHub {
-          owner = "ohmyzsh";
-          repo = "ohmyzsh";
-          rev = "master";
-          sha256 = "sha256-GYpKnVTbdQDrtJDiWfj6jSRnGu8RWX6rIQtT2LR/e2Y=";
-        };
-        file = "plugins/z/z.plugin.zsh";
-      }
-      {
-        name = "git";
-        src = pkgs.fetchFromGitHub {
-          owner = "ohmyzsh";
-          repo = "ohmyzsh";
-          rev = "master";
-          sha256 = "sha256-GYpKnVTbdQDrtJDiWfj6jSRnGu8RWX6rIQtT2LR/e2Y=";
-        };
-        file = "plugins/git/git.plugin.zsh";
-      }
-      {
-        name = "common-aliases";
-        src = pkgs.fetchFromGitHub {
-          owner = "ohmyzsh";
-          repo = "ohmyzsh";
-          rev = "master";
-          sha256 = "sha256-GYpKnVTbdQDrtJDiWfj6jSRnGu8RWX6rIQtT2LR/e2Y=";
-        };
-        file = "plugins/common-aliases/common-aliases.plugin.zsh";
-      }
-    ];
-  };
+
+    syntaxHighlighting.enable = true;
+    antidote = {
+      enable = true;
+      plugins = [
+        "romkatv/powerlevel10k"
+        "zsh-users/zsh-syntax-highlighting"
+        "zsh-users/zsh-autosuggestions"
+        "zsh-users/zsh-history-substring-search"
+        "ohmyzsh/ohmyzsh path:plugins/z"
+        "ohmyzsh/ohmyzsh path:plugins/git"
+      ];
+    };
+};
 
   # Let home-manager manage itself
   programs.home-manager.enable = true;
@@ -354,26 +257,24 @@
     --force-dark-mode
   '';
 
-  # User services configuration
   systemd.user.services.easyeffects = {
     Unit = {
-      Description = "Audio effects for PipeWire applications";
-      PartOf = "graphical-session.target";
-      After = [ "graphical-session.target" "pipewire.service" ];
-      Wants = [ "pipewire.service" ];
+      Description = "Easyeffects daemon";
+      Requires = [ "dbus.service" ];
+      After = [ "graphical-session.target" ];
+      PartOf = [
+        "graphical-session.target"
+        "pipewire.service"
+      ];
     };
+
+    Install.WantedBy = [ "graphical-session.target" ];
 
     Service = {
-      Type = "simple";
-      Restart = "on-failure";
       ExecStart = "${pkgs.easyeffects}/bin/easyeffects --gapplication-service";
-      Slice = "session.slice";
+      ExecStop = "${pkgs.easyeffects}/bin/easyeffects --quit";
+      Restart = "on-failure";
+      RestartSec = 5;
     };
-
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-
-    enable = true;
   };
 }

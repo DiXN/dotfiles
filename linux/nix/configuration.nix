@@ -1,7 +1,9 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [
+    ./hardware-configuration.nix
+  ];
 
   # Basic system configuration
   boot.loader.systemd-boot.enable = true;
@@ -10,6 +12,7 @@
 
   # Set hostname
   networking.hostName = "mk";
+  networking.networkmanager.enable = true;
 
   # Set timezone
   time.timeZone = "Europe/Vienna";
@@ -21,8 +24,6 @@
     keyMap = "de-latin1";
   };
 
-  # Enable sound
-  sound.enable = true;
   hardware.pulseaudio.enable = false;
 
   # Power management
@@ -31,7 +32,7 @@
 
   # Nix configuration
   nix = {
-    package = pkgs.nixFlakes;
+    package = pkgs.nixVersions.stable;
     settings = {
       auto-optimise-store = true;
       experimental-features = [ "nix-command" "flakes" ];
@@ -40,12 +41,10 @@
       # Configure binary caches
       substituters = [
         "https://cache.nixos.org"
-        "https://hyprland.cachix.org"
         "https://nix-community.cachix.org"
       ];
       trusted-public-keys = [
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       ];
     };
@@ -65,16 +64,8 @@
   };
   security.sudo.wheelNeedsPassword = false;
 
-  # For AUR packages that need special handling
-  nixpkgs.config.packageOverrides = pkgs: {
-    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-      inherit pkgs;
-    };
-  };
-
-
   # Package management (system-wide packages)
-  environment.systemPackages = with pkgs.nur.repos; [
+  environment.systemPackages = with pkgs; [
     # Core system utilities
     git
     openssh
@@ -96,14 +87,12 @@
       jack.enable = true;
     };
 
-    # NetworkManager
-    networkmanager.enable = true;
-
     # Display Manager
     displayManager = {
       sddm = {
         enable = true;
         theme = "astronaut";
+        wayland.enable = true;
         settings = {
           Theme = {
             CursorTheme = "Adwaita";
@@ -117,13 +106,6 @@
           };
         };
       };
-      lightdm.enable = false;
-    };
-
-    # Docker
-    docker = {
-      enable = true;
-      enableOnBoot = true;
     };
 
     # Syncthing
@@ -138,6 +120,11 @@
     openssh.enable = true;
   };
 
+  virtualisation.docker.rootless = {
+    enable = true;
+    setSocketVariable = true;
+  };
+
   # Podman configuration
   virtualisation.podman = {
     enable = true;
@@ -145,27 +132,22 @@
     defaultNetwork.settings.dns_enabled = true;
   };
 
-  # Install the Astronaut theme using fetchGit (no hash needed)
   environment.etc."sddm/themes/astronaut" = {
-    source = builtins.fetchGit {
-      url = "https://github.com/totoro-ghost/sddm-astronaut.git";
-      ref = "master";
+    source = pkgs.fetchFromGitHub {
+      owner = "totoro-ghost";
+      repo = "sddm-astronaut";
+      rev = "master";
+      sha256 = "sha256-j8pJvBml2LWxXNw1e/cSVXV+6w+K1lahv0uK1B9OYn0=";
     };
-    recursive = true;
   };
 
-  # Shell configuration
   programs.zsh = {
     enable = true;
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
-  };
+  }
 
-  # For Wayland/Hyprland
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-  };
+  programs.dconf.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -174,45 +156,7 @@
   services.xserver.layout = "de";
   services.xserver.xkbVariant = "nodeadkeys";
 
-  boot = {
-    initrd.kernelModules = [ "amdgpu" ];
-
-    kernelModules = [ "amdgpu" ];
-
-    kernelParams = [
-      "amdgpu.ppfeaturemask=0xffffffff"
-      "amdgpu.dc=1"
-      "amdgpu.dpm=1"
-    ];
-  };
-
-  hardware.opengl = {
-    enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
-
-    extraPackages = with pkgs; [
-      mesa
-      libva
-      rocm-opencl-icd
-      rocm-opencl-runtime
-    ];
-
-    extraPackages32 = with pkgs.pkgsi686Linux; [
-      mesa
-      libva
-    ];
-  };
-
-  environment.variables = {
-    AMD_VULKAN_ICD = "RADV";
-  };
-
   hardware.firmware = with pkgs; [
     firmwareLinuxNonfree
   ];
-
-  services.pia = {
-    enable = true;
-  };
 }

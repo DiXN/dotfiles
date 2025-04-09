@@ -37,7 +37,10 @@ cp -r /tmp/nixos-config/linux/nix/* /mnt/etc/nixos/
 
 # Generate hardware configuration for this specific machine
 echo "Generating hardware configuration..."
-nixos-generate-config --root /mnt --no-filesystems
+nixos-generate-config --root /mnt
+
+##Print config
+cat /mnt/etc/nixos/hardware-configuration.nix
 
 # Install NixOS
 echo "Installing NixOS..."
