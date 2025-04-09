@@ -199,11 +199,33 @@
       [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
     '';
     plugins = [
+      # Powerlevel10k theme
       {
         name = "powerlevel10k";
         src = pkgs.zsh-powerlevel10k;
         file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
       }
+      # Syntax highlighting
+      {
+        name = "zsh-syntax-highlighting";
+        src = pkgs.fetchFromGitHub {
+          owner = "zsh-users";
+          repo = "zsh-syntax-highlighting";
+          rev = "0.7.1";
+          sha256 = "gOG0NLlaJfotJfs+SUhGgLTNOnGLjoqnUp54V9aFJg8=";
+        };
+      }
+      # History substring search
+      {
+        name = "zsh-history-substring-search";
+        src = pkgs.fetchFromGitHub {
+          owner = "zsh-users";
+          repo = "zsh-history-substring-search";
+          rev = "v1.0.2";
+          sha256 = "0y8va5kc2y9gsmjvfzptiw70jb4s8hlxy5gv2pgsj1r4n9iq4wh1";
+        };
+      }
+      # Auto suggestions
       {
         name = "zsh-autosuggestions";
         src = pkgs.fetchFromGitHub {
@@ -213,14 +235,36 @@
           sha256 = "KLUYpUu4DHRumQZ3w59m9aTW6TBKMCXl2UcKi4uMd7w=";
         };
       }
+      # Oh-My-Zsh plugins
       {
-        name = "zsh-syntax-highlighting";
+        name = "z";
         src = pkgs.fetchFromGitHub {
-          owner = "zsh-users";
-          repo = "zsh-syntax-highlighting";
-          rev = "0.7.1";
-          sha256 = "gOG0NLlaJfotJfs+SUhGgLTNOnGLjoqnUp54V9aFJg8=";
+          owner = "ohmyzsh";
+          repo = "ohmyzsh";
+          rev = "master";
+          sha256 = "sha256-GYpKnVTbdQDrtJDiWfj6jSRnGu8RWX6rIQtT2LR/e2Y=";
         };
+        file = "plugins/z/z.plugin.zsh";
+      }
+      {
+        name = "git";
+        src = pkgs.fetchFromGitHub {
+          owner = "ohmyzsh";
+          repo = "ohmyzsh";
+          rev = "master";
+          sha256 = "sha256-GYpKnVTbdQDrtJDiWfj6jSRnGu8RWX6rIQtT2LR/e2Y=";
+        };
+        file = "plugins/git/git.plugin.zsh";
+      }
+      {
+        name = "common-aliases";
+        src = pkgs.fetchFromGitHub {
+          owner = "ohmyzsh";
+          repo = "ohmyzsh";
+          rev = "master";
+          sha256 = "sha256-GYpKnVTbdQDrtJDiWfj6jSRnGu8RWX6rIQtT2LR/e2Y=";
+        };
+        file = "plugins/common-aliases/common-aliases.plugin.zsh";
       }
     ];
   };
