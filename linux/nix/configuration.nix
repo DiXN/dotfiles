@@ -274,10 +274,14 @@
   };
 
   environment.variables = {
-    AMD_VULKAN_ICD = "RADV";  # Use RADV Vulkan driver from Mesa
+    AMD_VULKAN_ICD = "RADV";
   };
 
   hardware.firmware = with pkgs; [
-    firmwareLinuxNonfree  # Contains firmware for various hardware
+    firmwareLinuxNonfree
   ];
+
+  services.pia = {
+    enable = true;
+  };
 }
