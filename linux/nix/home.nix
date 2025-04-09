@@ -378,4 +378,27 @@
   xdg.configFile."electron-flags.conf".text = ''
     --force-dark-mode
   '';
+
+  # User services configuration
+  systemd.user.services.easyeffects = {
+    Unit = {
+      Description = "Audio effects for PipeWire applications";
+      PartOf = "graphical-session.target";
+      After = [ "graphical-session.target" "pipewire.service" ];
+      Wants = [ "pipewire.service" ];
+    };
+
+    Service = {
+      Type = "simple";
+      Restart = "on-failure";
+      ExecStart = "${pkgs.easyeffects}/bin/easyeffects --gapplication-service";
+      Slice = "session.slice";
+    };
+
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+
+    enable = true;
+  };
 }
