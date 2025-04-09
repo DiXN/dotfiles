@@ -1,9 +1,9 @@
-{ config, lib, ... }:
+{ config, lib, targetDisk ? "/dev/sda", ... }:
 {
   disko.devices = {
     disk = {
       my-disk = {
-        device = "/dev/sda";
+        device = targetDisk;
         type = "disk";
         content = {
           type = "gpt";

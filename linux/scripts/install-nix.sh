@@ -3,6 +3,9 @@ set -e
 
 # Short url: https://is.gd/pmakpq
 
+# Default disk if not specified
+TARGET_DISK=${1:-"/dev/sda"}
+
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then
   echo "Please run as root"
@@ -23,9 +26,9 @@ if [ ! -d "/tmp/nixos-config" ]; then
 fi
 
 # Format disks using disko
-echo "Formatting disks with disko..."
+echo "Formatting disk: $TARGET_DISK with disko..."
 nix --experimental-features "nix-command flakes" run github:nix-community/disko -- \
-  --mode disko /tmp/nixos-config/linux/nix/disko-config.nix
+  --mode disko --arg targetDisk "\"$TARGET_DISK\"" /tmp/nixos-config/linux/nix/disko-config.nix
 
 # Mount the partitions (disko should have done this already, but just in case)
 echo "Mounting partitions..."
@@ -39,6 +42,10 @@ mount -o subvol=nix /dev/mapper/mainpool-nix /mnt/nix
 echo "Copying NixOS configuration..."
 mkdir -p /mnt/etc/nixos
 cp -r /tmp/nixos-config/linux/nix/* /mnt/etc/nixos/
+
+# Generate hardware configuration for this specific machine
+echo "Generating hardware configuration..."
+nixos-generate-config --root /mnt --no-filesystems
 
 # Install NixOS
 echo "Installing NixOS..."
