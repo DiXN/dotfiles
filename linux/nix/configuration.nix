@@ -83,65 +83,6 @@
     kexec-tools
     less
     tree
-
-    # System monitoring and management
-    btop
-    htop
-    radeontop
-
-    # Hardware support
-    mesa
-    libva
-    rocm-opencl-icd
-    rocm-opencl-runtime
-    firmwareLinuxNonfree
-    ddcutil
-
-    # Network tools
-    networkmanager
-    networkmanagerapplet
-    ntp
-
-    # Audio/Video core
-    pipewire
-    wireplumber
-    pipewire-pulse
-
-    # Virtualization and containers
-    podman
-    podman-compose
-    docker
-    docker-compose
-    distrobox
-    slirp4netns
-    fuse-overlayfs
-
-    # Security tools
-    age
-
-    # Display manager and core desktop components
-    lightdm
-    lightdm-gtk-greeter
-    plymouth
-    libsForQt5.qt5.qtgraphicaleffects
-    libsForQt5.qt5.qtquickcontrols2
-    libsForQt5.qt5.qtsvg
-    libsForQt5.sddm-kcm
-
-    # Wayland core components
-    wl-clipboard
-    wlr-randr
-
-    # System shells
-    zsh
-    tmux
-
-    # Core development tools
-    glibc
-    lib32-glibc
-
-    # System services
-    syncthing
   ];
 
   # Enable services for some packages
