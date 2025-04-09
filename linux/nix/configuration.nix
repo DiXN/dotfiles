@@ -45,7 +45,7 @@
       ];
       trusted-public-keys = [
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="c=
+        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       ];
     };
@@ -65,8 +65,16 @@
   };
   security.sudo.wheelNeedsPassword = false;
 
+  # For AUR packages that need special handling
+  nixpkgs.config.packageOverrides = pkgs: {
+    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+      inherit pkgs;
+    };
+  };
+
+
   # Package management (system-wide packages)
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs.nur.repos; [
     # Core system utilities
     git
     openssh
@@ -136,21 +144,6 @@
     syncthing
   ];
 
-  # For AUR packages that need special handling
-  nixpkgs.config.packageOverrides = pkgs: {
-    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-      inherit pkgs;
-    };
-  };
-
-  # Include NUR packages
-  environment.systemPackages = with pkgs.nur.repos; [
-    # Add AUR equivalents here
-    # For example:
-    # someuser.hyprlock
-    # anotheruser.grimblast
-  ];
-
   # Enable services for some packages
   services = {
     # Pipewire
@@ -210,15 +203,6 @@
     dockerCompat = true;
     defaultNetwork.settings.dns_enabled = true;
   };
-
-  # Add SDDM packages and Astronaut theme
-  environment.systemPackages = with pkgs; [
-    # Add to your existing packages
-    libsForQt5.qt5.qtgraphicaleffects
-    libsForQt5.qt5.qtquickcontrols2
-    libsForQt5.qt5.qtsvg
-    libsForQt5.sddm-kcm
-  ];
 
   # Install the Astronaut theme using fetchGit (no hash needed)
   environment.etc."sddm/themes/astronaut" = {

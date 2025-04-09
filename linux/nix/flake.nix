@@ -25,7 +25,7 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
     in {
-      nixosConfigurations.hostname = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.mk = nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [
           ./configuration.nix

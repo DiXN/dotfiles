@@ -30,14 +30,6 @@ echo "Formatting disk: $TARGET_DISK with disko..."
 nix --experimental-features "nix-command flakes" run github:nix-community/disko -- \
   --mode disko --arg targetDisk "\"$TARGET_DISK\"" /tmp/nixos-config/linux/nix/disko-config.nix
 
-# Mount the partitions (disko should have done this already, but just in case)
-echo "Mounting partitions..."
-mount -o subvol=root /dev/mapper/mainpool-root /mnt
-mkdir -p /mnt/{boot,home,nix}
-mount /dev/disk/by-label/ESP /mnt/boot
-mount -o subvol=home /dev/mapper/mainpool-home /mnt/home
-mount -o subvol=nix /dev/mapper/mainpool-nix /mnt/nix
-
 # Copy your configuration to the target system
 echo "Copying NixOS configuration..."
 mkdir -p /mnt/etc/nixos

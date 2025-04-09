@@ -1,4 +1,4 @@
-{ config, lib, targetDisk ? "/dev/sda", ... }:
+{ targetDisk ? "/dev/sda", ... }:
 {
   disko.devices = {
     disk = {
@@ -34,20 +34,11 @@
         type = "lvm_vg";
         lvs = {
           thinpool = {
-            size = "95%";  # Use 95% of VG for thin-pool
+            size = "95%";
             lvm_type = "thin-pool";
           };
-          root = {
-            lvm_type = "thinlv";
-            pool = "thinpool";
-            content = {
-              type = "filesystem";
-              format = "ext4";
-              mountpoint = "/";
-              mountOptions = [ "defaults" ];
-            };
-          };
           home = {
+            size = "10G";
             lvm_type = "thinlv";
             pool = "thinpool";
             content = {
@@ -57,6 +48,7 @@
             };
           };
           nix = {
+            size = "10G";
             lvm_type = "thinlv";
             pool = "thinpool";
             content = {
@@ -64,6 +56,17 @@
               format = "ext4";
               mountpoint = "/nix";
               mountOptions = [ "noatime" ];  # Reduce writes--we don't care about access times
+            };
+          };
+          root = {
+            size = "10G";
+            lvm_type = "thinlv";
+            pool = "thinpool";
+            content = {
+              type = "filesystem";
+              format = "ext4";
+              mountpoint = "/";
+              mountOptions = [ "defaults" ];
             };
           };
         };
