@@ -217,12 +217,6 @@
     recursive = true;
   };
 
-  # Copy wallpaper for SDDM
-  environment.etc."sddm/backgrounds/wallpaper.jpg" = {
-    source = "${config.users.users.mk.home}/Pictures/wallpapers/4.jpg";
-    mode = "0644";
-  };
-
   # Shell configuration
   programs.zsh = {
     enable = true;
