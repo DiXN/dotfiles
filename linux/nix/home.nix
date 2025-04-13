@@ -1,4 +1,4 @@
-{ config, pkgs, lib, system, zen-browser, ... }:
+{ config, pkgs, lib, system, zen-browser, ignis, ... }:
 
 {
   home.username = "mk";
@@ -6,18 +6,13 @@
 
   home.stateVersion = "24.11";
 
-  wayland.windowManager.hyprland = {
-    enable = true;
-
-    package = pkgs.hyprland;
-
-    xwayland.enable = true;
-  };
-
   # User-specific packages
   home.packages = with pkgs; [
     # Browsers
     zen-browser.packages.${system}.default # beta
+    bat
+    eza
+    ignis.packages.${system}.default
   ];
 
   programs.git = {
@@ -36,14 +31,12 @@
       share = true;
     };
     shellAliases = {
-      ec = "$EDITOR ${config.users.users.mk.home}/zsh/.zshrc";
-      sc = "source ${config.users.users.mk.home}/zsh/.zshrc";
-      yas = "yay -S --noconfirm";
+      ec = "$EDITOR $HOME/.zshrc";
+      sc = "source $HOME/.zshrc";
       ze = "z -e";
-      yar = "yay -Rcns";
-      ads = "${config.users.users.mk.home}/Documents/androidshare.sh";
-      bd = "${config.users.users.mk.home}/Documents/brightness.sh down";
-      bu = "${config.users.users.mk.home}/Documents/brightness.sh up";
+      ads = "$HOME/Documents/androidshare.sh";
+      bd = "$HOME/Documents/brightness.sh down";
+      bu = "$HOME/Documents/brightness.sh up";
       eb = "sudo nvim /usr/bin/instantstatus";
       v = "nvim";
       sv = "sudo nvim";
@@ -60,7 +53,7 @@
       export BAT_THEME="ansi-dark"
 
       function spell() {
-        bash "${config.users.users.mk.home}/Documents/spell.sh $1"
+        bash "$HOME/Documents/spell.sh $1"
       }
 
       # Key bindings
@@ -86,7 +79,8 @@
       bindkey  "^[[F"   end-of-line
 
       # Source p10k config if it exists
-      [[ ! -f ${config.users.users.mk.home}/.config/zsh/.p10k.zsh ]] || source ${config.users.users.mk.home}/.config/zsh/.p10k.zsh
+      POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
+      [[ ! -f $HOME/.config/zsh/.p10k.zsh ]] || source $HOME/.config/zsh/.p10k.zsh
     '';
 
     syntaxHighlighting.enable = true;
@@ -101,7 +95,15 @@
         "ohmyzsh/ohmyzsh path:plugins/git"
       ];
     };
-};
+  };
+
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    extraConfig = ''
+      set number relativenumber
+    '';
+  };
 
   # Let home-manager manage itself
   programs.home-manager.enable = true;
@@ -277,4 +279,55 @@
       RestartSec = 5;
     };
   };
+
+  home.activation.dots = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    mkdir -p $HOME/Documents/repos/dotfiles
+    if [ ! -d $HOME/Documents/repos/dotfiles/.git ]; then
+      ${pkgs.git}/bin/git clone -b chezmoi https://github.com/dixn/dotfiles.git $HOME/Documents/repos/dotfiles
+    else
+      cd $HOME/Documents/repos/dotfiles && ${pkgs.git}/bin/git pull --rebase
+    fi
+
+    mkdir -p $HOME/Documents
+    for script in $HOME/Documents/repos/dotfiles/Documents/executable_*; do
+      if [ -f "$script" ]; then
+        new_name=$(basename "$script" | sed 's/^executable_//')
+        cp "$script" "$HOME/Documents/$new_name"
+        chmod +x "$HOME/Documents/$new_name"
+      fi
+    done
+
+    # Create pictures directory and copy wallpapers
+    mkdir -p $HOME/Pictures/wallpapers
+    if [ -d $HOME/Documents/repos/dotfiles/Pictures/wallpapers ]; then
+      cp -r $HOME/Documents/repos/dotfiles/Pictures/wallpapers/* $HOME/Pictures/wallpapers/
+    fi
+  '';
+
+  home.activation.ignis = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    # Create temporary directory for cloning
+    TEMP_DIR=$(mktemp -d)
+
+    # Clone the repository
+    ${pkgs.git}/bin/git clone https://github.com/linkfrg/dotfiles.git $TEMP_DIR
+
+    # Create ignis directory in ~/.config
+    mkdir -p $HOME/.config/ignis
+
+    # Copy the ignis folder to ~/.config
+    cp -r $TEMP_DIR/ignis/* $HOME/.config/ignis/
+
+    # Remove specified lines from config.py
+    if [ -f "$HOME/.config/ignis/config.py" ]; then
+      ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh("gsettings set org\.gnome\.desktop\.interface gtk-theme Material")/d' $HOME/.config/ignis/config.py
+      ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh("gsettings set org\.gnome\.desktop\.interface icon-theme Papirus")/d' $HOME/.config/ignis/config.py
+
+      ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh(.*font-name/,/)/d' $HOME/.config/ignis/config.py
+
+      ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh("hyprctl reload")/d' $HOME/.config/ignis/config.py
+    fi
+
+    # Clean up temporary directory
+    rm -rf $TEMP_DIR
+  '';
 }

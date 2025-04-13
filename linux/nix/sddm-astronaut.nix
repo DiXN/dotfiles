@@ -21,12 +21,6 @@ stdenvNoCC.mkDerivation rec {
   installPhase = ''
     mkdir -p $out/share/sddm/themes/astronaut
     cp -r $src/* $out/share/sddm/themes/astronaut/
-  '' + lib.optionalString (themeConfig != null) ''
-    # Apply custom theme configuration if provided
-    cat > $out/share/sddm/themes/astronaut/theme.conf.user <<EOF
-    [General]
-    ${lib.concatStringsSep "\n" (lib.mapAttrsToList (name: value: "${name}=${toString value}") themeConfig)}
-    EOF
   '';
 
   meta = {

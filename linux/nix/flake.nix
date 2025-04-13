@@ -13,9 +13,13 @@
       # to have it up to date or simply don't specify the nixpkgs input
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    ignis = {
+      url = "github:linkfrg/ignis";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, zen-browser, ... }:
+  outputs = { self, nixpkgs, home-manager, zen-browser, ignis, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -29,7 +33,7 @@
             home-manager.useUserPackages = true;
             home-manager.users.mk = import ./home.nix;
             home-manager.extraSpecialArgs = {
-              inherit system zen-browser;
+              inherit system zen-browser ignis;
             };
           }
         ];

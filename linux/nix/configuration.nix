@@ -64,6 +64,20 @@
   };
   security.sudo.wheelNeedsPassword = false;
 
+  environment.sessionVariables = rec {
+    XDG_CACHE_HOME  = "$HOME/.cache";
+    XDG_CONFIG_HOME = "$HOME/.config";
+    XDG_DATA_HOME   = "$HOME/.local/share";
+    XDG_STATE_HOME  = "$HOME/.local/state";
+
+    # Not officially in the specification
+    XDG_BIN_HOME    = "$HOME/.local/bin";
+
+    PATH = [
+      "${XDG_BIN_HOME}"
+    ];
+  };
+
   # Package management (system-wide packages)
   environment.systemPackages = with pkgs; [
     # Core system utilities
@@ -75,6 +89,7 @@
     less
     tree
     cantarell-fonts
+    niri
 
     (pkgs.callPackage ./sddm-astronaut.nix {
       themeConfig = {
@@ -143,7 +158,7 @@
     enable = true;
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
-  }
+  };
 
   programs.dconf.enable = true;
 
