@@ -74,6 +74,14 @@
     kexec-tools
     less
     tree
+    cantarell-fonts
+
+    (pkgs.callPackage ./sddm-astronaut.nix {
+      themeConfig = {
+        # Optional theme configuration
+        # Background = "/path/to/background.jpg";
+      };
+    })
   ];
 
   # Enable services for some packages
@@ -95,7 +103,6 @@
         wayland.enable = true;
         settings = {
           Theme = {
-            CursorTheme = "Adwaita";
             Font = "Cantarell 10";
           };
           Users = {
@@ -130,15 +137,6 @@
     enable = true;
     dockerCompat = true;
     defaultNetwork.settings.dns_enabled = true;
-  };
-
-  environment.etc."sddm/themes/astronaut" = {
-    source = pkgs.fetchFromGitHub {
-      owner = "totoro-ghost";
-      repo = "sddm-astronaut";
-      rev = "master";
-      sha256 = "sha256-j8pJvBml2LWxXNw1e/cSVXV+6w+K1lahv0uK1B9OYn0=";
-    };
   };
 
   programs.zsh = {
