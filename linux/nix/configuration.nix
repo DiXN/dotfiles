@@ -27,6 +27,7 @@
   hardware.pulseaudio.enable = false;
 
   # Power management
+  services.upower.enable = true;
   services.thermald.enable = true;
   powerManagement.enable = true;
 
@@ -89,7 +90,6 @@
     less
     tree
     cantarell-fonts
-    niri
 
     (pkgs.callPackage ./sddm-astronaut.nix {
       themeConfig = {
@@ -128,6 +128,8 @@
           };
         };
       };
+      # Add Niri to the session packages
+      sessionPackages = [ pkgs.niri ];
     };
 
     # Syncthing
