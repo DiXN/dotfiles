@@ -12,7 +12,11 @@
     zen-browser.packages.${system}.default # beta
     bat
     eza
+    walker
     ignis.packages.${system}.default
+    xwayland-satellite
+    nixvim
+    xsel
   ];
 
   programs.git = {
@@ -97,12 +101,11 @@
     };
   };
 
-  programs.neovim = {
+  programs.hyprlock.enable = true;
+
+  programs.fzf = {
     enable = true;
-    defaultEditor = true;
-    extraConfig = ''
-      set number relativenumber
-    '';
+    enableZshIntegration = true;
   };
 
   # Let home-manager manage itself
@@ -250,14 +253,46 @@
               off
           }
 
+          default-column-width { proportion 0.5; }
+
+          gaps 4
+
           preset-column-widths {
               proportion 0.33333
               proportion 0.5
               proportion 0.66667
           }
+
+          tab-indicator {
+              hide-when-single-tab
+              place-within-column
+              gap 5
+              width 4
+              length total-proportion=1.0
+              position "left"
+              gaps-between-tabs 2
+              corner-radius 8
+              active-color "yellow"
+              inactive-color "gray"
+          }
+
+          default-column-display "tabbed"
+
+          shadow {
+              on
+          }
+
       }
 
       spawn-at-startup "ignis" "init"
+      spawn-at-startup "sh" "-c" "xwayland-satellite"
+
+      environment {
+          QT_QPA_PLATFORM "wayland"
+          ELECTRON_OZONE_PLATFORM_HINT "auto"
+
+          DISPLAY ":0"
+      }
 
       prefer-no-csd
 
@@ -510,5 +545,11 @@
 
     # Clean up temporary directory
     rm -rf $TEMP_DIR
+  '';
+
+  home.activation.walker = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    if [ ! -d "$HOME/.config/walker" ]; then
+      ${pkgs.walker}/bin/walker -C
+    fi
   '';
 }

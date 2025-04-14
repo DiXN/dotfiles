@@ -21,9 +21,12 @@
       url = "github:sodiboo/niri-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixvim-config = {
+      url = "github:mkalts/nixvim-config";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, zen-browser, ignis, niri, ... }:
+  outputs = { self, nixpkgs, home-manager, zen-browser, ignis, niri, nixvim-config, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -43,7 +46,13 @@
         inherit system;
         modules = [
           ./configuration.nix
-          { nixpkgs.overlays = [ niri.overlays.niri ]; }
+          { nixpkgs.overlays = [
+              niri.overlays.niri
+              (final: prev: {
+                nixvim = nixvim-config.packages.${system}.default;
+              })
+            ];
+          }
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
