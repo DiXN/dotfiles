@@ -7,6 +7,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       # IMPORTANT: we're using "libgbm" and is only available in unstable so ensure
@@ -26,12 +30,11 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, zen-browser, ignis, niri, nixvim-config, ... }:
+  outputs = { self, nixpkgs, home-manager, zen-browser, ignis, niri, nixvim-config, sops-nix, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
 
-      # Create the modified ignis package directly
       ignisWithDeps = ignis.packages.${system}.ignis.overrideAttrs (oldAttrs: {
         propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or []) ++ (with pkgs; [
           (python312.withPackages (ppkgs: [
@@ -46,6 +49,7 @@
         inherit system;
         modules = [
           ./configuration.nix
+          sops-nix.nixosModules.sops
           { nixpkgs.overlays = [
               niri.overlays.niri
               (final: prev: {
@@ -62,9 +66,9 @@
                 ./home.nix
                 niri.homeModules.niri
               ];
-              # Pass special arguments to home.nix
               _module.args = {
                 inherit system zen-browser niri;
+                inherit sops-nix;
                 ignis = {
                   packages.${system} = {
                     default = ignisWithDeps;

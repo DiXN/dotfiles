@@ -91,12 +91,21 @@
     tree
     cantarell-fonts
 
+    sops
+    age
+    age-plugin-yubikey
+
     (pkgs.callPackage ./sddm-astronaut.nix {
       themeConfig = {
         # Optional theme configuration
         # Background = "/path/to/background.jpg";
       };
     })
+
+    gnupg
+    pinentry
+    yubikey-personalization
+    yubikey-manager
   ];
 
   # Enable services for some packages
@@ -174,4 +183,24 @@
   hardware.firmware = with pkgs; [
     firmwareLinuxNonfree
   ];
+
+  services.pcscd.enable = true;
+  services.udev.packages = [ pkgs.yubikey-personalization ];
+
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    secrets.nas = {
+      path = "/home/mk/.ssh/nas";
+      owner = "mk";
+      group = "users";
+      mode = "0600";
+    };
+
+    secrets.nas_pub = {
+      path = "/home/mk/.ssh/nas.pub";
+      owner = "mk";
+      group = "users";
+      mode = "0644";
+    };
+  };
 }

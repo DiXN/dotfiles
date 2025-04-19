@@ -6,9 +6,7 @@
 
   home.stateVersion = "24.11";
 
-  # User-specific packages
   home.packages = with pkgs; [
-    # Browsers
     zen-browser.packages.${system}.default # beta
     bat
     eza
