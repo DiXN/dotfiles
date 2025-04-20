@@ -102,8 +102,6 @@
       };
     })
 
-    gnupg
-    pinentry
     yubikey-personalization
     yubikey-manager
   ];
@@ -201,6 +199,13 @@
       owner = "mk";
       group = "users";
       mode = "0644";
+    };
+
+    secrets.ssh_config = {
+      path = "/home/mk/.ssh/config";
+      owner = "mk";
+      group = "users";
+      mode = "0600";
     };
   };
 }

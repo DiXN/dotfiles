@@ -1,14 +1,8 @@
 keys:
-  - &yubikey age1yubikey1qt9shmlkytnq8atpntr4rra0tc8v60jra6yxqa5umdpqdlf6mf03xyvtxka
+  - &mk age1yubikey1qt9shmlkytnq8atpntr4rra0tc8v60jra6yxqa5umdpqdlf6mf03xyvtxka
 
 creation_rules:
-  - path_regex: .*\.(key|pem|crt|p12|jks|bin|jpg|png|pdf)$
+  - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
     - age:
-      - *yubikey
-    binary: true
-
-  - path_regex: .*
-    key_groups:
-    - age:
-      - *yubikey
+      - *mk

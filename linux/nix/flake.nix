@@ -35,6 +35,42 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
 
+      ageKeyModule = { config, lib, ... }: {
+        options = {
+          sops.age.yubikey = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = "Whether to use YubiKey for SOPS age decryption";
+          };
+        };
+
+        config = lib.mkIf config.sops.age.yubikey {
+          system.activationScripts = {
+            ageSopsSetup = {
+              deps = [ "specialfs" ];
+              text = ''
+                mkdir -p /var/lib/sops-nix
+                ${pkgs.age-plugin-yubikey}/bin/age-plugin-yubikey --identity --slot 1 > /var/lib/sops-nix/key.txt
+                chmod 600 /var/lib/sops-nix/key.txt
+
+                export PATH="${pkgs.age-plugin-yubikey}/bin:$PATH"
+              '';
+            };
+          };
+
+          sops.age.keyFile = "/var/lib/sops-nix/key.txt";
+          sops.age.sshKeyPaths = [];
+          sops.age.generateKey = false;
+
+          environment.systemPackages = with pkgs; [
+            age-plugin-yubikey
+            age
+          ];
+
+          services.pcscd.enable = true;
+        };
+      };
+
       ignisWithDeps = ignis.packages.${system}.ignis.overrideAttrs (oldAttrs: {
         propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or []) ++ (with pkgs; [
           (python312.withPackages (ppkgs: [
@@ -50,12 +86,15 @@
         modules = [
           ./configuration.nix
           sops-nix.nixosModules.sops
+          ageKeyModule
           { nixpkgs.overlays = [
               niri.overlays.niri
               (final: prev: {
                 nixvim = nixvim-config.packages.${system}.default;
               })
             ];
+
+            sops.age.yubikey = true;
           }
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
