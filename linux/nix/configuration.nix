@@ -8,7 +8,7 @@
   # Basic system configuration
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.plymouth.enable = true;
+  boot.plymouth.enable = false;
 
   # Set hostname
   networking.hostName = "mk";
@@ -78,6 +78,13 @@
       "${XDG_BIN_HOME}"
     ];
   };
+
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  };
+
+  xdg.portal.config.common.default = "*";
 
   # Package management (system-wide packages)
   environment.systemPackages = with pkgs; [

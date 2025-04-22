@@ -7,7 +7,6 @@
   home.stateVersion = "24.11";
 
   home.packages = with pkgs; [
-    zen-browser.packages.${system}.default # beta
     bat
     eza
     walker
@@ -15,7 +14,38 @@
     xwayland-satellite
     nixvim
     xsel
+    nautilus
   ];
+
+  programs.zen-browser = {
+    enable = true;
+
+    policies = {
+      AutofillAddressEnabled = true;
+      AutofillCreditCardEnabled = false;
+      DisableAppUpdate = true;
+      DisableFeedbackCommands = true;
+      DisableFirefoxStudies = true;
+      DisablePocket = true;
+      DisableTelemetry = true;
+      DontCheckDefaultBrowser = true;
+      NoDefaultBookmarks = true;
+      OfferToSaveLogins = false;
+
+      ExtensionSettings = with builtins;
+        let extension = shortId: uuid: {
+          name = uuid;
+          value = {
+            install_url = "https://addons.mozilla.org/en-US/firefox/downloads/latest/${shortId}/latest.xpi";
+            installation_mode = "normal_installed";
+          };
+        };
+        in listToAttrs [
+          (extension "ublock-origin" "uBlock0@raymondhill.net")
+          (extension "bitwarden-password-manager" "{446900e4-71c2-419f-a6a7-df9c091e268b}")
+        ];
+    };
+  };
 
   programs.git = {
     enable = true;
@@ -298,6 +328,10 @@
           // Terminal
           Mod+Return { spawn "kitty"; }
 
+          Mod+F { spawn "nautilus"; }
+
+          Mod+B { spawn "zen"; }
+
           // Window management
           Mod+Q { close-window; }
 
@@ -427,6 +461,8 @@
     '';
   };
 
+  # services.easyeffects.enable = true;
+
   # GTK theming for dark mode
   gtk = {
     enable = true;
@@ -444,6 +480,14 @@
     gtk4.extraConfig = {
       gtk-application-prefer-dark-theme = true;
     };
+  };
+
+  xdg.configFile = {
+    "gtk-4.0/assets".source = "${config.gtk.theme.package}/share/themes/${config.gtk.theme.name}/gtk-4.0/assets";
+    "gtk-4.0/gtk.css".source = "${config.gtk.theme.package}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk.css";
+    "gtk-4.0/gtk-dark.css".source = "${config.gtk.theme.package}/share/themes/${config.gtk.theme.name}/gtk-4.0/gtk-dark.css";
+
+    # Removed external user.js file in favor of inline content in the activation script
   };
 
   # Qt theming to match GTK
@@ -473,33 +517,20 @@
     --force-dark-mode
   '';
 
-  systemd.user.services.easyeffects = {
-    Unit = {
-      Description = "Easyeffects daemon";
-      Requires = [ "dbus.service" ];
-      After = [ "graphical-session.target" ];
-      PartOf = [
-        "graphical-session.target"
-        "pipewire.service"
-      ];
-    };
-
-    Install.WantedBy = [ "graphical-session.target" ];
-
-    Service = {
-      ExecStart = "${pkgs.easyeffects}/bin/easyeffects --gapplication-service";
-      ExecStop = "${pkgs.easyeffects}/bin/easyeffects --quit";
-      Restart = "on-failure";
-      RestartSec = 5;
-    };
-  };
-
   home.activation.dots = lib.hm.dag.entryAfter ["writeBoundary"] ''
     mkdir -p $HOME/Documents/repos/dotfiles
     if [ ! -d $HOME/Documents/repos/dotfiles/.git ]; then
-      ${pkgs.git}/bin/git clone -b chezmoi https://github.com/dixn/dotfiles.git $HOME/Documents/repos/dotfiles
+      if ping -c 1 -W 2 github.com &>/dev/null; then
+        ${pkgs.git}/bin/git clone -b chezmoi https://github.com/dixn/dotfiles.git $HOME/Documents/repos/dotfiles || echo "Failed to clone repository, will try again next time"
+      else
+        echo "Network connection to github.com unavailable, skipping repository clone"
+      fi
     else
-      cd $HOME/Documents/repos/dotfiles && ${pkgs.git}/bin/git pull --rebase
+      if ping -c 1 -W 2 github.com &>/dev/null; then
+        cd $HOME/Documents/repos/dotfiles && ${pkgs.git}/bin/git pull --rebase || echo "Failed to update repository"
+      else
+        echo "Network connection to github.com unavailable, skipping repository update"
+      fi
     fi
 
     mkdir -p $HOME/Documents
@@ -519,35 +550,91 @@
   '';
 
   home.activation.ignis = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    # Create temporary directory for cloning
-    TEMP_DIR=$(mktemp -d)
+    # Check network connectivity first
+    if ping -c 1 -W 2 github.com &>/dev/null; then
+      # Create temporary directory for cloning
+      TEMP_DIR=$(mktemp -d)
 
-    # Clone the repository
-    ${pkgs.git}/bin/git clone https://github.com/linkfrg/dotfiles.git $TEMP_DIR
+      # Clone the repository
+      ${pkgs.git}/bin/git clone https://github.com/linkfrg/dotfiles.git $TEMP_DIR || {
+        echo "Failed to clone ignis repository, skipping setup"
+        rm -rf $TEMP_DIR
+        exit 0
+      }
 
-    # Create ignis directory in ~/.config
-    mkdir -p $HOME/.config/ignis
+      # Create ignis directory in ~/.config
+      mkdir -p $HOME/.config/ignis
 
-    # Copy the ignis folder to ~/.config
-    cp -r $TEMP_DIR/ignis/* $HOME/.config/ignis/
+      # Copy the ignis folder to ~/.config
+      cp -r $TEMP_DIR/ignis/* $HOME/.config/ignis/
 
-    # Remove specified lines from config.py
-    if [ -f "$HOME/.config/ignis/config.py" ]; then
-      ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh("gsettings set org\.gnome\.desktop\.interface gtk-theme Material")/d' $HOME/.config/ignis/config.py
-      ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh("gsettings set org\.gnome\.desktop\.interface icon-theme Papirus")/d' $HOME/.config/ignis/config.py
+      # Remove specified lines from config.py
+      if [ -f "$HOME/.config/ignis/config.py" ]; then
+        ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh("gsettings set org\.gnome\.desktop\.interface gtk-theme Material")/d' $HOME/.config/ignis/config.py
+        ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh("gsettings set org\.gnome\.desktop\.interface icon-theme Papirus")/d' $HOME/.config/ignis/config.py
 
-      ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh(.*font-name/,/)/d' $HOME/.config/ignis/config.py
+        ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh(.*font-name/,/)/d' $HOME/.config/ignis/config.py
 
-      ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh("hyprctl reload")/d' $HOME/.config/ignis/config.py
+        ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh("hyprctl reload")/d' $HOME/.config/ignis/config.py
+      fi
+
+      # Clean up temporary directory
+      rm -rf $TEMP_DIR
+    else
+      echo "Network connection to github.com unavailable, skipping ignis setup"
     fi
-
-    # Clean up temporary directory
-    rm -rf $TEMP_DIR
   '';
 
   home.activation.walker = lib.hm.dag.entryAfter ["writeBoundary"] ''
     if [ ! -d "$HOME/.config/walker" ]; then
       ${pkgs.walker}/bin/walker -C
+    fi
+  '';
+
+  # Script to create user.js in the correct Zen browser profile directory
+  home.activation.zenUserJs = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    ZEN_CONFIG_DIR="$HOME/.zen"
+
+    if [ -d "$ZEN_CONFIG_DIR" ]; then
+      # Find all directories in .zen that contain a prefs.js file
+      find "$ZEN_CONFIG_DIR" -type f -name "prefs.js" | while read -r prefs_file; do
+        profile_dir=$(dirname "$prefs_file")
+        echo "Creating user.js in Zen browser profile: $profile_dir"
+
+        # Create user.js with inline content
+        cat > "$profile_dir/user.js" << 'EOF'
+// user.js for Zen Browser
+// This file contains user preferences that override default settings
+
+// Privacy & Security
+user_pref("privacy.donottrackheader.enabled", true);
+user_pref("privacy.trackingprotection.enabled", true);
+user_pref("privacy.trackingprotection.socialtracking.enabled", true);
+user_pref("privacy.partition.network_state.ocsp_cache", true);
+user_pref("privacy.resistFingerprinting", true);
+
+// Performance
+user_pref("browser.cache.disk.enable", true);
+user_pref("browser.cache.memory.enable", true);
+user_pref("browser.sessionstore.interval", 15000);
+
+// UI/UX
+user_pref("browser.tabs.loadInBackground", true);
+user_pref("browser.urlbar.suggest.searches", true);
+user_pref("browser.urlbar.suggest.history", true);
+user_pref("browser.urlbar.suggest.bookmark", true);
+user_pref("browser.urlbar.suggest.openpage", true);
+
+// Zen Browser specific
+user_pref("zen.view.sidebar-expanded", false);
+user_pref("zen.view.sidebar-expanded.on-hover", false);
+user_pref("zen.welcome-screen.seen", true);
+
+// Add your custom configurations below
+EOF
+      done
+    else
+      echo "Zen browser config directory not found at $ZEN_CONFIG_DIR, skipping user.js setup"
     fi
   '';
 }
