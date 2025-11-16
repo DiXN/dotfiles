@@ -53,6 +53,10 @@
     userName = "Michael Kaltschmid";
   };
 
+  programs.lazygit = {
+    enable = true;
+  };
+
   # Zsh configuration
   programs.zsh = {
     enable = true;
