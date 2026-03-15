@@ -1,4 +1,4 @@
-{ config, pkgs, lib, system, zen-browser, ignis, ... }:
+{ config, pkgs, lib, system, zen-browser, dots-repo, ... }:
 
 {
   home.username = "mk";
@@ -10,7 +10,6 @@
     bat
     eza
     walker
-    ignis.packages.${system}.default
     xwayland-satellite
     nixvim
     xsel
@@ -316,7 +315,6 @@
 
       }
 
-      spawn-at-startup "ignis" "init"
       spawn-at-startup "sh" "-c" "xwayland-satellite"
 
       environment {
@@ -444,19 +442,19 @@
 
           // Volume controls
           XF86AudioRaiseVolume {
-              spawn "sh" "-c" "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+ && ignis open ignis_OSD";
+              spawn "sh" "-c" "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+";
           }
 
           XF86AudioLowerVolume {
-              spawn "sh" "-c" "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05- && ignis open ignis_OSD";
+              spawn "sh" "-c" "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-";
           }
 
           Mod+Shift+Up {
-              spawn "sh" "-c" "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+ && ignis open ignis_OSD";
+              spawn "sh" "-c" "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+";
           }
 
           Mod+Shift+Down {
-              spawn "sh" "-c" "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05- && ignis open ignis_OSD";
+              spawn "sh" "-c" "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-";
           }
 
           // Exit niri
@@ -521,22 +519,11 @@
     --force-dark-mode
   '';
 
-  home.activation.dots = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    mkdir -p $HOME/Documents/repos/dotfiles
-    if [ ! -d $HOME/Documents/repos/dotfiles/.git ]; then
-      if ping -c 1 -W 2 github.com &>/dev/null; then
-        ${pkgs.git}/bin/git clone -b chezmoi https://github.com/dixn/dotfiles.git $HOME/Documents/repos/dotfiles || echo "Failed to clone repository, will try again next time"
-      else
-        echo "Network connection to github.com unavailable, skipping repository clone"
-      fi
-    else
-      if ping -c 1 -W 2 github.com &>/dev/null; then
-        cd $HOME/Documents/repos/dotfiles && ${pkgs.git}/bin/git pull --rebase || echo "Failed to update repository"
-      else
-        echo "Network connection to github.com unavailable, skipping repository update"
-      fi
-    fi
+  home.file."Documents/repos/dotfiles".source = dots-repo;
 
+  home.file."Pictures/wallpapers".source = "${dots-repo}/Pictures/wallpapers";
+
+  home.activation.dotsScripts = lib.hm.dag.entryAfter ["writeBoundary"] ''
     mkdir -p $HOME/Documents
     for script in $HOME/Documents/repos/dotfiles/Documents/executable_*; do
       if [ -f "$script" ]; then
@@ -545,48 +532,6 @@
         chmod +x "$HOME/Documents/$new_name"
       fi
     done
-
-    # Create pictures directory and copy wallpapers
-    mkdir -p $HOME/Pictures/wallpapers
-    if [ -d $HOME/Documents/repos/dotfiles/Pictures/wallpapers ]; then
-      cp -r $HOME/Documents/repos/dotfiles/Pictures/wallpapers/* $HOME/Pictures/wallpapers/
-    fi
-  '';
-
-  home.activation.ignis = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    # Check network connectivity first
-    if ping -c 1 -W 2 github.com &>/dev/null; then
-      # Create temporary directory for cloning
-      TEMP_DIR=$(mktemp -d)
-
-      # Clone the repository
-      ${pkgs.git}/bin/git clone https://github.com/linkfrg/dotfiles.git $TEMP_DIR || {
-        echo "Failed to clone ignis repository, skipping setup"
-        rm -rf $TEMP_DIR
-        exit 0
-      }
-
-      # Create ignis directory in ~/.config
-      mkdir -p $HOME/.config/ignis
-
-      # Copy the ignis folder to ~/.config
-      cp -r $TEMP_DIR/ignis/* $HOME/.config/ignis/
-
-      # Remove specified lines from config.py
-      if [ -f "$HOME/.config/ignis/config.py" ]; then
-        ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh("gsettings set org\.gnome\.desktop\.interface gtk-theme Material")/d' $HOME/.config/ignis/config.py
-        ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh("gsettings set org\.gnome\.desktop\.interface icon-theme Papirus")/d' $HOME/.config/ignis/config.py
-
-        ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh(.*font-name/,/)/d' $HOME/.config/ignis/config.py
-
-        ${pkgs.gnused}/bin/sed -i '/Utils\.exec_sh("hyprctl reload")/d' $HOME/.config/ignis/config.py
-      fi
-
-      # Clean up temporary directory
-      rm -rf $TEMP_DIR
-    else
-      echo "Network connection to github.com unavailable, skipping ignis setup"
-    fi
   '';
 
   home.activation.walker = lib.hm.dag.entryAfter ["writeBoundary"] ''

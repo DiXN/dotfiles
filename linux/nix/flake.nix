@@ -17,10 +17,7 @@
       # to have it up to date or simply don't specify the nixpkgs input
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    ignis = {
-      url = "github:linkfrg/ignis";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+
     niri = {
       url = "github:sodiboo/niri-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,9 +29,13 @@
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    dots-repo = {
+      url = "github:dixn/dotfiles/chezmoi";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, zen-browser, ignis, niri, nixvim-config, sops-nix, firefox-addons, ... }:
+  outputs = { self, nixpkgs, home-manager, zen-browser, niri, nixvim-config, sops-nix, firefox-addons, dots-repo, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -75,15 +76,6 @@
         };
       };
 
-      ignisWithDeps = ignis.packages.${system}.ignis.overrideAttrs (oldAttrs: {
-        propagatedBuildInputs = (oldAttrs.propagatedBuildInputs or []) ++ (with pkgs; [
-          (python312.withPackages (ppkgs: [
-            ppkgs.materialyoucolor
-            ppkgs.pillow
-            ppkgs.jinja2
-          ]))
-        ]);
-      });
     in {
       nixosConfigurations.mk = nixpkgs.lib.nixosSystem {
         inherit system;
@@ -126,13 +118,7 @@
               ];
               _module.args = {
                 inherit system zen-browser niri;
-                inherit sops-nix firefox-addons;
-                ignis = {
-                  packages.${system} = {
-                    default = ignisWithDeps;
-                    ignis = ignisWithDeps;
-                  };
-                };
+                inherit sops-nix firefox-addons dots-repo;
               };
             };
           }
