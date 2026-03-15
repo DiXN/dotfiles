@@ -186,7 +186,7 @@
   services.xserver.xkbVariant = "nodeadkeys";
 
   hardware.firmware = with pkgs; [
-    firmwareLinuxNonfree
+    linux-firmware
   ];
 
   services.pcscd.enable = true;

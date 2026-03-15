@@ -2,9 +2,9 @@
   description = "NixOS configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sops-nix = {
@@ -33,9 +33,17 @@
       url = "github:dixn/dotfiles/chezmoi";
       flake = false;
     };
+    dms = {
+      url = "github:AvengeMedia/DankMaterialShell/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    quickshell = {
+      url = "git+https://git.outfoxxed.me/quickshell/quickshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, zen-browser, niri, nixvim-config, sops-nix, firefox-addons, dots-repo, ... }:
+  outputs = inputs@{ self, nixpkgs, home-manager, zen-browser, niri, nixvim-config, sops-nix, firefox-addons, dots-repo, dms, quickshell, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -79,6 +87,7 @@
     in {
       nixosConfigurations.mk = nixpkgs.lib.nixosSystem {
         inherit system;
+        specialArgs = { inherit inputs; };
         modules = [
           ./configuration.nix
           sops-nix.nixosModules.sops
@@ -110,16 +119,15 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "bck";
+            home-manager.extraSpecialArgs = { inherit system zen-browser niri sops-nix firefox-addons dots-repo dms quickshell; };
             home-manager.users.mk = { ... }: {
               imports = [
                 ./home.nix
                 niri.homeModules.niri
                 zen-browser.homeModules.beta
+                dms.homeModules.dank-material-shell
+                dms.homeModules.niri
               ];
-              _module.args = {
-                inherit system zen-browser niri;
-                inherit sops-nix firefox-addons dots-repo;
-              };
             };
           }
         ];

@@ -1,4 +1,4 @@
-{ config, pkgs, lib, system, zen-browser, dots-repo, ... }:
+{ config, pkgs, lib, system, zen-browser, dots-repo, dms, quickshell, ... }:
 
 {
   home.username = "mk";
@@ -495,7 +495,7 @@
   # Qt theming to match GTK
   qt = {
     enable = true;
-    platformTheme = "gtk";
+    platformTheme.name = "gtk";
     style = {
       name = "adwaita-dark";
       package = pkgs.adwaita-qt;
@@ -518,6 +518,18 @@
   xdg.configFile."electron-flags.conf".text = ''
     --force-dark-mode
   '';
+
+  programs.dank-material-shell = {
+    enable = true;
+    niri = {
+      enableKeybinds = true;
+      enableSpawn = true;
+    };
+    enableSystemMonitoring = true;
+    quickshell.package = quickshell.packages.${system}.default;
+  };
+
+  # systemd.user.services.niri-flake-polkit.enable = false;
 
   home.file."Documents/repos/dotfiles".source = dots-repo;
 
