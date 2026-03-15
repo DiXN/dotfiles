@@ -4,7 +4,7 @@
   home.username = "mk";
   home.homeDirectory = "/home/mk";
 
-  home.stateVersion = "24.11";
+  home.stateVersion = "26.05";
 
   home.packages = with pkgs; [
     bat
@@ -48,8 +48,12 @@
 
   programs.git = {
     enable = true;
-    userEmail = "kaltschmidmichael@gmail.com";
-    userName = "Michael Kaltschmid";
+    settings = {
+      user = {
+        email = "kaltschmidmichael@gmail.com";
+        name = "Michael Kaltschmid";
+      };
+    };
   };
 
   programs.lazygit = {
@@ -81,7 +85,7 @@
       vlang = "/usr/bin/v";
       la = "exa --icons -l -a";
     };
-    initExtra = ''
+    initContent = ''
       # Configure prompt
       prompt_context() {}
 
@@ -249,6 +253,7 @@
 
   programs.niri = {
     enable = true;
+    package = pkgs.niri-unstable;
     config = ''
       // Niri configuration
       input {
@@ -525,6 +530,7 @@
       enableKeybinds = true;
       enableSpawn = true;
     };
+    # includes.enable = true; # Explicitly not set to avoid conflict with enableKeybinds
     enableSystemMonitoring = true;
     quickshell.package = quickshell.packages.${system}.default;
   };

@@ -14,6 +14,8 @@
   networking.hostName = "mk";
   networking.networkmanager.enable = true;
 
+  system.stateVersion = "26.05";
+
   # Set timezone
   time.timeZone = "Europe/Vienna";
 
@@ -24,7 +26,7 @@
     keyMap = "de-latin1";
   };
 
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
 
   # Power management
   services.upower.enable = true;
@@ -43,6 +45,7 @@
       substituters = [
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
+        "https://niri.cachix.org"
       ];
       trusted-public-keys = [
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
@@ -97,7 +100,7 @@
     less
     tree
     cantarell-fonts
-
+    cachix
     sops
     age
     age-plugin-yubikey
@@ -182,8 +185,10 @@
   nixpkgs.config.allowUnfree = true;
 
   # X11 keyboard layout
-  services.xserver.layout = "de";
-  services.xserver.xkbVariant = "nodeadkeys";
+  services.xserver.xkb = {
+    layout = "de";
+    variant = "nodeadkeys";
+  };
 
   hardware.firmware = with pkgs; [
     linux-firmware
