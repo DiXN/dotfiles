@@ -6,6 +6,17 @@
 
   home.stateVersion = "26.05";
 
+  nix.settings = {
+    substituters = [
+      "https://cache.nixos.org"
+      "https://niri.cachix.org"
+    ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964="
+    ];
+  };
+
   home.packages = with pkgs; [
     bat
     eza
@@ -252,8 +263,8 @@
   };
 
   programs.niri = {
-    enable = true;
-    package = pkgs.niri-unstable;
+    # enable = true;
+    # package = pkgs.niri-unstable;
     config = ''
       // Niri configuration
       input {
@@ -320,6 +331,7 @@
 
       }
 
+      spawn-at-startup "dms" "run"
       spawn-at-startup "sh" "-c" "xwayland-satellite"
 
       environment {
@@ -381,12 +393,12 @@
 
           // Monitor window movement
           Mod+Shift+Ctrl+Left  { move-column-to-monitor-left; }
-          Mod+Shift+Ctrl+Down  { move-column-to-monitor-down; }
-          Mod+Shift+Ctrl+Up    { move-column-to-monitor-up; }
+          Mod+Shift+Ctrl+Down  { move-window-to-monitor-down; }
+          Mod+Shift+Ctrl+Up    { move-window-to-monitor-up; }
           Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
           Mod+Shift+Ctrl+H     { move-column-to-monitor-left; }
-          Mod+Shift+Ctrl+J     { move-column-to-monitor-down; }
-          Mod+Shift+Ctrl+K     { move-column-to-monitor-up; }
+          Mod+Shift+Ctrl+J     { move-window-to-monitor-down; }
+          Mod+Shift+Ctrl+K     { move-window-to-monitor-up; }
           Mod+Shift+Ctrl+L     { move-column-to-monitor-right; }
 
           // Workspace navigation
@@ -526,11 +538,26 @@
 
   programs.dank-material-shell = {
     enable = true;
+
     niri = {
       enableKeybinds = true;
       enableSpawn = true;
+
+      includes = {
+        enable = false;
+        override = true;
+        originalFileName = "hm";
+        filesToInclude = [
+          "alttab"
+          "binds"
+          "colors"
+          "layout"
+          "outputs"
+          "wpblur"
+        ];
+      };
     };
-    # includes.enable = true; # Explicitly not set to avoid conflict with enableKeybinds
+
     enableSystemMonitoring = true;
     quickshell.package = quickshell.packages.${system}.default;
   };

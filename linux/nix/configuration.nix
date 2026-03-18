@@ -129,22 +129,26 @@
 
     # Display Manager
     displayManager = {
-      sddm = {
+      dms-greeter = {
         enable = true;
-        theme = "astronaut";
-        wayland.enable = true;
-        settings = {
-          Theme = {
-            Font = "Cantarell 10";
-          };
-          Users = {
-            DefaultUser = "mk";
-          };
-          Wayland = {
-            EnableHiDPI = true;
-          };
-        };
+        compositor.name = "niri";
       };
+      # sddm = {
+      #   enable = true;
+      #   theme = "astronaut";
+      #   wayland.enable = true;
+      #   settings = {
+      #     Theme = {
+      #       Font = "Cantarell 10";
+      #     };
+      #     Users = {
+      #       DefaultUser = "mk";
+      #     };
+      #     Wayland = {
+      #       EnableHiDPI = true;
+      #     };
+      #   };
+      # };
       # Add Niri to the session packages
       sessionPackages = [ pkgs.niri ];
     };
@@ -171,6 +175,11 @@
     enable = true;
     dockerCompat = true;
     defaultNetwork.settings.dns_enabled = true;
+  };
+
+  programs.niri = {
+    enable = true;
+    package = pkgs.niri-unstable;
   };
 
   programs.zsh = {
