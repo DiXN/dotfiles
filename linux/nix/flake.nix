@@ -61,45 +61,6 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
 
-      ageKeyModule = { config, lib, ... }: {
-        options = {
-          sops.age.yubikey = lib.mkOption {
-            type = lib.types.bool;
-            default = false;
-            description = "Whether to use YubiKey for SOPS age decryption";
-          };
-        };
-
-        config = lib.mkIf config.sops.age.yubikey {
-          sops.useSystemdActivation = true;
-          sops.age.keyFile = "/var/lib/sops-nix/key.txt";
-          sops.age.sshKeyPaths = [];
-          sops.age.generateKey = false;
-          sops.age.plugins = [ pkgs.age-plugin-yubikey ];
-
-          systemd.services.sops-install-secrets = {
-            after = [ "pcscd.service" ];
-            wants = [ "pcscd.service" ];
-            serviceConfig.ExecStartPre =
-              "${pkgs.writeShellScript "gen-yubikey-identity" ''
-                if [ ! -s /var/lib/sops-nix/key.txt ]; then
-                  mkdir -p /var/lib/sops-nix
-                  ${pkgs.age-plugin-yubikey}/bin/age-plugin-yubikey --identity --slot 1 > /var/lib/sops-nix/key.txt \
-                    && chmod 600 /var/lib/sops-nix/key.txt \
-                    || { rm -f /var/lib/sops-nix/key.txt; exit 1; }
-                fi
-              ''}";
-          };
-
-          environment.systemPackages = with pkgs; [
-            age-plugin-yubikey
-            age
-          ];
-
-          services.pcscd.enable = true;
-        };
-      };
-
       vmScript = pkgs.writeShellScript "nixos-test-vm" ''
         set -euo pipefail
         IMG="''${1:-mk.qcow2}"
@@ -149,6 +110,7 @@
       mgmtScript = pkgs.writeShellScript "nixos-mk" ''
         set -euo pipefail
         FLAKE=/tmp/dotfiles/linux/nix
+        TARGET="''${TARGET:-mk}"
         VM_DIR=/mnt/x/vm
         export NIX_SSHOPTS="-p 2222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PubkeyAuthentication=no -o PreferredAuthentications=password"
         case "''${1:-help}" in
@@ -156,7 +118,7 @@
             cd "$VM_DIR"
             rm -f mk.raw mk.qcow2
             script=$(${pkgs.nix}/bin/nix build --print-out-paths --no-link \
-              "$FLAKE#nixosConfigurations.mk.config.system.build.diskoImagesScript")
+              "$FLAKE#nixosConfigurations.$TARGET.config.system.build.diskoImagesScript")
             exec "$script"
             ;;
           vm)
@@ -165,7 +127,7 @@
             ;;
           switch|test|boot)
             exec ${pkgs.sshpass}/bin/sshpass -p mk \
-              ${pkgs.nixos-rebuild}/bin/nixos-rebuild "$1" --flake "$FLAKE#mk" \
+              ${pkgs.nixos-rebuild}/bin/nixos-rebuild "$1" --flake "$FLAKE#$TARGET" \
               --target-host mk@localhost --use-remote-sudo
             ;;
           install)
@@ -175,7 +137,7 @@
             read -rp "type $(basename "$dev") to confirm: " a
             [ "$a" = "$(basename "$dev")" ] || exit 1
             sudo ${disko.packages.${system}.disko}/bin/disko --mode disko "$FLAKE/disko-config.nix" --arg targetDisk "$dev"
-            sudo env TMPDIR=/mnt ${pkgs.nixos-install}/bin/nixos-install --flake "$FLAKE#mk" --no-root-password
+            sudo env TMPDIR=/mnt ${pkgs.nixos-install}/bin/nixos-install --flake "$FLAKE#$TARGET" --no-root-password
             ;;
           usb)
             dev=''${2:?usage: nix run .# -- usb /dev/sdX}
@@ -204,59 +166,55 @@ usage: nix run .# -- <command>
   install <dev>    disko-format + nixos-install onto a device
   usb <dev>        write the image onto a device (raw convert; >= 24G)
   clean            kill stray qemu, remove VARS/pid files
+
+TARGET=<name> selects targets/<name>.nix (default: mk)
 USAGE
             ;;
         esac
       '';
 
-    in {
-      nixosConfigurations.mk = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./configuration.nix
-          sops-nix.nixosModules.sops
-          ageKeyModule
-          { nixpkgs.overlays = [
-              niri.overlays.niri
-              (final: prev: {
-                nixvim = nixvim-config.packages.${system}.default;
-              })
-            
-              (final: prev: {
-                aggregateModules = modules: let
-                  agg = prev.aggregateModules modules;
-                  kernel = builtins.head modules;
-                in
-                  if kernel ? target then agg // { inherit (kernel) target; } else agg;
-              })
-            ];
+      mkHost = name:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs; };
+          modules = [
+            ./targets/${name}.nix
+            sops-nix.nixosModules.sops
+            disko.nixosModules.disko
+            {
+              disko.devices.disk.my-disk.imageName = name;
+              disko.devices.disk.my-disk.imageSize = "24G";
+            }
+            {
+              nixpkgs.overlays = [
+                niri.overlays.niri
+                (final: prev: {
+                  nixvim = nixvim-config.packages.${system}.default;
+                })
 
-            sops.age.yubikey = true;
-          }
-          disko.nixosModules.disko
-          {
-            disko.devices.disk.my-disk.imageName = "mk";
-            disko.devices.disk.my-disk.imageSize = "24G";
-            disko.imageBuilder.imageFormat = "qcow2";
-          }
-          home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "bck";
-            home-manager.extraSpecialArgs = { inherit system zen-browser niri sops-nix firefox-addons dots-repo dms quickshell; };
-            home-manager.users.mk = { ... }: {
-              imports = [
-                ./home.nix
-                niri.homeModules.niri
-                zen-browser.homeModules.beta
-                dms.homeModules.dank-material-shell
-                dms.homeModules.niri
+                (final: prev: {
+                  aggregateModules = modules: let
+                    agg = prev.aggregateModules modules;
+                    kernel = builtins.head modules;
+                  in
+                    if kernel ? target then agg // { inherit (kernel) target; } else agg;
+                })
               ];
-            };
-          }
-        ];
-      };
+            }
+            home-manager.nixosModules.home-manager {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.backupFileExtension = "bck";
+              home-manager.extraSpecialArgs = { inherit system zen-browser niri sops-nix firefox-addons dots-repo dms quickshell; };
+              home-manager.users.mk.imports = [
+                ./modules/home/common.nix
+              ];
+            }
+          ];
+        };
+
+    in {
+      nixosConfigurations.mk = mkHost "mk";
 
       apps.${system} = {
         default = { type = "app"; program = "${mgmtScript}"; };

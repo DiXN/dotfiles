@@ -1,6 +1,11 @@
 { system, dms, quickshell, ... }:
 
 {
+  imports = [
+    dms.homeModules.dank-material-shell
+    dms.homeModules.niri
+  ];
+
   programs.dank-material-shell = {
     enable = true;
 

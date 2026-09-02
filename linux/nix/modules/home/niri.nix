@@ -1,6 +1,14 @@
-{ config, pkgs, ... }:
+{ config, pkgs, niri, ... }:
 
 {
+  imports = [
+    niri.homeModules.niri
+  ];
+
+  home.packages = with pkgs; [
+    xwayland-satellite
+  ];
+
   programs.niri = {
     package = pkgs.niri;
     settings = {
@@ -110,6 +118,7 @@
           allow-inhibiting = false;
           action.spawn = [ "dms" "ipc" "call" "lock" "lock" ];
         };
+        "Mod+Alt+L".action.spawn = "hyprlock";
         "Mod+S".action.expand-column-to-available-width = [];
         "Mod+Shift+Ctrl+Left".action.move-column-to-monitor-left = [];
         "Mod+Shift+Ctrl+Down".action.move-window-to-monitor-down = [];
@@ -176,8 +185,8 @@
         };
         "XF86AudioRaiseVolume".action.spawn = [ "dms" "ipc" "call" "audio" "increment" "3" ];
         "XF86AudioLowerVolume".action.spawn = [ "dms" "ipc" "call" "audio" "decrement" "3" ];
-        "Mod+Shift+Up".action.spawn = [ "sh" "-c" "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+ && ignis open ignis_OSD" ];
-        "Mod+Shift+Down".action.spawn = [ "sh" "-c" "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05- && ignis open ignis_OSD" ];
+        "Mod+Shift+Up".action.spawn = [ "dms" "ipc" "call" "audio" "increment" "3" ];
+        "Mod+Shift+Down".action.spawn = [ "dms" "ipc" "call" "audio" "decrement" "3" ];
         "Mod+Shift+E".action.quit = [];
       };
     };
