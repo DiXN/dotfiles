@@ -5,6 +5,8 @@
     enable = true;
 
     settings = {
+      configVersion = 16;
+
       currentThemeName = "dynamic";
       currentThemeCategory = "dynamic";
 
@@ -83,9 +85,11 @@
       ];
     };
 
+    systemd.enable = false;
+
     niri = {
       enableKeybinds = false;
-      enableSpawn = false;
+      enableSpawn = true;
 
       includes = {
         enable = false;

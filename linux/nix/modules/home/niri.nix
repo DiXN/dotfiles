@@ -2,6 +2,7 @@
 
 {
   programs.niri = {
+    package = pkgs.niri;
     settings = {
       input = {
         keyboard.xkb.layout = "de";
@@ -53,9 +54,7 @@
         default-column-display = "tabbed";
         shadow.enable = true;
       };
-
       spawn-at-startup = [
-        { argv = [ "dms" "run" ]; }
         { argv = [ "sh" "-c" "xwayland-satellite --server $WAYLAND_DISPLAY" ]; }
       ];
 
@@ -70,7 +69,7 @@
       binds = {
         "Mod+Return".action.spawn = "kitty";
         "Mod+F".action.spawn = "nautilus";
-        "Mod+B".action.spawn = "zen";
+        "Mod+B".action.spawn = "zen-beta";
         "Mod+Q".action.close-window = [];
         "Mod+Left".action.focus-column-left = [];
         "Mod+Down".action.focus-window-down = [];
