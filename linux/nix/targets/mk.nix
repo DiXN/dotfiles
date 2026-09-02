@@ -7,7 +7,7 @@
     ../modules/nixos/yubikey.nix
   ];
 
-  networking.hostName = "mk";
+  networking.hostName = "mk-vm";
 
   boot.kernelModules = [ "kvm-amd" ];
 }

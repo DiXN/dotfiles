@@ -215,6 +215,7 @@ USAGE
 
     in {
       nixosConfigurations.mk = mkHost "mk";
+      nixosConfigurations.notebook = mkHost "notebook";
 
       apps.${system} = {
         default = { type = "app"; program = "${mgmtScript}"; };
