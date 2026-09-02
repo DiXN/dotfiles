@@ -84,17 +84,22 @@
     '';
 
     syntaxHighlighting.enable = true;
-    antidote = {
+    autosuggestion.enable = true;
+    historySubstringSearch.enable = true;
+
+    oh-my-zsh = {
       enable = true;
-      plugins = [
-        "romkatv/powerlevel10k"
-        "zsh-users/zsh-syntax-highlighting"
-        "zsh-users/zsh-autosuggestions"
-        "zsh-users/zsh-history-substring-search"
-        "ohmyzsh/ohmyzsh path:plugins/z"
-        "ohmyzsh/ohmyzsh path:plugins/git"
-      ];
+      theme = "";
+      plugins = [ "git" "z" ];
     };
+
+    plugins = [
+      {
+        name = "powerlevel10k";
+        src = pkgs.zsh-powerlevel10k;
+        file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+      }
+    ];
   };
 
   programs.fzf = {
