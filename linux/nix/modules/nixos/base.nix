@@ -35,6 +35,7 @@
     settings = {
       auto-optimise-store = true;
       experimental-features = [ "nix-command" "flakes" ];
+      accept-flake-config = true;
       trusted-users = [ "root" "mk" ];
 
       # Configure binary caches
