@@ -5,6 +5,7 @@
     ./common/pc.nix
     (import ../disko-config.nix { withSwap = true; filesystem = "btrfs"; })
     ../modules/nixos/base.nix
+    ../modules/nixos/wifi.nix
     ../modules/nixos/gui.nix
     ../modules/nixos/containers.nix
     ../modules/nixos/yubikey.nix
