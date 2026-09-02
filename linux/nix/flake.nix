@@ -20,6 +20,10 @@
       url = "github:mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    disko = {
+      url = "github:nix-community/disko/latest";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       # IMPORTANT: we're using "libgbm" and is only available in unstable so ensure
@@ -52,7 +56,7 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, zen-browser, niri, nixvim-config, sops-nix, firefox-addons, dots-repo, dms, quickshell, ... }:
+  outputs = inputs@{ self, nixpkgs, home-manager, zen-browser, niri, nixvim-config, sops-nix, disko, firefox-addons, dots-repo, dms, quickshell, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -67,22 +71,25 @@
         };
 
         config = lib.mkIf config.sops.age.yubikey {
-          system.activationScripts = {
-            ageSopsSetup = {
-              deps = [ "specialfs" ];
-              text = ''
-                mkdir -p /var/lib/sops-nix
-                ${pkgs.age-plugin-yubikey}/bin/age-plugin-yubikey --identity --slot 1 > /var/lib/sops-nix/key.txt
-                chmod 600 /var/lib/sops-nix/key.txt
-
-                export PATH="${pkgs.age-plugin-yubikey}/bin:$PATH"
-              '';
-            };
-          };
-
+          sops.useSystemdActivation = true;
           sops.age.keyFile = "/var/lib/sops-nix/key.txt";
           sops.age.sshKeyPaths = [];
           sops.age.generateKey = false;
+          sops.age.plugins = [ pkgs.age-plugin-yubikey ];
+
+          systemd.services.sops-install-secrets = {
+            after = [ "pcscd.service" ];
+            wants = [ "pcscd.service" ];
+            serviceConfig.ExecStartPre =
+              "${pkgs.writeShellScript "gen-yubikey-identity" ''
+                if [ ! -s /var/lib/sops-nix/key.txt ]; then
+                  mkdir -p /var/lib/sops-nix
+                  ${pkgs.age-plugin-yubikey}/bin/age-plugin-yubikey --identity --slot 1 > /var/lib/sops-nix/key.txt \
+                    && chmod 600 /var/lib/sops-nix/key.txt \
+                    || { rm -f /var/lib/sops-nix/key.txt; exit 1; }
+                fi
+              ''}";
+          };
 
           environment.systemPackages = with pkgs; [
             age-plugin-yubikey
@@ -92,6 +99,97 @@
           services.pcscd.enable = true;
         };
       };
+
+      vmScript = pkgs.writeShellScript "nixos-test-vm" ''
+        set -euo pipefail
+        IMG="''${1:-mk.raw}"
+        if [ ! -f "$IMG" ]; then
+          echo "$IMG not found - build it first: nix run .#image"
+          exit 1
+        fi
+        VARS="$(mktemp -d)/VARS.fd"
+        install -m 600 ${pkgs.OVMF.variables} "$VARS"
+        USB=()
+        if [ "''${YUBIKEY:-0}" = "1" ]; then
+          entry=$(${pkgs.usbutils}/bin/lsusb | grep -m1 'ID 1050:')
+          bus=$(echo "$entry" | awk '{print $2}')
+          dev=$(echo "$entry" | awk '{print $4}' | tr -d ':')
+          USB=(-device "usb-host,hostbus=$bus,hostaddr=$dev")
+        fi
+        export GBM_BACKENDS_PATH="${pkgs.mesa}/lib/gbm"
+        export LIBGL_DRIVERS_PATH="${pkgs.mesa}/lib/dri"
+        export __EGL_VENDOR_LIBRARY_FILENAMES="${pkgs.mesa}/share/glvnd/egl_vendor.d/50_mesa.json"
+        exec ${pkgs.qemu}/bin/qemu-system-x86_64 \
+          -enable-kvm -cpu host -smp 8 -m 8G \
+          -device virtio-vga-gl -display gtk,gl=on \
+          -device qemu-xhci,id=xhci \
+          -drive if=pflash,format=raw,readonly=on,file=${pkgs.OVMF.firmware} \
+          -drive if=pflash,format=raw,file="$VARS" \
+          -drive if=virtio,format=raw,file="$IMG" \
+          -device virtio-net-pci,netdev=net0 -netdev user,id=net0,hostfwd=tcp::2222-:22 \
+          -audiodev pipewire,id=snd0 -device intel-hda -device hda-output,audiodev=snd0 \
+          "''${USB[@]}"
+      '';
+
+      mgmtScript = pkgs.writeShellScript "nixos-mk" ''
+        set -euo pipefail
+        FLAKE=/tmp/dotfiles/linux/nix
+        VM_DIR=/mnt/x/vm
+        export NIX_SSHOPTS="-p 2222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PubkeyAuthentication=no -o PreferredAuthentications=password"
+        case "''${1:-help}" in
+          image)
+            cd "$VM_DIR"
+            exec ${self.nixosConfigurations.mk.config.system.build.diskoImagesScript}
+            ;;
+          vm)
+            cd "$VM_DIR"
+            exec ${vmScript}
+            ;;
+          switch|test|boot)
+            exec ${pkgs.sshpass}/bin/sshpass -p mk \
+              ${pkgs.nixos-rebuild}/bin/nixos-rebuild "$1" --flake "$FLAKE#mk" \
+              --target-host mk@localhost --use-remote-sudo
+            ;;
+          install)
+            dev=''${2:?usage: nix run .# -- install /dev/sdX}
+            [ -b "$dev" ] || { echo "not a block device: $dev"; exit 1; }
+            echo "WILL DESTROY ALL DATA on $dev"
+            read -rp "type $(basename "$dev") to confirm: " a
+            [ "$a" = "$(basename "$dev")" ] || exit 1
+            sudo ${disko.packages.${system}.disko}/bin/disko --mode disko "$FLAKE/disko-config.nix" --arg targetDisk "$dev"
+            sudo env TMPDIR=/mnt ${pkgs.nixos-install}/bin/nixos-install --flake "$FLAKE#mk" --no-root-password
+            ;;
+          usb)
+            dev=''${2:?usage: nix run .# -- usb /dev/sdX}
+            [ -b "$dev" ] || { echo "not a block device: $dev"; exit 1; }
+            img="$VM_DIR/mk.raw"
+            [ -f "$img" ] || { echo "no image - run: nix run .# -- image"; exit 1; }
+            need=$(stat -c%s "$img")
+            have=$(lsblk -b -n -o SIZE "$dev")
+            [ "$have" -ge "$need" ] || { echo "stick too small: $(numfmt --to=iec "$have") < $(numfmt --to=iec "$need")"; exit 1; }
+            echo "WILL OVERWRITE $dev ($(numfmt --to=iec "$have")) with mk.raw ($(numfmt --to=iec "$need"))"
+            read -rp "type $(basename "$dev") to confirm: " a
+            [ "$a" = "$(basename "$dev")" ] || exit 1
+            sudo dd if="$img" of="$dev" bs=4M status=progress conv=fsync
+            ;;
+          clean)
+            pkill -9 -f 'qemu-system-x86_64.*mk.raw' || true
+            rm -f "$VM_DIR"/VARS.fd "$VM_DIR"/qemu-*.pid
+            echo cleaned
+            ;;
+          *)
+            cat <<'USAGE'
+usage: nix run .# -- <command>
+  image            rebuild pristine mk.raw (wipes the VM disk)
+  vm               boot the VM (prefix YUBIKEY=1 for key passthrough)
+  switch|test|boot fast rebuild into the running VM (test = reboot reverts)
+  install <dev>    disko-format + nixos-install onto a device
+  usb <dev>        dd mk.raw onto a device (stick >= 24G)
+  clean            kill stray qemu, remove VARS/pid files
+USAGE
+            ;;
+        esac
+      '';
 
     in {
       nixosConfigurations.mk = nixpkgs.lib.nixosSystem {
@@ -107,9 +205,21 @@
                 nixvim = nixvim-config.packages.${system}.default;
               })
             
+              (final: prev: {
+                aggregateModules = modules: let
+                  agg = prev.aggregateModules modules;
+                  kernel = builtins.head modules;
+                in
+                  if kernel ? target then agg // { inherit (kernel) target; } else agg;
+              })
             ];
 
             sops.age.yubikey = true;
+          }
+          disko.nixosModules.disko
+          {
+            disko.devices.disk.my-disk.imageName = "mk";
+            disko.devices.disk.my-disk.imageSize = "24G";
           }
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
@@ -127,6 +237,14 @@
             };
           }
         ];
+      };
+
+      apps.${system} = {
+        default = { type = "app"; program = "${mgmtScript}"; };
+        disko = { type = "app"; program = "${disko.packages.${system}.disko}/bin/disko"; };
+        image = { type = "app"; program = toString (pkgs.writeShellScript "image" ''exec ${mgmtScript} image''); };
+        test-vm = { type = "app"; program = toString (pkgs.writeShellScript "test-vm" ''exec ${mgmtScript} vm''); };
+        vm-switch = { type = "app"; program = toString (pkgs.writeShellScript "vm-switch" ''exec ${mgmtScript} ''${1:-test}''); };
       };
     };
 }
