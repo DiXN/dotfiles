@@ -111,6 +111,7 @@
         set -euo pipefail
         FLAKE=/tmp/dotfiles/linux/nix
         TARGET="''${TARGET:-mk}"
+        export NIX_CONFIG="accept-flake-config = true"
         VM_DIR=/mnt/x/vm
         export NIX_SSHOPTS="-p 2222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PubkeyAuthentication=no -o PreferredAuthentications=password"
         case "''${1:-help}" in
@@ -136,8 +137,8 @@
             echo "WILL DESTROY ALL DATA on $dev"
             read -rp "type $(basename "$dev") to confirm: " a
             [ "$a" = "$(basename "$dev")" ] || exit 1
-            sudo ${disko.packages.${system}.disko}/bin/disko --mode disko "$FLAKE/disko-config.nix" --arg targetDisk "$dev" --arg withSwap true
-            sudo env TMPDIR=/mnt ${pkgs.nixos-install}/bin/nixos-install --flake "$FLAKE#$TARGET" --no-root-password
+            sudo ${disko.packages.${system}.disko}/bin/disko --mode disko "$FLAKE/disko-config.nix" --argstr targetDisk "$dev" --arg withSwap true --argstr filesystem btrfs
+            sudo env NIX_CONFIG="accept-flake-config = true" TMPDIR=/mnt ${pkgs.nixos-install}/bin/nixos-install --flake "$FLAKE#$TARGET" --no-root-password
             ;;
           usb)
             dev=''${2:?usage: nix run .# -- usb /dev/sdX}
@@ -173,7 +174,7 @@ USAGE
         esac
       '';
 
-      mkHost = name:
+      mkHost = { name, imageSize ? "100G" }:
         nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit inputs; };
@@ -183,7 +184,7 @@ USAGE
             disko.nixosModules.disko
             {
               disko.devices.disk.my-disk.imageName = name;
-              disko.devices.disk.my-disk.imageSize = "24G";
+              disko.devices.disk.my-disk.imageSize = imageSize;
             }
             {
               nixpkgs.overlays = [
@@ -214,8 +215,8 @@ USAGE
         };
 
     in {
-      nixosConfigurations.mk = mkHost "mk";
-      nixosConfigurations.notebook = mkHost "notebook";
+      nixosConfigurations.mk = mkHost { name = "mk"; };
+      nixosConfigurations.notebook = mkHost { name = "notebook"; };
 
       apps.${system} = {
         default = { type = "app"; program = "${mgmtScript}"; };
