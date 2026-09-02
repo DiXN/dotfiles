@@ -3,7 +3,7 @@
 {
   imports = [
     "${modulesPath}/profiles/qemu-guest.nix"
-    ../../disko-config.nix
+    (import ../../disko-config.nix { withSwap = false; })
   ];
 
   boot.initrd.availableKernelModules = [ "nvme" "ahci" "xhci_pci" "usbhid" "usb_storage" "uas" "sd_mod" "sr_mod" ];

@@ -136,7 +136,7 @@
             echo "WILL DESTROY ALL DATA on $dev"
             read -rp "type $(basename "$dev") to confirm: " a
             [ "$a" = "$(basename "$dev")" ] || exit 1
-            sudo ${disko.packages.${system}.disko}/bin/disko --mode disko "$FLAKE/disko-config.nix" --arg targetDisk "$dev"
+            sudo ${disko.packages.${system}.disko}/bin/disko --mode disko "$FLAKE/disko-config.nix" --arg targetDisk "$dev" --arg withSwap true
             sudo env TMPDIR=/mnt ${pkgs.nixos-install}/bin/nixos-install --flake "$FLAKE#$TARGET" --no-root-password
             ;;
           usb)

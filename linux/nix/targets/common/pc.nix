@@ -1,10 +1,6 @@
 { lib, pkgs, ... }:
 
 {
-  imports = [
-    ../../disko-config.nix
-  ];
-
   boot.initrd.availableKernelModules = [
     "nvme"
     "ahci"
