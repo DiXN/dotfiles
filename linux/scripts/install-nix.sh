@@ -27,7 +27,7 @@ fi
 
 # Format disks using disko
 echo "Formatting disk: $TARGET_DISK with disko..."
-nix --experimental-features "nix-command flakes" run github:nix-community/disko -- \
+nix --experimental-features "nix-command flakes" run /tmp/nixos-config/linux/nix#disko -- \
   --mode disko --arg targetDisk "\"$TARGET_DISK\"" /tmp/nixos-config/linux/nix/disko-config.nix
 
 # Copy your configuration to the target system
@@ -35,12 +35,6 @@ echo "Copying NixOS configuration..."
 mkdir -p /mnt/etc/nixos
 cp -r /tmp/nixos-config/linux/nix/* /mnt/etc/nixos/
 
-# Generate hardware configuration for this specific machine
-echo "Generating hardware configuration..."
-nixos-generate-config --root /mnt
-
-##Print config
-cat /mnt/etc/nixos/hardware-configuration.nix
 
 # Install NixOS
 echo "Installing NixOS..."

@@ -1,14 +1,20 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, modulesPath, ... }:
 
 {
   imports = [
-    ./hardware-configuration.nix
+    "${modulesPath}/profiles/qemu-guest.nix"
+    ./disko-config.nix
   ];
 
   # Basic system configuration
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.plymouth.enable = false;
+
+  boot.initrd.availableKernelModules = [ "nvme" "ahci" "xhci_pci" "usbhid" "usb_storage" "uas" "sd_mod" "sr_mod" ];
+  boot.initrd.kernelModules = [ ];
+  boot.kernelModules = [ "kvm-amd" ];
+  boot.extraModulePackages = [ ];
 
   # Set hostname
   networking.hostName = "mk";
@@ -177,10 +183,7 @@
     defaultNetwork.settings.dns_enabled = true;
   };
 
-  programs.niri = {
-    enable = true;
-    package = pkgs.niri-unstable;
-  };
+  programs.niri.enable = true;
 
   programs.zsh = {
     enable = true;
