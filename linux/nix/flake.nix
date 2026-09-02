@@ -102,7 +102,7 @@
 
       vmScript = pkgs.writeShellScript "nixos-test-vm" ''
         set -euo pipefail
-        IMG="''${1:-mk.raw}"
+        IMG="''${1:-mk.qcow2}"
         if [ ! -f "$IMG" ]; then
           echo "$IMG not found - build it first: nix run .#image"
           exit 1
@@ -114,18 +114,33 @@
           entry=$(${pkgs.usbutils}/bin/lsusb | grep -m1 'ID 1050:')
           bus=$(echo "$entry" | awk '{print $2}')
           dev=$(echo "$entry" | awk '{print $4}' | tr -d ':')
-          USB=(-device "usb-host,hostbus=$bus,hostaddr=$dev")
+          USB=(-device usb-host,bus=xhci.0,hostbus="$bus",hostaddr="$dev")
+        fi
+        if [ -n "''${WAYLAND_DISPLAY:-}" ] && [ "''${SDLDRIVER:-wayland}" = "wayland" ]; then
+          export SDL_VIDEODRIVER=wayland
+        fi
+        if [ "''${SDL:-0}" = "1" ]; then
+          DISP=(-display sdl,gl=on)
+        else
+          DISP=(-display gtk,gl=on,grab-on-hover=on)
+        fi
+        if [ "''${VENUS:-1}" = "1" ]; then
+          GPU=(-device virtio-vga-gl,hostmem=8G,venus=true,blob=true)
+        else
+          GPU=(-device virtio-vga-gl)
         fi
         export GBM_BACKENDS_PATH="${pkgs.mesa}/lib/gbm"
         export LIBGL_DRIVERS_PATH="${pkgs.mesa}/lib/dri"
         export __EGL_VENDOR_LIBRARY_FILENAMES="${pkgs.mesa}/share/glvnd/egl_vendor.d/50_mesa.json"
         exec ${pkgs.qemu}/bin/qemu-system-x86_64 \
           -enable-kvm -cpu host -smp 8 -m 8G \
-          -device virtio-vga-gl -display gtk,gl=on \
+          -device virtio-rng-pci \
           -device qemu-xhci,id=xhci \
+          "''${DISP[@]}" \
+          "''${GPU[@]}" \
           -drive if=pflash,format=raw,readonly=on,file=${pkgs.OVMF.firmware} \
           -drive if=pflash,format=raw,file="$VARS" \
-          -drive if=virtio,format=raw,file="$IMG" \
+          -drive if=virtio,format=qcow2,file="$IMG" \
           -device virtio-net-pci,netdev=net0 -netdev user,id=net0,hostfwd=tcp::2222-:22 \
           -audiodev pipewire,id=snd0 -device intel-hda -device hda-output,audiodev=snd0 \
           "''${USB[@]}"
@@ -139,7 +154,10 @@
         case "''${1:-help}" in
           image)
             cd "$VM_DIR"
-            exec ${self.nixosConfigurations.mk.config.system.build.diskoImagesScript}
+            rm -f mk.raw mk.qcow2
+            script=$(${pkgs.nix}/bin/nix build --print-out-paths --no-link \
+              "$FLAKE#nixosConfigurations.mk.config.system.build.diskoImagesScript")
+            exec "$script"
             ;;
           vm)
             cd "$VM_DIR"
@@ -162,29 +180,29 @@
           usb)
             dev=''${2:?usage: nix run .# -- usb /dev/sdX}
             [ -b "$dev" ] || { echo "not a block device: $dev"; exit 1; }
-            img="$VM_DIR/mk.raw"
+            img="$VM_DIR/mk.qcow2"
+            [ -f "$img" ] || img="$VM_DIR/mk.raw"
             [ -f "$img" ] || { echo "no image - run: nix run .# -- image"; exit 1; }
-            need=$(stat -c%s "$img")
+            need=$(${pkgs.qemu}/bin/qemu-img info --output=json "$img" | ${pkgs.jq}/bin/jq -r '."virtual-size"')
             have=$(lsblk -b -n -o SIZE "$dev")
             [ "$have" -ge "$need" ] || { echo "stick too small: $(numfmt --to=iec "$have") < $(numfmt --to=iec "$need")"; exit 1; }
-            echo "WILL OVERWRITE $dev ($(numfmt --to=iec "$have")) with mk.raw ($(numfmt --to=iec "$need"))"
+            echo "WILL OVERWRITE $dev ($(numfmt --to=iec "$have")) with $img (virtual $(numfmt --to=iec "$need"))"
             read -rp "type $(basename "$dev") to confirm: " a
-            [ "$a" = "$(basename "$dev")" ] || exit 1
-            sudo dd if="$img" of="$dev" bs=4M status=progress conv=fsync
+            sudo ${pkgs.qemu}/bin/qemu-img convert -O raw "$img" "$dev"
             ;;
           clean)
-            pkill -9 -f 'qemu-system-x86_64.*mk.raw' || true
+            pkill -9 -f 'qemu-system-x86_64.*mk\.(raw|qcow2)' || true
             rm -f "$VM_DIR"/VARS.fd "$VM_DIR"/qemu-*.pid
             echo cleaned
             ;;
           *)
             cat <<'USAGE'
 usage: nix run .# -- <command>
-  image            rebuild pristine mk.raw (wipes the VM disk)
+  image            rebuild pristine mk.qcow2 (wipes the VM disk)
   vm               boot the VM (prefix YUBIKEY=1 for key passthrough)
   switch|test|boot fast rebuild into the running VM (test = reboot reverts)
   install <dev>    disko-format + nixos-install onto a device
-  usb <dev>        dd mk.raw onto a device (stick >= 24G)
+  usb <dev>        write the image onto a device (raw convert; >= 24G)
   clean            kill stray qemu, remove VARS/pid files
 USAGE
             ;;
@@ -220,6 +238,7 @@ USAGE
           {
             disko.devices.disk.my-disk.imageName = "mk";
             disko.devices.disk.my-disk.imageSize = "24G";
+            disko.imageBuilder.imageFormat = "qcow2";
           }
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
