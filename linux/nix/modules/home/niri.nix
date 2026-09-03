@@ -7,6 +7,7 @@
 
   home.packages = with pkgs; [
     xwayland-satellite
+    wvkbd
   ];
 
   programs.niri = {
@@ -73,6 +74,11 @@
       };
 
       prefer-no-csd = true;
+
+      switch-events = {
+        "tablet-mode-on".action.spawn = [ "sh" "-c" "pgrep wvkbd || wvkbd-mobintl --auto --hidden" ];
+        "tablet-mode-off".action.spawn = [ "pkill" "wvkbd" ];
+      };
 
       binds = {
         "Mod+Return".action.spawn = "kitty";
@@ -179,6 +185,10 @@
         "Ctrl+Print".action.screenshot-screen = [];
         "Alt+Print".action.screenshot-window = [];
         "Mod+O".action.toggle-overview = [];
+        "Mod+V" = {
+          hotkey-overlay.title = "On-Screen Keyboard";
+          action.spawn = [ "sh" "-c" "pkill wvkbd || wvkbd-mobintl --auto --hidden" ];
+        };
         "Mod+M" = {
           hotkey-overlay.title = "Task Manager";
           action.spawn = [ "dms" "ipc" "call" "processlist" "toggle" ];

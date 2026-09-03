@@ -17,6 +17,11 @@
 
   services.power-profiles-daemon.enable = true;
 
+  home-manager.users.mk.programs.niri.settings = {
+    input.touch.map-to-output = "eDP-1";
+    spawn-at-startup = [ { argv = [ "rot8" ]; } ];
+  };
+
   services.snapper.configs.root = {
     SUBVOLUME = "/";
     TIMELINE_CREATE = true;
@@ -30,5 +35,6 @@
 
   environment.systemPackages = with pkgs; [
     brightnessctl
+    rot8
   ];
 }
