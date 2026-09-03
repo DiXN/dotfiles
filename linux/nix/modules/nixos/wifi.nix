@@ -35,7 +35,7 @@ in
     restartUnits = [ "NetworkManager.service" ];
   }) networks;
 
-  systemd.services.NetworkManager.after = [ "sops-nix.service" ];
+  systemd.services.NetworkManager.after = [ "sops-install-secrets.service" ];
 
   environment.etc = builtins.listToAttrs (map (ssid: {
     name = "NetworkManager/system-connections/${ssid}.nmconnection";
