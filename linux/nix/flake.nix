@@ -189,6 +189,7 @@ USAGE
             {
               nixpkgs.overlays = [
                 niri.overlays.niri
+                firefox-addons.overlays.default
                 (final: prev: {
                   nixvim = nixvim-config.packages.${system}.default;
                 })
