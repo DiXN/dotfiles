@@ -3,6 +3,7 @@
 {
   imports = [
     ./sops.nix
+    ./ai-keys.nix
   ];
 
   home-manager.users.mk.imports = [

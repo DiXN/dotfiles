@@ -47,6 +47,9 @@
       la = "exa --icons -l -a";
     };
     initContent = ''
+      # AI provider keys (sops-rendered shared store)
+      [[ -r $HOME/.config/ai/keys.env ]] && { set -a; source $HOME/.config/ai/keys.env; set +a; }
+
       # Configure prompt
       prompt_context() {}
 
