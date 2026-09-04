@@ -1,0 +1,16 @@
+{
+    "id": "yubikeyOath",
+    "name": "YubiKey OATH",
+    "description": "OATH codes from every plugged YubiKey in your bar: per-credential regen countdown, click a row to copy.",
+    "version": "1.0.0",
+    "author": "mk",
+    "type": "widget",
+    "capabilities": ["dankbar-widget", "security"],
+    "component": "./YubikeyOathWidget.qml",
+    "icon": "vpn_key",
+    "settings": "./Settings.qml",
+    "startupCheck": "./StartupCheck.qml",
+    "requires_dms": ">=1.5.3",
+    "dependencies": ["ykman"],
+    "permissions": ["settings_read", "settings_write"]
+}

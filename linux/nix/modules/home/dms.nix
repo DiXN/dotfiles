@@ -64,6 +64,7 @@
             { id = "music"; enabled = true; }
             { id = "clock"; enabled = true; }
             { id = "weather"; enabled = true; }
+            { id = "yubikeyOath"; enabled = true; }
           ];
           rightWidgets = [
             { id = "privacyIndicator"; enabled = true; }
@@ -108,6 +109,19 @@
           "outputs"
           "wpblur"
         ];
+      };
+    };
+
+    plugins."yubikeyOath" = {
+      enable = true;
+      src = ./plugins/yubikeyOath;
+      # Declared here because plugin_settings.json is store-managed
+      # (managePluginSettings); UI toggles won't persist across rebuilds.
+      settings = {
+        enabled = true;
+        copyDigitsOnly = true;
+        showUsernames = true;
+        codeGrouping = "half";
       };
     };
 
