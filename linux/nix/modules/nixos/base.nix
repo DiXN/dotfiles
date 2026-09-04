@@ -9,6 +9,7 @@
   home-manager.users.mk.imports = [
     ../home/shell.nix
     ../home/dots.nix
+    ../home/omp.nix
   ];
 
   # Basic system configuration
