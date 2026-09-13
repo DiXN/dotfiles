@@ -57,9 +57,14 @@
       url = "git+https://git.outfoxxed.me/quickshell/quickshell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Foreign-distro GL compat (nixGL). Only consumed by homeConfigurations.foreign.
+    nixGL = {
+      url = "github:nix-community/nixGL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, zen-browser, niri, nixvim-config, sops-nix, disko, firefox-addons, dots-repo, dms, quickshell, omp, ... }:
+  outputs = inputs@{ self, nixpkgs, home-manager, zen-browser, niri, nixvim-config, sops-nix, disko, firefox-addons, dots-repo, dms, quickshell, nixGL, omp, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -134,6 +139,45 @@
               ${pkgs.nixos-rebuild}/bin/nixos-rebuild "$1" --flake "$FLAKE#$TARGET" \
               --target-host mk@localhost --use-remote-sudo
             ;;
+          foreign)
+            # Bootstrap a foreign-distro (Arch) user for homeConfigurations.foreign.
+            # HM_USER=mk selects the user (default: mk-nix). Idempotent.
+            FUSER="''${HM_USER:-mk-nix}"
+            sudo pacman -S --needed --noconfirm nix
+            sudo systemctl enable --now nix-daemon.service
+            sudo mkdir -p /etc/nix
+            grep -q "experimental-features" /etc/nix/nix.conf 2>/dev/null \
+              || echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf >/dev/null
+            RESTART=no
+            if grep -q "^trusted-users" /etc/nix/nix.conf 2>/dev/null; then
+              if ! grep -q "^trusted-users.*$FUSER" /etc/nix/nix.conf; then
+                sudo sed -i "s/^trusted-users.*/& $FUSER/" /etc/nix/nix.conf
+                RESTART=yes
+              fi
+            else
+              echo "trusted-users = root $FUSER" | sudo tee -a /etc/nix/nix.conf >/dev/null
+              RESTART=yes
+            fi
+            [ "$RESTART" = yes ] && sudo systemctl restart nix-daemon.service
+            id "$FUSER" &>/dev/null || sudo useradd -m "$FUSER"
+            sudo loginctl enable-linger "$FUSER" || true
+            sudo -u "$FUSER" sh -c 'grep -qs "hm-session-vars" ~/.profile || printf "%s\n" "" "# nix home-manager session env" "if [ -f \"\$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh\" ]; then" "  . \"\$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh\"" "fi" >> ~/.profile'
+            NIXGL="''${HM_NIXGL:-}"
+            if [ -z "$NIXGL" ]; then
+              NIXGL=nixGLIntel
+              ${pkgs.pciutils}/bin/lspci 2>/dev/null | grep -qi nvidia && NIXGL=nixGLNvidia
+            fi
+            sudo -u "$FUSER" -i env \
+              HM_USER="$FUSER" HM_NIXGL="$NIXGL" NIX_CONFIG="accept-flake-config = true" \
+              ${pkgs.nix}/bin/nix run github:nix-community/home-manager/master -- switch \
+              --impure --flake "path:$FLAKE#foreign" -b backup
+            ZSHBIN="/home/$FUSER/.nix-profile/bin/zsh"
+            if [ -x "$ZSHBIN" ]; then
+              grep -qs "$ZSHBIN" /etc/shells || echo "$ZSHBIN" | sudo tee -a /etc/shells >/dev/null
+              sudo chsh -s "$ZSHBIN" "$FUSER"
+            fi
+            echo "done: $FUSER bootstrapped from $FLAKE#foreign"
+            ;;
           install)
             dev=''${2:?usage: nix run .# -- install /dev/sdX}
             [ -b "$dev" ] || { echo "not a block device: $dev"; exit 1; }
@@ -167,6 +211,8 @@ usage: nix run .# -- <command>
   image            rebuild pristine mk.qcow2 (wipes the VM disk)
   vm               boot the VM (prefix YUBIKEY=1 for key passthrough)
   switch|test|boot fast rebuild into the running VM (test = reboot reverts)
+  foreign          bootstrap foreign-distro user for homeConfigurations.foreign
+                   (HM_USER=mk selects user, default mk-nix; HM_NIXGL overrides GPU detect)
   install <dev>    disko-format + nixos-install onto a device
   usb <dev>        write the image onto a device (raw convert; >= 24G)
   clean            kill stray qemu, remove VARS/pid files
@@ -221,6 +267,45 @@ USAGE
     in {
       nixosConfigurations.mk = mkHost { name = "mk"; };
       nixosConfigurations.notebook = mkHost { name = "notebook"; };
+
+      # Standalone home-manager for foreign distros (e.g. Arch). The NixOS
+      # hosts above do NOT evaluate any of this.
+      # Default user is mk-nix; override with HM_USER (needs --impure):
+      #   HM_USER=mk home-manager switch --impure --flake .#foreign
+      # Nvidia instead of Intel: HM_NIXGL=nixGLNvidia (also needs --impure).
+      homeConfigurations.foreign =
+        let
+          foreignUser =
+            let u = builtins.getEnv "HM_USER";
+            in if u == "" then "mk-nix" else u;
+        in home-manager.lib.homeManagerConfiguration {
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = [
+              niri.overlays.niri
+              (final: prev: {
+                nixvim = nixvim-config.packages.${system}.default;
+              })
+              (import ./overlays/nixgl-compat.nix { inherit system nixGL dms quickshell; })
+            ];
+          };
+          extraSpecialArgs = { inherit system niri dms quickshell; };
+          modules = [
+            {
+              home.username = foreignUser;
+              home.homeDirectory = "/home/${foreignUser}";
+              home.stateVersion = "26.05";
+              programs.home-manager.enable = true;
+            }
+            ./modules/home/niri.nix
+            ./modules/home/shell.nix
+            ./modules/home/terminals.nix
+            ./modules/home/dms.nix
+            ({ pkgs, ... }: {
+              programs.dank-material-shell.package = pkgs.dms-shell-nixgl;
+            })
+          ];
+        };
 
       apps.${system} = {
         default = { type = "app"; program = "${mgmtScript}"; };
