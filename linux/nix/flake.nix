@@ -121,6 +121,19 @@
         TARGET="''${TARGET:-mk}"
         export NIX_CONFIG="accept-flake-config = true"
         VM_DIR=/mnt/x/vm
+        MACH=/var/lib/machines/mk-nix-sys
+        GCROOT="$HOME/.cache/mk-nix-sys-toplevel"
+        do_import() {
+          mkdir -p "$(dirname "$GCROOT")"
+          TOPLEVEL=$(${pkgs.nix}/bin/nix build --print-out-paths --out-link "$GCROOT" "$FLAKE#nixosConfigurations.nspawn.config.system.build.toplevel")
+          sudo machinectl terminate mk-nix-sys 2>/dev/null || true
+          sudo rm -rf "$MACH"
+          sudo mkdir -p "$MACH"/sbin "$MACH"/etc "$MACH"/proc "$MACH"/sys "$MACH"/dev
+          sudo chmod 755 /var/lib/machines
+          sudo ln -sfn "$TOPLEVEL/init" "$MACH/sbin/init"
+          sudo cp -f "$TOPLEVEL/etc/os-release" "$MACH/etc/os-release"
+          echo "mk-nix-sys skeleton -> $TOPLEVEL (pinned at $GCROOT, store shared ro at boot)"
+        }
         export NIX_SSHOPTS="-p 2222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PubkeyAuthentication=no -o PreferredAuthentications=password"
         case "''${1:-help}" in
           image)
@@ -178,6 +191,51 @@
             fi
             echo "done: $FUSER bootstrapped from $FLAKE#foreign"
             ;;
+          nspawn-import)
+            do_import
+            ;;
+          nspawn)
+            imported=0
+            if [ "''${REBUILD:-0}" = 1 ] || [ ! -L "$MACH/sbin/init" ] || [ ! -e "$GCROOT" ]; then
+              do_import
+              imported=1
+            else
+              TOPLEVEL=$(readlink "$MACH/sbin/init"); TOPLEVEL="''${TOPLEVEL%/init}"
+              if [ ! -e "$TOPLEVEL/init" ]; then
+                do_import
+                imported=1
+              fi
+            fi
+            [ "$imported" = 1 ] || [ -d "$MACH" ] || { echo "no machine - run: nix run .# -- nspawn-import"; exit 1; }
+            command -v systemd-nspawn >/dev/null || { echo "missing systemd-nspawn (systemd-container)"; exit 1; }
+            BINDS=(--bind-ro=/nix --bind=/dev/dri --bind=/dev/input --bind=/dev/tty0 --bind=/dev/tty12)
+            BINDS+=(--bind=/dev/shm)
+            BINDS+=(--bind-ro=/run/user/1000/pipewire-0:/run/pw-host/pipewire-0 --bind-ro=/run/user/1000/pulse:/run/pw-host/pulse)
+            BINDS+=(--bind-ro=/run/dbus/system_bus_socket:/run/host/system_bus_socket)
+            PROPS=(--property=DeviceAllow=char-drm --property=DeviceAllow=char-input --capability=CAP_SYS_TTY_CONFIG --capability=CAP_NET_ADMIN --capability=CAP_IPC_LOCK --system-call-filter=sendmsg --system-call-filter=recvmsg)
+            case "''${STEAM:-isolated}" in
+              ro-games)
+                SROOT="$HOME/.local/share/Steam"
+                if [ -d "$SROOT/steamapps/common" ]; then
+                  BINDS+=(--bind-ro="$SROOT/steamapps/common:/home/mk/.local/share/Steam/steamapps/common")
+                  [ -f "$SROOT/libraryfolders.vdf" ] && BINDS+=(--bind-ro="$SROOT/libraryfolders.vdf:/home/mk/.local/share/Steam/libraryfolders.vdf")
+                  for m in "$SROOT"/steamapps/*.acf; do
+                    [ -f "$m" ] || continue
+                    BINDS+=(--bind-ro="$m:/home/mk/.local/share/Steam/steamapps/$(basename "$m")")
+                  done
+                else
+                  echo "no host Steam library found - starting isolated"
+                fi
+                ;;
+              full)
+                BINDS+=(--bind="$HOME/.local/share/Steam:/home/mk/.local/share/Steam")
+                ;;
+            esac
+            exec sudo SYSTEMD_NSPAWN_API_VFS_WRITABLE=1 systemd-nspawn --machine=mk-nix-sys -bD "$MACH" --ephemeral "''${BINDS[@]}" "''${PROPS[@]}"
+            ;;
+          nspawn-shell)
+            exec sudo machinectl shell mk-nix-sys
+            ;;
           install)
             dev=''${2:?usage: nix run .# -- install /dev/sdX}
             [ -b "$dev" ] || { echo "not a block device: $dev"; exit 1; }
@@ -211,6 +269,11 @@ usage: nix run .# -- <command>
   image            rebuild pristine mk.qcow2 (wipes the VM disk)
   vm               boot the VM (prefix YUBIKEY=1 for key passthrough)
   switch|test|boot fast rebuild into the running VM (test = reboot reverts)
+  nspawn-import    rebuild nspawn skeleton mk-nix-sys (shares host /nix, no copy)
+  nspawn           boot mk-nix-sys ephemeral with GPU + display/audio passthrough
+                   (auto-imports when missing/stale, REBUILD=1 forces;
+                   STEAM=isolated|ro-games|full, default isolated)
+  nspawn-shell     open shell in running mk-nix-sys
   foreign          bootstrap foreign-distro user for homeConfigurations.foreign
                    (HM_USER=mk selects user, default mk-nix; HM_NIXGL overrides GPU detect)
   install <dev>    disko-format + nixos-install onto a device
@@ -264,9 +327,38 @@ USAGE
           ];
         };
 
+      mkContainer = { name }:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs; };
+          modules = [
+            ./targets/${name}.nix
+            sops-nix.nixosModules.sops
+            {
+              nixpkgs.overlays = [
+                niri.overlays.niri
+                firefox-addons.overlays.default
+                (final: prev: {
+                  nixvim = nixvim-config.packages.${system}.default;
+                })
+              ];
+            }
+            home-manager.nixosModules.home-manager {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.backupFileExtension = "bck";
+              home-manager.extraSpecialArgs = { inherit system zen-browser niri sops-nix firefox-addons dots-repo dms quickshell omp; };
+              home-manager.users.mk.imports = [
+                ./modules/home/common.nix
+              ];
+            }
+          ];
+        };
+
     in {
       nixosConfigurations.mk = mkHost { name = "mk"; };
       nixosConfigurations.notebook = mkHost { name = "notebook"; };
+      nixosConfigurations.nspawn = mkContainer { name = "nspawn"; };
 
       # Standalone home-manager for foreign distros (e.g. Arch). The NixOS
       # hosts above do NOT evaluate any of this.
