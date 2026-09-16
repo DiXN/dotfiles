@@ -5,16 +5,21 @@
     extra-substituters = [
       "https://niri.cachix.org"
       "https://nix-community.cachix.org"
+      "https://cache.numtide.com"
     ];
     extra-trusted-public-keys = [
       "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
     ];
   };
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    omp = { url = "github:can1357/oh-my-pi"; };
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -64,7 +69,7 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, zen-browser, niri, nixvim-config, sops-nix, disko, firefox-addons, dots-repo, dms, quickshell, nixGL, omp, ... }:
+  outputs = inputs@{ self, nixpkgs, home-manager, zen-browser, niri, nixvim-config, sops-nix, disko, firefox-addons, dots-repo, dms, quickshell, nixGL, llm-agents, ... }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -302,6 +307,7 @@ USAGE
               nixpkgs.overlays = [
                 niri.overlays.niri
                 firefox-addons.overlays.default
+                llm-agents.overlays.shared-nixpkgs
                 (final: prev: {
                   nixvim = nixvim-config.packages.${system}.default;
                 })
@@ -319,7 +325,7 @@ USAGE
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.backupFileExtension = "bck";
-              home-manager.extraSpecialArgs = { inherit system zen-browser niri sops-nix firefox-addons dots-repo dms quickshell omp; };
+              home-manager.extraSpecialArgs = { inherit system zen-browser niri sops-nix firefox-addons dots-repo dms quickshell; };
               home-manager.users.mk.imports = [
                 ./modules/home/common.nix
               ];
@@ -338,6 +344,7 @@ USAGE
               nixpkgs.overlays = [
                 niri.overlays.niri
                 firefox-addons.overlays.default
+                llm-agents.overlays.shared-nixpkgs
                 (final: prev: {
                   nixvim = nixvim-config.packages.${system}.default;
                 })
@@ -347,7 +354,7 @@ USAGE
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.backupFileExtension = "bck";
-              home-manager.extraSpecialArgs = { inherit system zen-browser niri sops-nix firefox-addons dots-repo dms quickshell omp; };
+              home-manager.extraSpecialArgs = { inherit system zen-browser niri sops-nix firefox-addons dots-repo dms quickshell; };
               home-manager.users.mk.imports = [
                 ./modules/home/common.nix
               ];

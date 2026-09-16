@@ -107,6 +107,8 @@
   # SSH
   services.openssh.enable = true;
 
+  services.speechd.enable = false;
+
   programs.zsh = {
     enable = true;
     autosuggestions.enable = true;
