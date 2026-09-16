@@ -215,6 +215,25 @@
             command -v systemd-nspawn >/dev/null || { echo "missing systemd-nspawn (systemd-container)"; exit 1; }
             BINDS=(--bind-ro=/nix --bind=/dev/dri --bind=/dev/input --bind=/dev/tty0 --bind=/dev/tty12)
             BINDS+=(--bind=/dev/shm)
+            # YubiKey CCID: share host pcscd socket (slot needs no PIN/touch).
+            if [ -S /run/pcscd/pcscd.comm ]; then
+              BINDS+=(--bind=/run/pcscd/pcscd.comm)
+            else
+              echo "no host pcscd socket - YubiKey/sops unavailable in container" >&2
+            fi
+            if ! ${pkgs.usbutils}/bin/lsusb 2>/dev/null | grep -q 'ID 1050:'; then
+              echo "no YubiKey on host USB - sops secrets will fail to decrypt" >&2
+            fi
+            # YubiKey HID (OTP/FIDO): bind stable by-id nodes, resolved at launch.
+            seen=""
+            for h in /dev/input/by-id/usb-Yubico_YubiKey*-hidraw /dev/input/by-id/usb-Yubico_YubiKey*-fido; do
+              [ -e "$h" ] || continue
+              node=$(readlink -f "$h")
+              case " $seen " in *" $node "*) continue;; esac
+              seen="$seen $node"
+              BINDS+=(--bind="$node")
+              PROPS+=(--property="DeviceAllow=$node rwm")
+            done
             BINDS+=(--bind-ro=/run/user/1000/pipewire-0:/run/pw-host/pipewire-0 --bind-ro=/run/user/1000/pulse:/run/pw-host/pulse)
             BINDS+=(--bind-ro=/run/dbus/system_bus_socket:/run/host/system_bus_socket)
             PROPS=(--property=DeviceAllow=char-drm --property=DeviceAllow=char-input --capability=CAP_SYS_TTY_CONFIG --capability=CAP_NET_ADMIN --capability=CAP_IPC_LOCK --system-call-filter=sendmsg --system-call-filter=recvmsg)

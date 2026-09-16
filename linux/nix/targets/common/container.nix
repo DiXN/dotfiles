@@ -24,14 +24,14 @@
   systemd.sockets.nix-daemon.enable = lib.mkForce false;
   systemd.services.nix-channel-init.enable = lib.mkForce false;
 
-  sops.secrets = lib.mkForce { };
-  sops.templates = lib.mkForce { };
-
   services.udev.enable = lib.mkForce true;
   services.udev.extraRules = ''
     SUBSYSTEM=="drm", KERNEL=="card[0-9]*|renderD[0-9]*", TAG+="seat"
     SUBSYSTEM=="drm", KERNEL=="card[0-9]*", TAG+="master-of-seat"
     SUBSYSTEM=="input", KERNEL=="event[0-9]*", TAG+="seat"
+    # YubiKey HID: grant mk access without session ACLs.
+    SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1050", MODE="0666"
+    SUBSYSTEM=="input", ATTRS{idVendor}=="1050", MODE="0666"
   '';
 
   environment.sessionVariables = {
@@ -70,7 +70,10 @@
     after = [ "systemd-udev.service" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.systemd}/bin/udevadm trigger --subsystem-match=input --action=change";
+      ExecStart = [
+        "${pkgs.systemd}/bin/udevadm trigger --subsystem-match=input --action=change"
+        "${pkgs.systemd}/bin/udevadm trigger --subsystem-match=hidraw --action=change"
+      ];
     };
   };
 }
