@@ -21,4 +21,6 @@
 
   # No local pcscd: the host daemon serves the shared socket.
   services.pcscd.enable = lib.mkForce false;
+
+  home-manager.users.mk.programs.zen-browser.profiles.mk.mods = lib.mkForce [];
 }

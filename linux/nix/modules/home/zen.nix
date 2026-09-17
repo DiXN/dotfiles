@@ -78,7 +78,6 @@
       };
 
     mods = [
-      "2e3369c7-e450-46ba-8794-75ccb0de5e48" # Now playing indicator
       "570afd9d-96fa-48b5-bad3-0c106757cce9" # Super Sleek UI
       "58649066-2b6f-4a5b-af6d-c3d21d16fc00" # Private Mode Highlighting
       "5941aefd-67b0-453d-9b62-9071a31cbb0d" # Ultra compact mode
