@@ -13,6 +13,7 @@
   programs.niri = {
     package = pkgs.niri;
     settings = {
+      hotkey-overlay.skip-at-startup = true;
       input = {
         keyboard.xkb.layout = "de";
         focus-follows-mouse.enable = true;

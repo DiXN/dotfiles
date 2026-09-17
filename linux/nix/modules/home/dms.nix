@@ -1,10 +1,17 @@
 { system, dms, quickshell, ... }:
 
+let
+  changelogSource = builtins.readFile "${dms.outPath}/quickshell/Services/ChangelogService.qml";
+  changelogMatch = builtins.match ".*currentVersion: \"([^\"]+)\".*" changelogSource;
+  changelogVersion = if changelogMatch == null then throw "ChangelogService.qml: currentVersion not found" else builtins.head changelogMatch;
+in
 {
   imports = [
     dms.homeModules.dank-material-shell
     dms.homeModules.niri
   ];
+
+  xdg.configFile."DankMaterialShell/.changelog-${changelogVersion}".text = "";
 
   programs.dank-material-shell = {
     enable = true;
