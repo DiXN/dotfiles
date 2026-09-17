@@ -213,46 +213,71 @@
             fi
             [ "$imported" = 1 ] || [ -d "$MACH" ] || { echo "no machine - run: nix run .# -- nspawn-import"; exit 1; }
             command -v systemd-nspawn >/dev/null || { echo "missing systemd-nspawn (systemd-container)"; exit 1; }
+            CHOME=/home/mk # guest home, must match users.users.mk.home in targets/nspawn.nix
+            # bind ro|rw <host-path> [guest-path]: append unless the host path is missing.
+            # Returns 1 when skipped - always guard it (set -e): `bind ... || true`, `if bind ...`.
+            bind() {
+              local dst="''${3:-$2}"
+              [ -e "$2" ] || return 1
+              if [ "$1" = ro ]; then BINDS+=(--bind-ro="$2:$dst"); else BINDS+=(--bind="$2:$dst"); fi
+            }
+            # hbind ro|rw <path-under-$HOME>: share ~/<path> into the guest's home, skip when absent.
+            hbind() { bind "$1" "$HOME/$2" "$CHOME/$2"; }
+            # --- base: store, GPU/input, boot ttys, shm (required, nspawn fails when missing) ---
             BINDS=(--bind-ro=/nix --bind=/dev/dri --bind=/dev/input --bind=/dev/tty0 --bind=/dev/tty12)
             BINDS+=(--bind=/dev/shm)
-            # YubiKey CCID: share host pcscd socket (slot needs no PIN/touch).
-            if [ -S /run/pcscd/pcscd.comm ]; then
-              BINDS+=(--bind=/run/pcscd/pcscd.comm)
-            else
-              echo "no host pcscd socket - YubiKey/sops unavailable in container" >&2
-            fi
+            # --- audio + host dbus (required, remapped into the guest) ---
+            BINDS+=(--bind-ro=/run/user/1000/pipewire-0:/run/pw-host/pipewire-0 --bind-ro=/run/user/1000/pulse:/run/pw-host/pulse)
+            BINDS+=(--bind-ro=/run/dbus/system_bus_socket:/run/host/system_bus_socket)
+            PROPS=(--property=DeviceAllow=char-drm --property=DeviceAllow=char-input
+                   --capability=CAP_SYS_TTY_CONFIG --capability=CAP_NET_ADMIN --capability=CAP_IPC_LOCK
+                   --system-call-filter=sendmsg --system-call-filter=recvmsg)
+            # --- YubiKey CCID: share host pcscd socket (slot needs no PIN/touch) ---
+            bind rw /run/pcscd/pcscd.comm || echo "no host pcscd socket - YubiKey/sops unavailable in container" >&2
             if ! ${pkgs.usbutils}/bin/lsusb 2>/dev/null | grep -q 'ID 1050:'; then
               echo "no YubiKey on host USB - sops secrets will fail to decrypt" >&2
             fi
-            # YubiKey HID (OTP/FIDO): bind stable by-id nodes, resolved at launch.
+            # --- YubiKey HID (OTP/FIDO): stable by-id nodes, resolved at launch ---
             seen=""
             for h in /dev/input/by-id/usb-Yubico_YubiKey*-hidraw /dev/input/by-id/usb-Yubico_YubiKey*-fido; do
               [ -e "$h" ] || continue
               node=$(readlink -f "$h")
               case " $seen " in *" $node "*) continue;; esac
               seen="$seen $node"
-              BINDS+=(--bind="$node")
+              bind rw "$node" || continue
               PROPS+=(--property="DeviceAllow=$node rwm")
             done
-            BINDS+=(--bind-ro=/run/user/1000/pipewire-0:/run/pw-host/pipewire-0 --bind-ro=/run/user/1000/pulse:/run/pw-host/pulse)
-            BINDS+=(--bind-ro=/run/dbus/system_bus_socket:/run/host/system_bus_socket)
-            PROPS=(--property=DeviceAllow=char-drm --property=DeviceAllow=char-input --capability=CAP_SYS_TTY_CONFIG --capability=CAP_NET_ADMIN --capability=CAP_IPC_LOCK --system-call-filter=sendmsg --system-call-filter=recvmsg)
-            case "''${STEAM:-isolated}" in
-              ro-games)
-                SROOT="$HOME/.local/share/Steam"
-                if [ -d "$SROOT/steamapps/common" ]; then
-                  BINDS+=(--bind-ro="$SROOT/steamapps/common:/home/mk/.local/share/Steam/steamapps/common")
-                  [ -f "$SROOT/libraryfolders.vdf" ] && BINDS+=(--bind-ro="$SROOT/libraryfolders.vdf:/home/mk/.local/share/Steam/libraryfolders.vdf")
+            # --- bulk media mounts (same path, skipped when absent) ---
+            for m in /mnt/q /mnt/x; do bind rw "$m" || true; done
+            # --- gaming: wine prefixes (rw, guest sees the same ~/ layout) ---
+            for p in .wine .proton .winef3 Games; do hbind rw "$p" || true; done
+            # --- gaming: launcher data (game lists, custom runners) ---
+            for p in .local/share/faugus-launcher .local/share/Steam/compatibilitytools.d \
+                     .local/share/pluto .local/share/lutris .local/share/rockstar-games-launcher; do
+              hbind rw "$p" || true
+            done
+            SROOT=$HOME/.local/share/Steam
+            case "''${STEAM:-rw-client}" in
+              ro-games) # fresh login every boot, game payloads ro
+                if hbind ro .local/share/Steam/steamapps/common; then
+                  hbind ro .local/share/Steam/libraryfolders.vdf || true
                   for m in "$SROOT"/steamapps/*.acf; do
                     [ -f "$m" ] || continue
-                    BINDS+=(--bind-ro="$m:/home/mk/.local/share/Steam/steamapps/$(basename "$m")")
+                    BINDS+=(--bind-ro="$m:$CHOME/.local/share/Steam/steamapps/$(basename "$m")")
                   done
                 else
-                  echo "no host Steam library found - starting isolated"
+                  echo "no host Steam library found - starting isolated" >&2
                 fi
                 ;;
-              full)
-                BINDS+=(--bind="$HOME/.local/share/Steam:/home/mk/.local/share/Steam")
+              rw-client) # login persists, game payloads stay ro
+                if hbind rw .local/share/Steam; then
+                  hbind ro .local/share/Steam/steamapps/common || true
+                else
+                  echo "no host Steam dir found - starting isolated" >&2
+                fi
+                ;;
+              full) # whole Steam tree rw - can overwrite your install
+                hbind rw .local/share/Steam || echo "no host Steam dir found - starting isolated" >&2
                 ;;
             esac
             exec sudo SYSTEMD_NSPAWN_API_VFS_WRITABLE=1 systemd-nspawn --machine=mk-nix-sys -bD "$MACH" --ephemeral "''${BINDS[@]}" "''${PROPS[@]}"
@@ -296,7 +321,7 @@ usage: nix run .# -- <command>
   nspawn-import    rebuild nspawn skeleton mk-nix-sys (shares host /nix, no copy)
   nspawn           boot mk-nix-sys ephemeral with GPU + display/audio passthrough
                    (auto-imports when missing/stale, REBUILD=1 forces;
-                   STEAM=isolated|ro-games|full, default isolated)
+                   STEAM=isolated|ro-games|rw-client|full, default rw-client)
   nspawn-shell     open shell in running mk-nix-sys
   foreign          bootstrap foreign-distro user for homeConfigurations.foreign
                    (HM_USER=mk selects user, default mk-nix; HM_NIXGL overrides GPU detect)
